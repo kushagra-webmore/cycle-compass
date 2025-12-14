@@ -1,0 +1,287 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700&family=Quicksand:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Warm cream background */
+    --background: 30 50% 98%;
+    --foreground: 340 20% 20%;
+
+    /* Cards - soft white */
+    --card: 30 40% 99%;
+    --card-foreground: 340 20% 20%;
+
+    /* Popover */
+    --popover: 30 40% 99%;
+    --popover-foreground: 340 20% 20%;
+
+    /* Primary - Soft Rose */
+    --primary: 350 60% 65%;
+    --primary-foreground: 0 0% 100%;
+    --primary-soft: 350 60% 92%;
+    --primary-glow: 350 60% 75%;
+
+    /* Secondary - Warm Lavender */
+    --secondary: 270 30% 90%;
+    --secondary-foreground: 270 30% 30%;
+
+    /* Muted - Soft neutral */
+    --muted: 30 20% 94%;
+    --muted-foreground: 340 10% 45%;
+
+    /* Accent - Soft Coral */
+    --accent: 15 70% 85%;
+    --accent-foreground: 15 50% 25%;
+
+    /* Destructive */
+    --destructive: 0 60% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Borders & inputs */
+    --border: 340 20% 90%;
+    --input: 340 20% 92%;
+    --ring: 350 60% 65%;
+
+    --radius: 1rem;
+
+    /* Custom colors */
+    --sage: 140 25% 70%;
+    --sage-foreground: 140 30% 20%;
+    --lavender: 270 35% 80%;
+    --lavender-foreground: 270 30% 25%;
+    --peach: 25 80% 85%;
+    --peach-foreground: 25 50% 25%;
+    --blush: 350 50% 88%;
+    --cream: 35 50% 96%;
+
+    /* Phase colors */
+    --phase-menstrual: 0 55% 70%;
+    --phase-follicular: 350 55% 75%;
+    --phase-ovulatory: 25 70% 75%;
+    --phase-luteal: 270 35% 75%;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(350 60% 65%), hsl(15 70% 75%));
+    --gradient-calm: linear-gradient(180deg, hsl(30 50% 98%), hsl(350 60% 97%));
+    --gradient-lavender: linear-gradient(135deg, hsl(270 35% 85%), hsl(350 50% 85%));
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(30 40% 97%));
+
+    /* Shadows */
+    --shadow-soft: 0 4px 20px -4px hsl(350 30% 70% / 0.15);
+    --shadow-card: 0 8px 30px -8px hsl(350 30% 60% / 0.12);
+    --shadow-glow: 0 0 40px hsl(350 60% 70% / 0.2);
+
+    /* Sidebar */
+    --sidebar-background: 30 40% 97%;
+    --sidebar-foreground: 340 20% 25%;
+    --sidebar-primary: 350 60% 65%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 350 60% 94%;
+    --sidebar-accent-foreground: 350 40% 30%;
+    --sidebar-border: 340 20% 90%;
+    --sidebar-ring: 350 60% 65%;
+  }
+
+  .dark {
+    /* Deep navy background */
+    --background: 250 30% 12%;
+    --foreground: 30 30% 92%;
+
+    /* Cards */
+    --card: 250 25% 16%;
+    --card-foreground: 30 30% 92%;
+
+    /* Popover */
+    --popover: 250 25% 16%;
+    --popover-foreground: 30 30% 92%;
+
+    /* Primary - Soft Rose (lighter for dark mode) */
+    --primary: 350 55% 70%;
+    --primary-foreground: 250 30% 10%;
+    --primary-soft: 350 40% 25%;
+    --primary-glow: 350 55% 60%;
+
+    /* Secondary */
+    --secondary: 270 25% 25%;
+    --secondary-foreground: 270 30% 85%;
+
+    /* Muted */
+    --muted: 250 20% 20%;
+    --muted-foreground: 30 15% 60%;
+
+    /* Accent */
+    --accent: 15 50% 30%;
+    --accent-foreground: 15 70% 90%;
+
+    /* Destructive */
+    --destructive: 0 50% 45%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Borders */
+    --border: 250 20% 22%;
+    --input: 250 20% 22%;
+    --ring: 350 55% 70%;
+
+    /* Custom colors */
+    --sage: 140 20% 40%;
+    --sage-foreground: 140 25% 85%;
+    --lavender: 270 25% 40%;
+    --lavender-foreground: 270 30% 90%;
+    --peach: 25 50% 35%;
+    --peach-foreground: 25 70% 90%;
+    --blush: 350 35% 25%;
+    --cream: 250 25% 14%;
+
+    /* Phase colors */
+    --phase-menstrual: 0 45% 55%;
+    --phase-follicular: 350 45% 60%;
+    --phase-ovulatory: 25 55% 55%;
+    --phase-luteal: 270 30% 55%;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(350 55% 50%), hsl(15 50% 45%));
+    --gradient-calm: linear-gradient(180deg, hsl(250 30% 12%), hsl(250 25% 15%));
+    --gradient-lavender: linear-gradient(135deg, hsl(270 25% 25%), hsl(350 35% 25%));
+    --gradient-card: linear-gradient(145deg, hsl(250 25% 18%), hsl(250 25% 14%));
+
+    /* Shadows */
+    --shadow-soft: 0 4px 20px -4px hsl(0 0% 0% / 0.3);
+    --shadow-card: 0 8px 30px -8px hsl(0 0% 0% / 0.4);
+    --shadow-glow: 0 0 40px hsl(350 55% 50% / 0.15);
+
+    /* Sidebar */
+    --sidebar-background: 250 25% 14%;
+    --sidebar-foreground: 30 30% 90%;
+    --sidebar-primary: 350 55% 70%;
+    --sidebar-primary-foreground: 250 30% 10%;
+    --sidebar-accent: 350 40% 22%;
+    --sidebar-accent-foreground: 350 50% 85%;
+    --sidebar-border: 250 20% 22%;
+    --sidebar-ring: 350 55% 70%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Nunito', sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Quicksand', sans-serif;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: 'Quicksand', sans-serif;
+  }
+
+  .gradient-primary {
+    background: var(--gradient-primary);
+  }
+
+  .gradient-calm {
+    background: var(--gradient-calm);
+  }
+
+  .gradient-lavender {
+    background: var(--gradient-lavender);
+  }
+
+  .gradient-card {
+    background: var(--gradient-card);
+  }
+
+  .shadow-soft {
+    box-shadow: var(--shadow-soft);
+  }
+
+  .shadow-card {
+    box-shadow: var(--shadow-card);
+  }
+
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--muted));
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--primary) / 0.3);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--primary) / 0.5);
+}
+
+/* Phase wheel animations */
+@keyframes pulse-soft {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 3s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    hsl(var(--primary) / 0.1) 0%,
+    hsl(var(--primary) / 0.3) 50%,
+    hsl(var(--primary) / 0.1) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
