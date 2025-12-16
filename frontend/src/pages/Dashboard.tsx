@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom';
-import { Calendar, Sparkles, Heart, AlertTriangle } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Calendar, Sparkles, Heart, AlertTriangle, History } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { AppLayout } from '@/components/layout/AppLayout';
@@ -50,6 +50,7 @@ export default function Dashboard() {
 
   const latestSymptom = symptomHistory?.[0];
   const hasData = Boolean(cycle);
+  const navigate = useNavigate();
   const phase = phaseLabel(cycle?.context.phase);
 
   return (
@@ -96,16 +97,22 @@ export default function Dashboard() {
               <div className="w-16 h-16 mx-auto rounded-full bg-primary-soft flex items-center justify-center">
                 <Heart className="h-8 w-8 text-primary" />
               </div>
-              <CardTitle>Start Your Journey</CardTitle>
+              <CardTitle>Your history is ready 💫</CardTitle>
               <p className="text-muted-foreground text-sm max-w-xs mx-auto">
-                Begin tracking to see personalized insights about your cycle.
+                We’ve saved the cycles you just added. Give them a quick review or start logging today’s symptoms when you’re ready.
               </p>
-              <Button asChild variant="gradient" size="lg">
-                <Link to="/log">
-                  <Calendar className="h-4 w-4 mr-2" />
-                  Log Your First Entry
-                </Link>
-              </Button>
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <Button variant="secondary" size="lg" onClick={() => navigate('/journal')}>
+                  <History className="h-4 w-4 mr-2" />
+                  Review history
+                </Button>
+                <Button asChild variant="gradient" size="lg">
+                  <Link to="/log">
+                    <Calendar className="h-4 w-4 mr-2" />
+                    Log today’s symptoms
+                  </Link>
+                </Button>
+              </div>
             </CardContent>
           </Card>
         )}

@@ -24,6 +24,10 @@ interface CreateCyclePayload {
   isPredicted?: boolean;
 }
 
+interface BulkCyclePayload {
+  cycles: CreateCyclePayload[];
+}
+
 interface SymptomLogPayload {
   cycleId?: string;
   date: string;
@@ -62,6 +66,22 @@ export const useCreateCycle = () => {
   return useMutation({
     mutationFn: (payload: CreateCyclePayload) =>
       apiFetch<CycleSummary>('/cycles', {
+        method: 'POST',
+        auth: true,
+        body: JSON.stringify(payload),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: cycleKeys.current });
+      queryClient.invalidateQueries({ queryKey: cycleKeys.history(30) });
+    },
+  });
+};
+
+export const useBulkCreateCycles = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: BulkCyclePayload) =>
+      apiFetch<{ cycles: CycleSummary[] }>('/cycles/bulk', {
         method: 'POST',
         auth: true,
         body: JSON.stringify(payload),
