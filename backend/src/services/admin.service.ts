@@ -1,13 +1,13 @@
-import { getSupabaseClient } from '../lib/supabase';
-import { HttpError } from '../utils/http-error';
-import { logAuditEvent } from './audit.service';
-import { adminMythArticleSchema } from '../validators/admin';
+import { getSupabaseClient } from '../lib/supabase.js';
+import { HttpError } from '../utils/http-error.js';
+import { logAuditEvent } from './audit.service.js';
+import { adminMythArticleSchema } from '../validators/admin.js';
 
 export const listUsers = async () => {
   const supabase = getSupabaseClient();
   const { data, error } = await supabase
     .from('users')
-    .select('id, role, status, created_at, profiles(name, timezone, onboarding_completed)')
+    .select('id, role, status, created_at, last_login, last_activity, profiles(name, timezone, onboarding_completed)')
     .order('created_at', { ascending: false });
 
   if (error) {

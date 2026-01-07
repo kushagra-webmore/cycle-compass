@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const createPairingSchema = z.object({
-  method: z.enum(['LINK', 'QR', 'CODE']).default('LINK'),
+  method: z.enum(['LINK', 'QR', 'CODE', 'ALL']).default('ALL'),
 });
 
 export const acceptPairingSchema = z.object({

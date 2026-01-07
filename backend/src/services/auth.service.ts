@@ -1,8 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
-import { env } from '../config/env';
-import { UserRole } from '../types';
-import { HttpError } from '../utils/http-error';
-import { createUserRecord, getUserWithProfile } from './user.service';
+import { env } from '../config/env.js';
+import { UserRole } from '../types/index.js';
+import { HttpError } from '../utils/http-error.js';
+import { createUserRecord, getUserWithProfile } from './user.service.js';
 
 const clientOptions = {
   auth: {
@@ -14,13 +14,27 @@ const clientOptions = {
 const supabaseService = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY, clientOptions);
 const supabaseAnon = createClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY, clientOptions);
 
-export const signupWithEmail = async (
-  email: string,
-  password: string,
-  role: UserRole,
-  name?: string,
-  timezone?: string,
-) => {
+interface SignupParams {
+  email: string;
+  password: string;
+  role: UserRole;
+  name: string;
+  dateOfBirth: string; // ISO date string (YYYY-MM-DD)
+  phone: string;
+  city: string;
+  timezone?: string;
+}
+
+export const signupWithEmail = async ({
+  email,
+  password,
+  role,
+  name,
+  dateOfBirth,
+  phone,
+  city,
+  timezone,
+}: SignupParams) => {
   const { data, error } = await supabaseService.auth.admin.createUser({
     email,
     password,
@@ -35,6 +49,9 @@ export const signupWithEmail = async (
     id: data.user.id,
     role,
     name,
+    dateOfBirth,
+    phone,
+    city,
     timezone,
   });
 
@@ -57,6 +74,21 @@ export const signInWithEmail = async (email: string, password: string) => {
 
   if (error || !data.session || !data.user) {
     throw new HttpError(401, 'Invalid email or password', error);
+  }
+
+  // Update last login and last activity timestamps
+  const now = new Date().toISOString();
+  const { error: updateError } = await supabaseService
+    .from('users')
+    .update({ 
+      last_login: now,
+      last_activity: now 
+    })
+    .eq('id', data.user.id);
+
+  if (updateError) {
+    console.error('Failed to update last login:', updateError);
+    // Don't throw error, just log it - login should still succeed
   }
 
   const appUser = await getUserWithProfile(data.user.id, email);
@@ -82,21 +114,72 @@ export const refreshSession = async (refreshToken: string) => {
   };
 };
 
-export const getUserByAccessToken = async (accessToken: string) => {
-  const { data, error } = await supabaseService.auth.getUser(accessToken);
+export const requestPasswordReset = async (email: string) => {
+  const redirectUrl = `${env.CLIENT_APP_URL}/reset-password`;
+
+  const { error } = await supabaseAnon.auth.resetPasswordForEmail(email, {
+    redirectTo: redirectUrl,
+  });
+
+  if (error) {
+    throw new HttpError(400, 'Failed to send password reset email', error);
+  }
+
+  return { success: true };
+};
+
+export const resetPassword = async (accessToken: string, newPassword: string) => {
+  const { error } = await supabaseAnon.auth.updateUser({
+    password: newPassword,
+  });
+
+  if (error) {
+    throw new HttpError(400, 'Failed to reset password', error);
+  }
+
+  return { success: true };
+};
+
+export const getUserByAccessToken = async (token: string) => {
+  const { data, error } = await supabaseAnon.auth.getUser(token);
 
   if (error || !data.user) {
+    console.error('getUserByAccessToken Failed:', error);
     throw new HttpError(401, 'Invalid access token', error);
   }
 
-  const userEmail = data.user.email ?? '';
-  return getUserWithProfile(data.user.id, userEmail);
+  return getUserWithProfile(data.user.id, data.user.email ?? '');
 };
 
-export const signOutUser = async (accessToken: string) => {
-  const { error } = await supabaseService.auth.admin.signOut(accessToken);
+export const signOutUser = async (token: string) => {
+  const { error } = await supabaseService.auth.admin.signOut(token);
 
   if (error) {
-    throw new HttpError(400, 'Failed to sign out session', error);
+    throw new HttpError(500, 'Failed to sign out', error);
   }
+
+  return { success: true };
+};
+export const updateUserPassword = async (userId: string, email: string, currentPassword: string, newPassword: number | string) => {
+  // 1. Verify current password by attempting to sign in
+  const { error: signInError, data } = await supabaseAnon.auth.signInWithPassword({
+    email,
+    password: currentPassword,
+  });
+
+  if (signInError || !data.user) {
+    throw new HttpError(400, 'Incorrect current password', signInError);
+  }
+
+  // 2. Update password using admin client
+  const { error: updateError } = await supabaseService.auth.admin.updateUserById(
+    userId,
+    { password: newPassword.toString() }
+  );
+
+  if (updateError) {
+    throw new HttpError(400, 'Failed to update password', updateError);
+  }
+
+  return { success: true };
 };

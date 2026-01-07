@@ -1,8 +1,8 @@
-import { env } from '../config/env';
-import { getSupabaseClient } from '../lib/supabase';
-import { HttpError } from '../utils/http-error';
-import { generateInviteToken, generatePairCode, generateQrPlaceholder } from '../utils/token';
-import { logAuditEvent } from './audit.service';
+import { env } from '../config/env.js';
+import { getSupabaseClient } from '../lib/supabase.js';
+import { HttpError } from '../utils/http-error.js';
+import { generateInviteToken, generatePairCode, generateQrPlaceholder } from '../utils/token.js';
+import { logAuditEvent } from './audit.service.js';
 
 interface CreatePairingResult {
   pairingId: string;
@@ -14,7 +14,7 @@ interface CreatePairingResult {
 
 export const createPairingInvite = async (
   primaryUserId: string,
-  method: 'LINK' | 'QR' | 'CODE',
+  method: 'LINK' | 'QR' | 'CODE' | 'ALL',
 ): Promise<CreatePairingResult> => {
   const supabase = getSupabaseClient();
 
@@ -29,11 +29,11 @@ export const createPairingInvite = async (
     token_expires_at: expiresAt.toISOString(),
   };
 
-  if (method === 'CODE') {
+  if (method === 'CODE' || method === 'ALL') {
     insertPayload.invite_code = generatePairCode();
   }
 
-  if (method === 'QR') {
+  if (method === 'QR' || method === 'ALL') {
     insertPayload.invite_qr = generateQrPlaceholder(token);
   }
 
@@ -58,15 +58,15 @@ export const createPairingInvite = async (
     expiresAt: expiresAt.toISOString(),
   };
 
-  if (method === 'LINK' || method === 'QR') {
+  if (method === 'LINK' || method === 'QR' || method === 'ALL') {
     result.inviteLink = `${baseInviteUrl}?token=${token}`;
   }
 
-  if (method === 'QR') {
+  if (method === 'QR' || method === 'ALL') {
     result.qrData = generateQrPlaceholder(token);
   }
 
-  if (method === 'CODE') {
+  if (method === 'CODE' || method === 'ALL') {
     result.pairCode = data.invite_code;
   }
 
@@ -116,8 +116,7 @@ export const acceptPairingInvite = async (userId: string, options: { token?: str
   let query = supabase
     .from('pairings')
     .select('*')
-    .eq('status', 'PENDING')
-    .maybeSingle();
+    .eq('status', 'PENDING');
 
   if (options.token) {
     query = query.eq('invite_token', options.token);
@@ -127,7 +126,7 @@ export const acceptPairingInvite = async (userId: string, options: { token?: str
     throw new HttpError(400, 'Missing invite token or pairing code');
   }
 
-  const { data: pairing, error } = await query;
+  const { data: pairing, error } = await query.maybeSingle();
 
   if (error || !pairing) {
     throw new HttpError(400, 'Invalid or expired invite', error);
@@ -151,7 +150,50 @@ export const acceptPairingInvite = async (userId: string, options: { token?: str
   return { pairingId: pairing.id, consent };
 };
 
-export const revokePairing = async (primaryUserId: string, pairingId: string) => {
+export const getInviteDetails = async (options: { token?: string; pairCode?: string }) => {
+  const supabase = getSupabaseClient();
+
+  let query = supabase
+    .from('pairings')
+    .select('primary_user_id, status, invite_token, invite_code, token_expires_at')
+    .eq('status', 'PENDING');
+
+  if (options.token) {
+    query = query.eq('invite_token', options.token);
+  } else if (options.pairCode) {
+    query = query.eq('invite_code', options.pairCode);
+  } else {
+    throw new HttpError(400, 'Missing invite token or pairing code');
+  }
+
+  const { data: pairing, error } = await query.maybeSingle();
+
+  if (error || !pairing) {
+    throw new HttpError(404, 'Invite not found or expired');
+  }
+
+  if (pairing.token_expires_at && new Date(pairing.token_expires_at) < new Date()) {
+    throw new HttpError(400, 'Invite has expired');
+  }
+
+  // Fetch inviter profile
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('name')
+    .eq('user_id', pairing.primary_user_id)
+    .single();
+
+  // Fetch inviter email (requires admin privileges)
+  const { data: userData } = await supabase.auth.admin.getUserById(pairing.primary_user_id);
+
+  return {
+    inviterName: profile?.name,
+    inviterEmail: userData.user?.email,
+    expiresAt: pairing.token_expires_at,
+  };
+};
+
+export const revokePairing = async (userId: string, pairingId: string) => {
   const supabase = getSupabaseClient();
 
   const { data, error } = await supabase
@@ -164,7 +206,7 @@ export const revokePairing = async (primaryUserId: string, pairingId: string) =>
     throw new HttpError(404, 'Pairing not found', error);
   }
 
-  if (data.primary_user_id !== primaryUserId) {
+  if (data.primary_user_id !== userId && data.partner_user_id !== userId) {
     throw new HttpError(403, 'You can only revoke your own pairings');
   }
 
@@ -173,6 +215,7 @@ export const revokePairing = async (primaryUserId: string, pairingId: string) =>
     .update({
       status: 'REVOKED',
       partner_user_id: null,
+      consent_settings: null, // Optionally clear consent or keep it? user requested unlink.
     })
     .eq('id', pairingId);
 
@@ -180,7 +223,7 @@ export const revokePairing = async (primaryUserId: string, pairingId: string) =>
     throw new HttpError(400, 'Failed to revoke pairing', updateError);
   }
 
-  await logAuditEvent(primaryUserId, 'pairing.revoke', {
+  await logAuditEvent(userId, 'pairing.revoke', {
     pairingId,
   });
 };
@@ -189,7 +232,16 @@ export const getActivePairingForUser = async (userId: string) => {
   const supabase = getSupabaseClient();
   const { data, error } = await supabase
     .from('pairings')
-    .select('*, consent_settings(*)')
+    .select(`
+      *,
+      consent_settings(*),
+      primary:users!primary_user_id(
+        profiles(name)
+      ),
+      partner:users!partner_user_id(
+        profiles(name)
+      )
+    `)
     .or(`primary_user_id.eq.${userId},partner_user_id.eq.${userId}`)
     .eq('status', 'ACTIVE')
     .maybeSingle();
@@ -198,7 +250,24 @@ export const getActivePairingForUser = async (userId: string) => {
     throw new HttpError(400, 'Failed to fetch pairing', error);
   }
 
-  return data;
+  if (!data) return null;
+
+  // Manually fetch names to ensure reliability
+  const userIds = [data.primary_user_id, data.partner_user_id].filter(Boolean);
+  const { data: profiles } = await supabase
+    .from('profiles')
+    .select('user_id, name')
+    .in('user_id', userIds);
+
+  const primaryProfile = profiles?.find(p => p.user_id === data.primary_user_id);
+  const partnerProfile = profiles?.find(p => p.user_id === data.partner_user_id);
+
+  // Transform to flat structure and rename properties for clarity
+  return {
+    ...data,
+    primaryUserName: primaryProfile?.name,
+    partnerUserName: partnerProfile?.name,
+  };
 };
 
 export const updateConsentSettings = async (

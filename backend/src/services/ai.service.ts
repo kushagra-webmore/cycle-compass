@@ -1,5 +1,5 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { env } from '../config/env';
+import { env } from '../config/env.js';
 import {
   cycleExplainerSystemPrompt,
   partnerGuidanceSystemPrompt,
@@ -7,8 +7,11 @@ import {
   buildCycleExplainerUserPrompt,
   buildPartnerGuidanceUserPrompt,
   buildJournalSummaryUserPrompt,
-} from '../config/prompts';
-import { logAIInteraction } from './audit.service';
+} from '../config/prompts.js';
+import { logAIInteraction } from './audit.service.js';
+import { getUserWithProfile } from './user.service.js';
+import { getCurrentCycle } from './cycle.service.js';
+import { getLatestSymptomEntry } from './cycle.service.js';
 
 const client = new GoogleGenerativeAI(env.GEMINI_API_KEY);
 
@@ -63,15 +66,45 @@ export const generatePartnerGuidance = async (
 
 export const generateJournalSummary = async (userId: string, entries: string[]) => {
   const model = createModel();
-  const prompt = buildJournalSummaryUserPrompt(entries.join('\n\n'));
-  const result = await model.generateContent({
-    contents: [{
-      role: 'user',
-      parts: [{ text: `${journalSummarySystemPrompt}\n\n${prompt}` }],
-    }],
+
+  const userProfile = await getUserWithProfile(userId, '');
+  const currentCycle = await getCurrentCycle(userId);
+  const latestSymptom = await getLatestSymptomEntry(userId);
+
+  const prompt = buildJournalSummaryUserPrompt({
+    entries: entries.join('\n\n'),
+    userName: userProfile.name ?? userProfile.email,
+    timezone: userProfile.timezone,
+    phase: currentCycle?.context.phase ?? null,
+    cycleDay: currentCycle?.context.currentDay ?? null,
+    latestMood: latestSymptom?.mood ?? null,
+    latestEnergy: latestSymptom?.energy ?? null,
+    latestPain: typeof latestSymptom?.pain === 'number' ? latestSymptom.pain : null,
   });
 
-  const text = result.response.text();
-  await logAIInteraction(userId, 'JOURNAL', { entries }, text);
-  return text;
+  let attempt = 0;
+  let lastError: unknown;
+
+  while (attempt < 3) {
+    try {
+      const result = await model.generateContent({
+        contents: [{
+          role: 'user',
+          parts: [{ text: `${journalSummarySystemPrompt}\n\n${prompt}` }],
+        }],
+      });
+
+      const text = result.response.text();
+      await logAIInteraction(userId, 'JOURNAL', { entries, attempt: attempt + 1 }, text);
+      return text;
+    } catch (error) {
+      lastError = error;
+      attempt += 1;
+      if (attempt >= 3) {
+        throw error;
+      }
+    }
+  }
+
+  throw lastError ?? new Error('Failed to generate journal summary');
 };

@@ -1,5 +1,6 @@
-import { getSupabaseClient } from '../lib/supabase';
-import { HttpError } from '../utils/http-error';
+import { DateTime } from 'luxon';
+import { getSupabaseClient } from '../lib/supabase.js';
+import { HttpError } from '../utils/http-error.js';
 
 export interface CreateJournalParams {
   userId: string;
@@ -10,11 +11,18 @@ export interface CreateJournalParams {
 
 export const createJournalEntry = async ({ userId, date, encryptedText, aiSummary }: CreateJournalParams) => {
   const supabase = getSupabaseClient();
+  const istNow = DateTime.now().setZone('Asia/Kolkata');
+
+  const isoDate = date
+    ? DateTime.fromISO(date, { setZone: true }).setZone('Asia/Kolkata')
+    : istNow;
+
   const { data, error } = await supabase
     .from('journals')
     .insert({
       user_id: userId,
-      date,
+      date: isoDate.toISO(),
+      created_at: istNow.toISO(),
       encrypted_text: encryptedText,
       ai_summary: aiSummary,
     })

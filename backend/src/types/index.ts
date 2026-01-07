@@ -7,9 +7,15 @@ export interface AuthUser {
   status: 'ACTIVE' | 'SUSPENDED' | 'DELETED';
   onboardingCompleted: boolean;
   name?: string;
+  age?: number;
+  dateOfBirth?: string;
+  phone?: string;
+  city?: string;
   timezone?: string;
   lastPeriodDate?: string | null;
   cycleLength?: number | null;
+  lastLogin?: string | null;
+  lastActivity?: string | null;
 }
 
 declare global {

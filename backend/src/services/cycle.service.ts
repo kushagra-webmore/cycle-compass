@@ -1,6 +1,6 @@
-import { getSupabaseClient } from '../lib/supabase';
-import { HttpError } from '../utils/http-error';
-import { getCycleContext, CycleContext } from '../utils/cycle';
+import { getSupabaseClient } from '../lib/supabase.js';
+import { HttpError } from '../utils/http-error.js';
+import { getCycleContext, CycleContext } from '../utils/cycle.js';
 
 export interface CreateCycleInput {
   startDate: string;
@@ -81,6 +81,53 @@ export const createCycle = async (userId: string, input: CreateCycleInput) => {
     .eq('user_id', userId);
 
   return mapCycleRow(data);
+};
+
+export const createCyclesBulk = async (userId: string, cycles: CreateCycleInput[]) => {
+  if (!cycles || cycles.length < 2) {
+    throw new HttpError(400, 'Please provide at least the most recent two cycles.');
+  }
+
+  const supabase = getSupabaseClient();
+
+  const sanitized = cycles
+    .filter((cycle) => Boolean(cycle.startDate))
+    .map((cycle) => ({
+      user_id: userId,
+      start_date: cycle.startDate,
+      end_date: cycle.endDate ?? null,
+      cycle_length: cycle.cycleLength ?? 28,
+      is_predicted: cycle.isPredicted ?? false,
+    }));
+
+  if (sanitized.length < 2) {
+    throw new HttpError(400, 'At least two cycles with start dates are required.');
+  }
+
+  sanitized.sort((a, b) => new Date(b.start_date).getTime() - new Date(a.start_date).getTime());
+
+  const { data, error } = await supabase
+    .from('cycles')
+    .upsert(sanitized, { onConflict: 'user_id,start_date' })
+    .select()
+    .order('start_date', { ascending: false });
+
+  if (error) {
+    throw new HttpError(400, 'Failed to import cycles', error);
+  }
+
+  const mostRecent = sanitized[0];
+
+  await supabase
+    .from('profiles')
+    .update({
+      last_period_date: mostRecent.start_date,
+      cycle_length: mostRecent.cycle_length,
+      onboarding_completed: true,
+    })
+    .eq('user_id', userId);
+
+  return (data ?? []).map(mapCycleRow);
 };
 
 export const getCurrentCycle = async (userId: string): Promise<CycleSummary | null> => {
@@ -180,4 +227,59 @@ export const getSymptomHistory = async (
 export const getLatestSymptomEntry = async (userId: string): Promise<SymptomEntry | null> => {
   const history = await getSymptomHistory(userId, 7);
   return history.length > 0 ? history[0] : null;
+};
+
+export const getCyclesHistory = async (userId: string): Promise<CycleSummary[]> => {
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase
+    .from('cycles')
+    .select('*')
+    .eq('user_id', userId)
+    .order('start_date', { ascending: false });
+
+  if (error) {
+    throw new HttpError(400, 'Failed to fetch cycles history', error);
+  }
+
+  return (data ?? []).map(mapCycleRow);
+};
+
+export const updateCycle = async (
+  userId: string,
+  cycleId: string,
+  input: Partial<CreateCycleInput>,
+): Promise<CycleSummary> => {
+  const supabase = getSupabaseClient();
+  
+  const updates: any = {};
+  if (input.startDate) updates.start_date = input.startDate;
+  if (input.endDate) updates.end_date = input.endDate; // Allow setting to null/undefined if needed, but typically updates send specific values
+  if (input.cycleLength) updates.cycle_length = input.cycleLength;
+
+  const { data, error } = await supabase
+    .from('cycles')
+    .update(updates)
+    .eq('id', cycleId)
+    .eq('user_id', userId)
+    .select()
+    .single();
+
+  if (error || !data) {
+    throw new HttpError(400, 'Failed to update cycle', error);
+  }
+
+  return mapCycleRow(data);
+};
+
+export const deleteCycle = async (userId: string, cycleId: string): Promise<void> => {
+  const supabase = getSupabaseClient();
+  const { error } = await supabase
+    .from('cycles')
+    .delete()
+    .eq('id', cycleId)
+    .eq('user_id', userId);
+
+  if (error) {
+    throw new HttpError(400, 'Failed to delete cycle', error);
+  }
 };

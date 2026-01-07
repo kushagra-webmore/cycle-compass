@@ -1,12 +1,12 @@
 import { Router } from 'express';
-import { authenticate, requireRoles } from '../middleware/auth';
-import { validateBody } from '../middleware/validate';
+import { authenticate, requireRoles } from '../middleware/auth.js';
+import { validateBody } from '../middleware/validate.js';
 import {
   adminForceUnpairSchema,
   adminMythArticleSchema,
   adminUpdateUserSchema,
-} from '../validators/admin';
-import { asyncHandler } from '../utils/async-handler';
+} from '../validators/admin.js';
+import { asyncHandler } from '../utils/async-handler.js';
 import {
   deleteMythArticle,
   forceUnpair,
@@ -18,7 +18,14 @@ import {
   listUsers,
   updateUserAccount,
   upsertMythArticle,
-} from '../services/admin.service';
+} from '../services/admin.service.js';
+import {
+  getAllUserDetails,
+  getUserActivityLog,
+  getChatbotHistoryForUser,
+  getUserCycleData,
+} from '../services/admin-data.service.js';
+import { getDashboardAnalytics } from '../services/analytics.service.js';
 
 export const adminRouter = Router();
 
@@ -42,6 +49,43 @@ adminRouter.post(
   }),
 );
 
+// Comprehensive user data endpoints
+adminRouter.get(
+  '/users/:userId/details',
+  asyncHandler(async (req, res) => {
+    const { userId } = req.params;
+    const details = await getAllUserDetails(userId);
+    res.json(details);
+  }),
+);
+
+adminRouter.get(
+  '/users/:userId/activity',
+  asyncHandler(async (req, res) => {
+    const { userId } = req.params;
+    const activity = await getUserActivityLog(userId);
+    res.json(activity);
+  }),
+);
+
+adminRouter.get(
+  '/users/:userId/chatbot',
+  asyncHandler(async (req, res) => {
+    const { userId } = req.params;
+    const history = await getChatbotHistoryForUser(userId);
+    res.json({ history });
+  }),
+);
+
+adminRouter.get(
+  '/users/:userId/cycles',
+  asyncHandler(async (req, res) => {
+    const { userId } = req.params;
+    const cycles = await getUserCycleData(userId);
+    res.json({ cycles });
+  }),
+);
+
 adminRouter.get(
   '/pairings',
   asyncHandler(async (_req, res) => {
@@ -51,16 +95,17 @@ adminRouter.get(
 );
 
 adminRouter.post(
-  '/pairings/force-unpair',
+  '/pairings/unpair',
   validateBody(adminForceUnpairSchema),
   asyncHandler(async (req, res) => {
-    await forceUnpair(req.authUser!.id, req.body.pairingId);
+    const { pairingId } = req.body;
+    await forceUnpair(req.authUser!.id, pairingId);
     res.json({ success: true });
   }),
 );
 
 adminRouter.get(
-  '/consent/logs',
+  '/consent-logs',
   asyncHandler(async (_req, res) => {
     const logs = await listConsentAuditLogs();
     res.json(logs);
@@ -68,15 +113,24 @@ adminRouter.get(
 );
 
 adminRouter.get(
-  '/analytics/overview',
-  asyncHandler(async (_req, res) => {
-    const overview = await getAnalyticsOverview();
-    res.json(overview);
+  '/analytics/dashboard',
+  asyncHandler(async (req, res) => {
+    const days = req.query.days ? parseInt(req.query.days as string) : 30;
+    const analytics = await getDashboardAnalytics(days);
+    res.json(analytics);
   }),
 );
 
 adminRouter.get(
-  '/ai/interactions',
+  '/analytics/overview',
+  asyncHandler(async (_req, res) => {
+    const analytics = await getAnalyticsOverview();
+    res.json(analytics);
+  }),
+);
+
+adminRouter.get(
+  '/ai-interactions',
   asyncHandler(async (_req, res) => {
     const interactions = await listAIInteractions();
     res.json(interactions);

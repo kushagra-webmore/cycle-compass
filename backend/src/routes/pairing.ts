@@ -1,20 +1,21 @@
 import { Router } from 'express';
-import { authenticate, requireRoles } from '../middleware/auth';
-import { validateBody } from '../middleware/validate';
+import { authenticate, requireRoles } from '../middleware/auth.js';
+import { validateBody } from '../middleware/validate.js';
 import {
   createPairingSchema,
   acceptPairingSchema,
   revokePairingSchema,
   updateConsentSchema,
-} from '../validators/pairing';
-import { asyncHandler } from '../utils/async-handler';
+} from '../validators/pairing.js';
+import { asyncHandler } from '../utils/async-handler.js';
 import {
   createPairingInvite,
   acceptPairingInvite,
   revokePairing,
   updateConsentSettings,
   getActivePairingForUser,
-} from '../services/pairing.service';
+  getInviteDetails,
+} from '../services/pairing.service.js';
 
 export const pairingRouter = Router();
 
@@ -37,6 +38,7 @@ pairingRouter.get(
       status: pairing.status,
       consent: pairing.consent_settings,
       partnerUserId: isPrimary ? pairing.partner_user_id : pairing.primary_user_id,
+      partnerName: isPrimary ? pairing.partnerUserName : pairing.primaryUserName,
     });
   }),
 );
@@ -67,11 +69,27 @@ pairingRouter.post(
 pairingRouter.post(
   '/revoke',
   authenticate,
-  requireRoles('PRIMARY'),
   validateBody(revokePairingSchema),
   asyncHandler(async (req, res) => {
     await revokePairing(req.authUser!.id, req.body.pairingId);
     res.json({ success: true });
+  }),
+);
+
+pairingRouter.get(
+  '/invite',
+  asyncHandler(async (req, res) => {
+    const { token, code } = req.query;
+    if (!token && !code) {
+      return res.status(400).json({ message: 'Missing token or code' });
+    }
+    
+    const result = await getInviteDetails({ 
+      token: token as string, 
+      pairCode: code as string 
+    });
+    
+    res.json(result);
   }),
 );
 

@@ -1,4 +1,4 @@
-import { getSupabaseClient } from '../lib/supabase';
+import { getSupabaseClient } from '../lib/supabase.js';
 
 export type AuditAction =
   | 'pairing.create'
@@ -11,7 +11,9 @@ export type AuditAction =
   | 'admin.force-unpair'
   | 'ai.explain'
   | 'ai.partner-guidance'
-  | 'ai.journal-summary';
+  | 'ai.journal-summary'
+  | 'chatbot.message'
+  | 'chatbot.history-cleared';
 
 export const logAuditEvent = async (actorUserId: string | null, action: AuditAction, metadata?: Record<string, unknown>) => {
   const supabase = getSupabaseClient();

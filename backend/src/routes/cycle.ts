@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import { authenticate, requireRoles } from '../middleware/auth';
-import { validateBody } from '../middleware/validate';
-import { asyncHandler } from '../utils/async-handler';
-import { createCycleSchema, logSymptomSchema, LogSymptomInput } from '../validators/cycle';
-import { createCycle, getCurrentCycle, getSymptomHistory, logSymptom } from '../services/cycle.service';
+import { authenticate, requireRoles } from '../middleware/auth.js';
+import { validateBody } from '../middleware/validate.js';
+import { asyncHandler } from '../utils/async-handler.js';
+import { createCycleSchema, bulkCycleSchema, logSymptomSchema, updateCycleSchema, LogSymptomInput } from '../validators/cycle.js';
+import { createCycle, createCyclesBulk, getCurrentCycle, getSymptomHistory, logSymptom, getCyclesHistory, updateCycle, deleteCycle } from '../services/cycle.service.js';
 
 export const cycleRouter = Router();
 export const symptomRouter = Router();
@@ -17,6 +17,40 @@ cycleRouter.post(
   asyncHandler(async (req, res) => {
     const cycle = await createCycle(req.authUser!.id, req.body);
     res.status(201).json(cycle);
+  }),
+);
+
+cycleRouter.post(
+  '/bulk',
+  validateBody(bulkCycleSchema),
+  asyncHandler(async (req, res) => {
+    const result = await createCyclesBulk(req.authUser!.id, req.body.cycles);
+    res.status(201).json({ cycles: result });
+  }),
+);
+
+cycleRouter.get(
+  '/history',
+  asyncHandler(async (req, res) => {
+    const cycles = await getCyclesHistory(req.authUser!.id);
+    res.json(cycles);
+  }),
+);
+
+cycleRouter.patch(
+  '/:id',
+  validateBody(updateCycleSchema),
+  asyncHandler(async (req, res) => {
+    const cycle = await updateCycle(req.authUser!.id, req.params.id, req.body);
+    res.json(cycle);
+  }),
+);
+
+cycleRouter.delete(
+  '/:id',
+  asyncHandler(async (req, res) => {
+    await deleteCycle(req.authUser!.id, req.params.id);
+    res.json({ success: true });
   }),
 );
 

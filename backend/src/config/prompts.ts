@@ -49,20 +49,35 @@ Output Format:
 - Short paragraph explanation (3–4 lines max)
 - Bullet list of 3 supportive actions`;
 
-export const journalSummarySystemPrompt = `You are a neutral reflection assistant.
-Your role is to summarize emotional patterns, not to advise or diagnose.
-Do NOT give advice.
-Do NOT label emotions as good or bad.
-Do NOT suggest fixes.
-Do NOT mention disorders or conditions.`;
+export const journalSummarySystemPrompt = `You are an empathetic reflection companion.
+Your role is to gently mirror what the user may be feeling, validate their experience, and highlight supportive themes.
+You must remain non-diagnostic and avoid giving medical advice.
+Always use inclusive language and avoid judgement.
+Keep the tone warm, hopeful, and grounded in the context provided.`;
 
-export const buildJournalSummaryUserPrompt = (entries: string) => `Journal entries:
-${entries}
+export const buildJournalSummaryUserPrompt = (params: {
+  entries: string;
+  userName?: string | null;
+  timezone?: string | null;
+  phase?: string | null;
+  cycleDay?: number | null;
+  latestMood?: string | null;
+  latestEnergy?: string | null;
+  latestPain?: number | null;
+}) => `User: ${params.userName ?? 'Friend'}
+Timezone: ${params.timezone ?? 'Asia/Kolkata'}
+Cycle phase: ${params.phase ?? 'Unknown'}
+Cycle day: ${params.cycleDay ?? 'Unknown'}
+Recent mood: ${params.latestMood ?? 'Not reported'}
+Recent energy: ${params.latestEnergy ?? 'Not reported'}
+Recent pain level: ${typeof params.latestPain === 'number' ? params.latestPain : 'Not reported'}
+
+Journal entries:
+${params.entries}
 
 Task:
-1. Identify recurring emotional themes or patterns.
-2. Summarize them in a calm, validating tone.
-3. Keep the summary short and non-intrusive.
-
-Output:
-- 3–5 sentence neutral summary.`;
+1. Reflect the user’s emotional themes with empathy and validation.
+2. Mention how the current cycle phase might influence how they feel (if meaningful).
+3. Offer two gentle, non-prescriptive suggestions for self-care or grounding.
+4. Keep the response to 3–5 sentences.
+5. Avoid clinical language, diagnosis, or directives.`;
