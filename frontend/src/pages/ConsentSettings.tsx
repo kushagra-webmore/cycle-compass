@@ -131,10 +131,6 @@ export default function ConsentSettings() {
     );
   }
 
-  if (pairing) {
-    console.log('Pairing data received:', pairing);
-  }
-
   return (
     <AppLayout title="Consent & Privacy">
       <div className="space-y-6 animate-fade-in">
