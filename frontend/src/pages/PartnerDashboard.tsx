@@ -8,6 +8,7 @@ import { usePartnerGuidance } from '@/hooks/api/ai';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { apiClient } from '@/lib/api-client';
+import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
 
 const phaseInfo = {
@@ -201,17 +202,50 @@ export default function PartnerDashboard() {
                        <CardTitle className="text-base">Recent Symptoms</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-2">
-                      {data.sharedData.symptoms.slice(0, 3).map((log: any, i: number) => (
-                        <div key={i} className="flex justify-between items-center text-sm p-2 bg-background/50 rounded-lg">
-                           <span>{new Date(log.date).toLocaleDateString()}</span>
-                           <div className="flex gap-2">
-                             {log.pain > 0 && <span className="text-destructive">Pain: {log.pain}</span>}
-                             {log.bloating && <span className="text-primary">Bloating</span>}
-                             {/* Fallback if no specific symptoms */}
-                             {log.pain === 0 && !log.bloating && <span className="text-muted-foreground">Logged</span>}
+                       {data.sharedData.symptoms.slice(0, 3).map((log: any, i: number) => (
+                        <div key={i} className="flex flex-col gap-2 p-3 bg-background/50 rounded-lg text-sm">
+                           <div className="flex justify-between items-center border-b border-border/50 pb-2 mb-1">
+                             <span className="font-medium text-foreground">{new Date(log.date).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}</span>
+                           </div>
+                           <div className="flex flex-wrap gap-2">
+                             {log.pain > 0 && (
+                               <Badge variant="outline" className="bg-destructive/10 text-destructive border-destructive/20">
+                                 Pain: {log.pain}/5
+                               </Badge>
+                             )}
+                             {log.bloating && (
+                               <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
+                                 Bloating
+                               </Badge>
+                             )}
+                             {log.mood && (
+                               <Badge variant="outline" className="bg-lavender/30 text-lavender-foreground border-lavender/50">
+                                 Mood: {log.mood.toLowerCase()}
+                               </Badge>
+                             )}
+                             {log.energy && (
+                               <Badge variant="outline" className="bg-peach/30 text-peach-foreground border-peach/50">
+                                 Energy: {log.energy.toLowerCase()}
+                               </Badge>
+                             )}
+                             {log.sleep_hours !== null && (
+                               <Badge variant="outline" className="bg-sage/30 text-sage-foreground border-sage/50">
+                                 Sleep: {log.sleep_hours}h
+                               </Badge>
+                             )}
+                             {log.cravings && (
+                               <Badge variant="outline" className="bg-muted text-muted-foreground border-border">
+                                 Craving: {log.cravings}
+                               </Badge>
+                             )}
+                             
+                             {/* Fallback if practically empty */}
+                             {log.pain === 0 && !log.bloating && !log.mood && !log.energy && !log.sleep_hours && !log.cravings && (
+                               <span className="text-muted-foreground italic text-xs">No details logged for this day</span>
+                             )}
                            </div>
                         </div>
-                      ))}
+                       ))}
                     </CardContent>
                   </Card>
                 )}

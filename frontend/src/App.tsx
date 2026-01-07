@@ -192,7 +192,7 @@ const AppRoutes = () => {
       <Route
         path="/profile"
         element={
-          <ProtectedRoute allowedRoles={['primary']}>
+          <ProtectedRoute allowedRoles={['primary', 'partner']}>
             <Profile />
           </ProtectedRoute>
         }

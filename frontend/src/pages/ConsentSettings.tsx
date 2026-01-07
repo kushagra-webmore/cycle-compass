@@ -15,6 +15,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { useAuth } from '@/contexts/AuthContext';
 import { usePairing, useUpdateConsent, useRevokePairing } from '@/hooks/api/pairing';
 
 const consentFields = [
@@ -51,6 +52,7 @@ const consentFields = [
 ];
 
 export default function ConsentSettings() {
+  const { user } = useAuth();
   const { toast } = useToast();
   const { data: pairing, isLoading, isError, refetch } = usePairing();
   const updateConsent = useUpdateConsent();
@@ -129,6 +131,10 @@ export default function ConsentSettings() {
     );
   }
 
+  if (pairing) {
+    console.log('Pairing data received:', pairing);
+  }
+
   return (
     <AppLayout title="Consent & Privacy">
       <div className="space-y-6 animate-fade-in">
@@ -153,8 +159,17 @@ export default function ConsentSettings() {
                 <User className="h-6 w-6 text-lavender-foreground" />
               </div>
               <div className="flex-1">
-                <p className="font-semibold text-foreground">Partner Connected</p>
-                <p className="text-xs text-muted-foreground">{pairing?.partnerUserName || pairing?.partnerUserId || 'Partner'}</p>
+                <p className="font-semibold text-foreground">
+                  {user?.role === 'primary' ? 'Partner Connected' : 'Connected With'}
+                </p>
+                <p className="text-sm font-medium text-foreground">
+                  {(user?.role === 'primary' ? pairing?.partnerUserName : pairing?.primaryUserName) || 
+                   (user?.role === 'primary' ? pairing?.partner_user_id : pairing?.primary_user_id) || 
+                   'Unknown User'}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {(user?.role === 'primary' ? pairing?.partnerUserEmail : pairing?.primaryUserEmail) || 'No email'}
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -167,7 +182,8 @@ export default function ConsentSettings() {
             <CardDescription>Toggle what your partner can see</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {consents.map((consent) => {
+            {user?.role === 'primary' ? (
+              consents.map((consent) => {
               const Icon = consent.icon;
               return (
                 <div
@@ -190,7 +206,13 @@ export default function ConsentSettings() {
                   />
                 </div>
               );
-            })}
+            })
+            ) : (
+              <div className="py-6 text-center text-muted-foreground">
+                <p>Your partner controls what information is shared with you.</p>
+              </div>
+            )}
+            
           </CardContent>
         </Card>
 
@@ -209,7 +231,7 @@ export default function ConsentSettings() {
         </Card>
 
         {/* Revoke Access */}
-        {hasPartner && (
+        {hasPartner && user?.role === 'primary' && (
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button variant="destructive" size="lg" className="w-full">

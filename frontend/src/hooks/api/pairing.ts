@@ -14,9 +14,13 @@ export interface PairingInfo {
   status: 'PENDING' | 'ACTIVE' | 'REVOKED';
   role: 'PRIMARY' | 'PARTNER' | 'ADMIN';
   isPrimary: boolean;
-  partnerUserId: string | null;
+  primary_user_id: string;
+  partner_user_id: string | null;
+  partnerUserId: string | null; // Keeping for potential compatibility, but snake_case is what API returns
   partnerUserName?: string;
+  partnerUserEmail?: string;
   primaryUserName?: string;
+  primaryUserEmail?: string;
   consent: ConsentSettings | null;
   inviteLink?: string;
   pairCode?: string;
