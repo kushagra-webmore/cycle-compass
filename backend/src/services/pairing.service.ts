@@ -257,16 +257,33 @@ export const getActivePairingForUser = async (userId: string) => {
   const { data: profiles } = await supabase
     .from('profiles')
     .select('user_id, name')
+    .select('user_id, name')
     .in('user_id', userIds);
+
+  console.log('getActivePairingForUser userIds:', userIds);
+  console.log('getActivePairingForUser profiles found:', profiles);
 
   const primaryProfile = profiles?.find(p => p.user_id === data.primary_user_id);
   const partnerProfile = profiles?.find(p => p.user_id === data.partner_user_id);
 
   // Transform to flat structure and rename properties for clarity
+  const { data: primaryAuth } = await supabase.auth.admin.getUserById(data.primary_user_id);
+  
+  let partnerEmail: string | undefined;
+  if (data.partner_user_id) {
+    const { data: pData } = await supabase.auth.admin.getUserById(data.partner_user_id);
+    partnerEmail = pData.user?.email;
+  }
+
+  console.log('Primary Email found:', primaryAuth.user?.email);
+  console.log('Partner Email found:', partnerEmail);
+
   return {
     ...data,
     primaryUserName: primaryProfile?.name,
+    primaryUserEmail: primaryAuth.user?.email,
     partnerUserName: partnerProfile?.name,
+    partnerUserEmail: partnerEmail,
   };
 };
 

@@ -32,11 +32,11 @@ pairingRouter.get(
     const isPrimary = pairing.primary_user_id === req.authUser!.id;
 
     res.json({
-      id: pairing.id,
+      ...pairing,
+      consent: pairing.consent_settings,
       role: req.authUser!.role,
       isPrimary,
-      status: pairing.status,
-      consent: pairing.consent_settings,
+      // Keep backward compatibility for fields if needed, but spreading pairing handles new fields
       partnerUserId: isPrimary ? pairing.partner_user_id : pairing.primary_user_id,
       partnerName: isPrimary ? pairing.partnerUserName : pairing.primaryUserName,
     });

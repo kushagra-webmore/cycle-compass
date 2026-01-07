@@ -10,6 +10,7 @@ const updateProfileSchema = z.object({
   phone: z.string().optional(),
   city: z.string().optional(),
   timezone: z.string().optional(),
+  dateOfBirth: z.string().optional(), // ISO date string
   onboardingCompleted: z.boolean().optional(),
   lastPeriodDate: z.string().optional().nullable(),
   cycleLength: z.number().int().positive().optional().nullable(),
@@ -24,7 +25,7 @@ userRouter.patch(
   validateBody(updateProfileSchema),
   asyncHandler(async (req: Request, res: Response) => {
     const authReq = req as unknown as AuthenticatedRequest;
-    const { onboardingCompleted, lastPeriodDate, cycleLength, ...rest } = req.body;
+    const { onboardingCompleted, lastPeriodDate, cycleLength, dateOfBirth, ...rest } = req.body;
     
     // Map frontend field names to backend field names
     const updates = {
@@ -32,6 +33,7 @@ userRouter.patch(
       onboarding_completed: onboardingCompleted,
       last_period_date: lastPeriodDate,
       cycle_length: cycleLength,
+      date_of_birth: dateOfBirth,
     };
 
     console.log('Processing user update with data:', updates);

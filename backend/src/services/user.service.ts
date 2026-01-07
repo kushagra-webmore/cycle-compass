@@ -19,29 +19,43 @@ interface UserRow {
     onboarding_completed: boolean;
     last_period_date?: string | null;
     cycle_length?: number | null;
-  } | null;
+  } | {
+    name?: string | null;
+    age?: number | null;
+    date_of_birth?: string | null;
+    phone?: string | null;
+    city?: string | null;
+    timezone?: string | null;
+    onboarding_completed: boolean;
+    last_period_date?: string | null;
+    cycle_length?: number | null;
+  }[] | null;
 }
 
 const mapUserRowToAuthUser = (
   row: UserRow,
   email: string,
-): AuthUser => ({
-  id: row.id,
-  email,
-  role: row.role,
-  status: row.status,
-  onboardingCompleted: Boolean(row.profiles?.onboarding_completed),
-  name: row.profiles?.name ?? undefined,
-  age: row.profiles?.age ?? undefined,
-  dateOfBirth: row.profiles?.date_of_birth ?? undefined,
-  phone: row.profiles?.phone ?? undefined,
-  city: row.profiles?.city ?? undefined,
-  timezone: row.profiles?.timezone ?? undefined,
-  lastPeriodDate: row.profiles?.last_period_date ?? null,
-  cycleLength: row.profiles?.cycle_length ?? null,
-  lastLogin: row.last_login ?? null,
-  lastActivity: row.last_activity ?? null,
-});
+): AuthUser => {
+  const profileData = Array.isArray(row.profiles) ? row.profiles[0] : row.profiles;
+  
+  return {
+    id: row.id,
+    email,
+    role: row.role,
+    status: row.status,
+    onboardingCompleted: Boolean(profileData?.onboarding_completed),
+    name: profileData?.name ?? undefined,
+    age: profileData?.age ?? undefined,
+    dateOfBirth: profileData?.date_of_birth ?? undefined,
+    phone: profileData?.phone ?? undefined,
+    city: profileData?.city ?? undefined,
+    timezone: profileData?.timezone ?? undefined,
+    lastPeriodDate: profileData?.last_period_date ?? null,
+    cycleLength: profileData?.cycle_length ?? null,
+    lastLogin: row.last_login ?? null,
+    lastActivity: row.last_activity ?? null,
+  };
+};
 
 export const getUserWithProfile = async (
   userId: string,
@@ -59,6 +73,8 @@ export const getUserWithProfile = async (
   if (error || !data) {
     throw new HttpError(404, 'User record not found', error);
   }
+
+  console.log('DEBUG: getUserWithProfile raw data:', JSON.stringify(data, null, 2));
 
   return mapUserRowToAuthUser(data, email);
 };
@@ -136,19 +152,39 @@ export const updateUserProfile = async (
   
   console.log('Clean updates to apply:', cleanUpdates);
 
+  // Calculate age if date_of_birth is present
+  if (cleanUpdates.date_of_birth) {
+    const dob = new Date(cleanUpdates.date_of_birth as string);
+    const today = new Date();
+    let age = today.getFullYear() - dob.getFullYear();
+    const m = today.getMonth() - dob.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+      age--;
+    }
+    // @ts-ignore - age is not in UpdateProfileArgs but valid for DB
+    cleanUpdates.age = age;
+  }
+
   if (Object.keys(cleanUpdates).length === 0) {
     console.log('No updates to apply, fetching current profile');
     const { data: userData } = await supabase.auth.admin.getUserById(userId);
     return getUserWithProfile(userId, userData.user?.email ?? '');
   }
 
+  // Use upsert instead of update to handle missing profiles for legacy/partner users
   const { error } = await supabase
     .from('profiles')
-    .update(cleanUpdates)
-    .eq('user_id', userId);
+    .upsert(
+      { 
+        user_id: userId, 
+        ...cleanUpdates,
+        updated_at: new Date().toISOString()
+      },
+      { onConflict: 'user_id' }
+    );
 
   if (error) {
-    console.error('Profile update error:', error);
+    console.error('Profile update/upsert error:', error);
     throw new HttpError(400, 'Failed to update user profile', error);
   }
 
