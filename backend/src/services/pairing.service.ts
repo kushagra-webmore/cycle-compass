@@ -215,7 +215,8 @@ export const revokePairing = async (userId: string, pairingId: string) => {
     .update({
       status: 'REVOKED',
       partner_user_id: null,
-      consent_settings: null, // Optionally clear consent or keep it? user requested unlink.
+      // consent_settings is a separate table, so we don't update it here. 
+      // Setting status to REVOKED is sufficient.
     })
     .eq('id', pairingId);
 
@@ -274,9 +275,6 @@ export const getActivePairingForUser = async (userId: string) => {
     const { data: pData } = await supabase.auth.admin.getUserById(data.partner_user_id);
     partnerEmail = pData.user?.email;
   }
-
-  console.log('Primary Email found:', primaryAuth.user?.email);
-  console.log('Partner Email found:', partnerEmail);
 
   return {
     ...data,

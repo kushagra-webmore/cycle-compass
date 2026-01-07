@@ -9,9 +9,6 @@ export const validateBody = (schema: ZodSchema) =>
       next();
     } catch (error) {
       if (error instanceof ZodError) {
-        console.error('Validation Error for path:', req.path);
-        console.error('Request Body:', req.body);
-        console.error('Zod Errors:', JSON.stringify(error.flatten(), null, 2));
         next(new HttpError(400, 'Invalid request body', error.flatten()));
         return;
       }
