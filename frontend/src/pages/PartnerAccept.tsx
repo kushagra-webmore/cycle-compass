@@ -1,35 +1,87 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Heart, Check, X, Eye, Shield, Sparkles } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Heart, Check, X, Eye, Shield, Sparkles, LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ThemeToggle } from '@/components/layout/ThemeToggle';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
+import { apiClient } from '@/lib/api-client';
+
+interface InviteDetails {
+  inviterName?: string;
+  inviterEmail?: string;
+  expiresAt: string;
+}
 
 export default function PartnerAccept() {
+  const [searchParams] = useSearchParams();
+  const token = searchParams.get('token');
+  const code = searchParams.get('code');
+  
   const [isAccepting, setIsAccepting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [details, setDetails] = useState<InviteDetails | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { updateUser } = useAuth();
+  const { user } = useAuth(); // Just check user presence, don't use updateUser directly yet
 
-  const sharedData = [
-    { label: 'Current phase', enabled: true },
-    { label: 'Mood summary', enabled: true },
-    { label: 'Energy levels', enabled: false },
-    { label: 'Symptom details', enabled: false },
-  ];
+  useEffect(() => {
+    const fetchInvite = async () => {
+      if (!token && !code) {
+        setError('Invalid invitation link.');
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        const query = token ? `token=${token}` : `code=${code}`;
+        const { data } = await apiClient.get<InviteDetails>(`/pairings/invite?${query}`, {
+          skipAuth: true // Invite preview should be public
+        });
+        setDetails(data);
+      } catch (err) {
+        console.error(err);
+        setError('This invitation is invalid or has expired.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchInvite();
+  }, [token, code]);
 
   const handleAccept = async () => {
+    if (!user) {
+      // Redirect to login/signup with return URL
+      const returnUrl = encodeURIComponent(window.location.search);
+      navigate(`/?redirect=/partner-accept${window.location.search}`);
+      return;
+    }
+
     setIsAccepting(true);
-    await new Promise((r) => setTimeout(r, 1000));
-    
-    updateUser({ onboardingCompleted: true });
-    toast({
-      title: "Connection accepted! 💕",
-      description: "You can now view shared insights.",
-    });
-    navigate('/partner-dashboard');
+    try {
+      await apiClient.post('/pairings/accept', { 
+        token: token || undefined, 
+        pairCode: code || undefined 
+      });
+      
+      toast({
+        title: "Connection accepted! 💕",
+        description: "You can now view shared insights.",
+      });
+      navigate('/partner-dashboard');
+    } catch (error) {
+      toast({
+        title: "Failed to accept",
+        description: "Something went wrong. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsAccepting(false);
+    }
   };
 
   const handleDecline = () => {
@@ -39,6 +91,26 @@ export default function PartnerAccept() {
     });
     navigate('/');
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin text-primary">Loading...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <Card className="max-w-md w-full text-center p-6">
+          <CardTitle className="text-destructive mb-2">Invalid Invitation</CardTitle>
+          <p className="text-muted-foreground mb-4">{error}</p>
+          <Button onClick={() => navigate('/')}>Go Home</Button>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen gradient-calm flex flex-col">
@@ -74,7 +146,12 @@ export default function PartnerAccept() {
               {/* Inviter Info */}
               <div className="p-4 rounded-xl bg-muted/50">
                 <p className="text-sm text-muted-foreground">Invitation from</p>
-                <p className="font-semibold text-foreground">user@example.com</p>
+                <div className="font-semibold text-foreground text-lg">
+                  {details?.inviterName || 'A Cycle-Aware User'}
+                </div>
+                {details?.inviterEmail && (
+                  <p className="text-sm text-muted-foreground">{details.inviterEmail}</p>
+                )}
               </div>
 
               {/* What's Shared */}
@@ -84,21 +161,18 @@ export default function PartnerAccept() {
                   What you may see
                 </h3>
                 <div className="space-y-2">
-                  {sharedData.map((item) => (
-                    <div
-                      key={item.label}
-                      className="flex items-center justify-between p-3 rounded-lg bg-muted/30"
-                    >
-                      <span className="text-sm text-foreground">{item.label}</span>
-                      <span className={`text-xs px-2 py-1 rounded-full ${
-                        item.enabled 
-                          ? 'bg-sage/30 text-sage-foreground' 
-                          : 'bg-muted text-muted-foreground'
-                      }`}>
-                        {item.enabled ? 'Shared' : 'Not shared'}
-                      </span>
-                    </div>
-                  ))}
+                  <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30">
+                    <span className="text-sm text-foreground">Cycle Phase & Mood</span>
+                    <span className="text-xs px-2 py-1 rounded-full bg-sage/30 text-sage-foreground">
+                      Shared
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30">
+                     <span className="text-sm text-foreground">Symptom Details</span>
+                     <span className="text-xs px-2 py-1 rounded-full bg-muted text-muted-foreground">
+                       Can be toggled
+                     </span>
+                  </div>
                 </div>
               </div>
 
@@ -114,32 +188,39 @@ export default function PartnerAccept() {
               </div>
 
               {/* Actions */}
-              <div className="flex gap-3">
-                <Button
-                  variant="calm"
-                  size="lg"
-                  className="flex-1"
-                  onClick={handleDecline}
-                >
-                  <X className="h-4 w-4 mr-2" />
-                  Decline
-                </Button>
-                <Button
-                  variant="gradient"
-                  size="lg"
-                  className="flex-1"
-                  onClick={handleAccept}
-                  disabled={isAccepting}
-                >
-                  {isAccepting ? (
-                    <span className="animate-pulse">Connecting...</span>
-                  ) : (
-                    <>
-                      <Check className="h-4 w-4 mr-2" />
-                      Accept
-                    </>
-                  )}
-                </Button>
+              <div className="flex flex-col gap-3">
+                {!user && (
+                   <p className="text-xs text-amber-600 bg-amber-50 p-2 rounded">
+                     You need to sign in or create an account to accept this invitation.
+                   </p>
+                )}
+                <div className="flex gap-3">
+                  <Button
+                    variant="calm"
+                    size="lg"
+                    className="flex-1"
+                    onClick={handleDecline}
+                  >
+                    <X className="h-4 w-4 mr-2" />
+                    Decline
+                  </Button>
+                  <Button
+                    variant="gradient"
+                    size="lg"
+                    className="flex-1"
+                    onClick={handleAccept}
+                    disabled={isAccepting}
+                  >
+                    {isAccepting ? (
+                      <span className="animate-pulse">Connecting...</span>
+                    ) : (
+                      <>
+                        {user ? <Check className="h-4 w-4 mr-2" /> : <LogIn className="h-4 w-4 mr-2" />}
+                        {user ? 'Accept' : 'Login to Accept'}
+                      </>
+                    )}
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </Card>

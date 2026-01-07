@@ -9,6 +9,8 @@ interface PartnerSummaries {
 export interface PartnerSummaryResponse {
   pairingId: string;
   primaryUserId: string;
+  partnerUserName?: string;
+  primaryUserName?: string;
   consent: {
     share_phase: boolean;
     share_mood_summary: boolean;
@@ -29,6 +31,10 @@ export interface PartnerSummaryResponse {
     };
   } | null;
   summaries: PartnerSummaries;
+  sharedData?: {
+    symptoms: any[];
+    journals: any[];
+  };
 }
 
 const partnerKeys = {

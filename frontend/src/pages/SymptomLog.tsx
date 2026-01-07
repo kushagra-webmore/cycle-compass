@@ -12,8 +12,8 @@ import { useLogSymptom } from '@/hooks/api/cycles';
 const moodOptions = [
   { value: 'HIGH', emoji: '😊', label: 'Great' },
   { value: 'NEUTRAL', emoji: '🙂', label: 'Good' },
-  { value: 'LOW', emoji: '😐', label: 'Okay' },
-  { value: 'LOW', emoji: '😔', label: 'Low' },
+  { value: 'LOW_OKAY', emoji: '😐', label: 'Okay' },
+  { value: 'LOW_BAD', emoji: '😔', label: 'Low' },
 ];
 
 const energyOptions = [
@@ -64,7 +64,7 @@ export default function SymptomLog() {
         cycleId: cycle.id,
         date: new Date().toISOString().slice(0, 10),
         pain: pain[0],
-        mood: (mood || defaultMood) as 'LOW' | 'NEUTRAL' | 'HIGH',
+        mood: (mood === 'LOW_OKAY' || mood === 'LOW_BAD' ? 'LOW' : mood || defaultMood) as 'LOW' | 'NEUTRAL' | 'HIGH',
         energy: (energy || defaultEnergy) as 'LOW' | 'MEDIUM' | 'HIGH',
         sleepHours: sleep ? sleepMap[sleep] : undefined,
         cravings: cravings.trim() || undefined,

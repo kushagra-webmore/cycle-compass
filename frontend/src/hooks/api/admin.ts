@@ -6,8 +6,13 @@ export interface AdminUser {
   role: 'PRIMARY' | 'PARTNER' | 'ADMIN';
   status: 'ACTIVE' | 'SUSPENDED' | 'DELETED';
   created_at: string;
+  last_login?: string | null;
+  last_activity?: string | null;
   profiles?: {
     name?: string | null;
+    age?: number | null;
+    phone?: string | null;
+    city?: string | null;
     timezone?: string | null;
     onboarding_completed?: boolean | null;
   } | null;
@@ -136,6 +141,20 @@ export const useMythArticles = () =>
     queryFn: () => apiFetch<MythArticle[]>('/admin/myths', { auth: true }),
   });
 
+export interface DashboardAnalytics {
+  date: string;
+  newUsers: number;
+  activeUsers: number;
+  messages: number;
+  cyclesStarted: number;
+}
+
+export const useDashboardAnalytics = (days = 30) =>
+  useQuery({
+    queryKey: ['admin', 'analytics', days],
+    queryFn: () => apiFetch<DashboardAnalytics[]>(`/admin/analytics/dashboard?days=${days}`, { auth: true }),
+  });
+
 interface UpsertMythPayload {
   id?: string;
   title: string;
@@ -170,5 +189,75 @@ export const useDeleteMythArticle = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: adminKeys.myths });
     },
+  });
+};
+
+// Comprehensive user data hooks
+export interface UserDetails {
+  user: AdminUser;
+  cycles: any[];
+  symptoms: any[];
+  journals: any[];
+  pairing: any | null;
+}
+
+interface UserActivity {
+  auditLogs: any[];
+  lastLogin: string | null;
+  accountCreated: string;
+}
+
+interface ChatMessage {
+  id: string;
+  role: string;
+  message: string;
+  created_at: string;
+  is_deleted: boolean;
+  deleted_at: string | null;
+}
+
+export const useUserDetails = (userId: string | null) => {
+  return useQuery({
+    queryKey: ['admin', 'userDetails', userId],
+    queryFn: async () => {
+      if (!userId) return null;
+      return apiFetch<UserDetails>(`/admin/users/${userId}/details`, { auth: true });
+    },
+    enabled: !!userId,
+  });
+};
+
+export const useUserActivity = (userId: string | null) => {
+  return useQuery({
+    queryKey: ['admin', 'userActivity', userId],
+    queryFn: async () => {
+      if (!userId) return null;
+      return apiFetch<UserActivity>(`/admin/users/${userId}/activity`, { auth: true });
+    },
+    enabled: !!userId,
+  });
+};
+
+export const useUserChatbot = (userId: string | null) => {
+  return useQuery({
+    queryKey: ['admin', 'userChatbot', userId],
+    queryFn: async () => {
+      if (!userId) return null;
+      const response = await apiFetch<{ history: ChatMessage[] }>(`/admin/users/${userId}/chatbot`, { auth: true });
+      return response.history;
+    },
+    enabled: !!userId,
+  });
+};
+
+export const useUserCycles = (userId: string | null) => {
+  return useQuery({
+    queryKey: ['admin', 'userCycles', userId],
+    queryFn: async () => {
+      if (!userId) return null;
+      const response = await apiFetch<{ cycles: any[] }>(`/admin/users/${userId}/cycles`, { auth: true });
+      return response.cycles;
+    },
+    enabled: !!userId,
   });
 };

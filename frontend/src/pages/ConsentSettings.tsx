@@ -154,7 +154,7 @@ export default function ConsentSettings() {
               </div>
               <div className="flex-1">
                 <p className="font-semibold text-foreground">Partner Connected</p>
-                <p className="text-xs text-muted-foreground">partner@example.com</p>
+                <p className="text-xs text-muted-foreground">{pairing?.partnerUserName || pairing?.partnerUserId || 'Partner'}</p>
               </div>
             </CardContent>
           </Card>

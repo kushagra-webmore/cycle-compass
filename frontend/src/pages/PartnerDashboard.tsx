@@ -7,6 +7,8 @@ import { usePartnerSummary } from '@/hooks/api/partner';
 import { usePartnerGuidance } from '@/hooks/api/ai';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
+import { apiClient } from '@/lib/api-client';
+import { useAuth } from '@/contexts/AuthContext';
 
 const phaseInfo = {
   MENSTRUAL: {
@@ -32,6 +34,7 @@ const phaseInfo = {
 };
 
 export default function PartnerDashboard() {
+  const { user } = useAuth();
   const { data, isLoading, isError, refetch } = usePartnerSummary();
   const partnerGuidance = usePartnerGuidance();
   const { toast } = useToast();
@@ -120,22 +123,57 @@ export default function PartnerDashboard() {
               <div className="w-16 h-16 mx-auto rounded-full bg-muted flex items-center justify-center">
                 <Heart className="h-8 w-8 text-muted-foreground" />
               </div>
-              <CardTitle>Waiting for shared data</CardTitle>
+              <CardTitle>No active connection</CardTitle>
               <CardDescription className="max-w-xs mx-auto">
-                Your partner hasn’t shared any insights yet. Once they do, you’ll see helpful information here.
+                You are not connected to a partner yet.
               </CardDescription>
+              <Button onClick={() => window.location.href = '/join'} className="mt-4">
+                Enter Invite Code
+              </Button>
             </CardContent>
           </Card>
         )}
 
         {data && (
           <>
+
             <div className="text-center pt-2">
-              <h2 className="font-display text-2xl font-bold text-foreground">Hey there, partner 💕</h2>
+              <h2 className="font-display text-2xl font-bold text-foreground">
+                Hey {user?.name ? user.name.split(' ')[0] : 'there'} 💕
+              </h2>
               <p className="text-muted-foreground mt-1 text-sm">
-                Here’s how you can be supportive today
+                Check in on {data.primaryUserName || 'your partner'} today
               </p>
             </div>
+
+            <Card className="border-l-4 border-l-primary/50 shadow-sm mt-4">
+               <CardContent className="flex items-center justify-between p-4">
+                 <div className="flex items-center gap-3">
+                   <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
+                     {data.primaryUserName ? data.primaryUserName[0].toUpperCase() : 'P'}
+                   </div>
+                   <div>
+                     <p className="font-semibold text-sm">Connected to {data.primaryUserName || 'Partner'}</p>
+                     <p className="text-xs text-muted-foreground">Sharing is active</p>
+                   </div>
+                 </div>
+                 <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 px-2"
+                    onClick={async () => {
+                      if(!confirm("Are you sure you want to unlink?")) return;
+                      try {
+                        await apiClient.post('/pairings/revoke', { pairingId: data.pairingId });
+                        toast({ title: "Unlinked successfully" });
+                        refetch();
+                      } catch(e) { toast({ title: "Failed to unlink", variant: "destructive" }); }
+                    }}
+                 >
+                   Unlink
+                 </Button>
+               </CardContent>
+            </Card>
 
             {data.cycle && (
               <Card className="border-2 bg-phase-luteal/10 border-phase-luteal/30">
@@ -152,6 +190,54 @@ export default function PartnerDashboard() {
                   <p className="text-sm text-muted-foreground">{phase.description}</p>
                 </CardContent>
               </Card>
+            )}
+
+            {/* Shared Data Sections */}
+            {(data.sharedData?.symptoms?.length > 0 || data.sharedData?.journals?.length > 0) && (
+              <div className="space-y-4">
+                {data.sharedData.symptoms.length > 0 && (
+                  <Card variant="soft">
+                    <CardHeader className="pb-2">
+                       <CardTitle className="text-base">Recent Symptoms</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-2">
+                      {data.sharedData.symptoms.slice(0, 3).map((log: any, i: number) => (
+                        <div key={i} className="flex justify-between items-center text-sm p-2 bg-background/50 rounded-lg">
+                           <span>{new Date(log.date).toLocaleDateString()}</span>
+                           <div className="flex gap-2">
+                             {log.pain > 0 && <span className="text-destructive">Pain: {log.pain}</span>}
+                             {log.bloating && <span className="text-primary">Bloating</span>}
+                             {/* Fallback if no specific symptoms */}
+                             {log.pain === 0 && !log.bloating && <span className="text-muted-foreground">Logged</span>}
+                           </div>
+                        </div>
+                      ))}
+                    </CardContent>
+                  </Card>
+                )}
+
+                {data.sharedData.journals.length > 0 && (
+                  <Card variant="soft">
+                    <CardHeader className="pb-2">
+                       <CardTitle className="text-base">Journal Entries</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-2">
+                      {data.sharedData.journals.map((entry: any, i: number) => (
+                        <div key={i} className="p-3 bg-background/50 rounded-lg text-sm">
+                           <div className="flex justify-between mb-1 text-xs text-muted-foreground">
+                             <span>{new Date(entry.date).toLocaleDateString()}</span>
+                           </div>
+                           {entry.ai_summary ? (
+                             <p className="text-foreground">{entry.ai_summary}</p>
+                           ) : (
+                             <p className="italic text-muted-foreground">Written entry (Private)</p>
+                           )}
+                        </div>
+                      ))}
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
             )}
 
             <div className="grid grid-cols-2 gap-3">

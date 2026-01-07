@@ -1,636 +1,598 @@
-import { useMemo, useState } from 'react';
-import {
-  Users,
-  Link2,
-  Shield,
-  Sparkles,
-  ChevronRight,
-  Search,
-  BarChart3,
-  Activity,
-  Loader2,
-  AlertTriangle,
-  Trash2,
-  Check,
+import { useState } from 'react';
+import { 
+  Users, MessageSquare, Activity, Calendar, Heart, 
+  Clock, MapPin, Mail, Phone, Shield, Trash2, Eye,
+  ChevronDown, ChevronRight, Search, Filter
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Switch } from '@/components/ui/switch';
 import { AppLayout } from '@/components/layout/AppLayout';
-import { cn } from '@/lib/utils';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-  useAdminUsers,
-  useUpdateAdminUser,
-  useAdminPairings,
-  useForceUnpair,
-  useConsentLogs,
-  useAIInteractions,
-  useMythArticles,
-  useUpsertMythArticle,
-  useDeleteMythArticle,
-  useAnalyticsOverview,
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { 
+  useAdminUsers, 
+  useUserDetails, 
+  useUserActivity, 
+  useUserChatbot, 
+  useUserCycles 
 } from '@/hooks/api/admin';
-import { useToast } from '@/hooks/use-toast';
+import { formatDistanceToNow, format } from 'date-fns';
+import { cn } from '@/lib/utils';
+import { AnalyticsDashboard } from '@/components/admin/AnalyticsDashboard';
 
-const statusTone = {
-  ACTIVE: 'bg-sage/30 text-sage-foreground',
-  PENDING: 'bg-lavender/30 text-lavender-foreground',
-  REVOKED: 'bg-destructive/20 text-destructive',
-  SUSPENDED: 'bg-destructive/20 text-destructive',
-  DELETED: 'bg-muted text-muted-foreground',
-};
-
-export default function AdminDashboard() {
-  const { toast } = useToast();
-  const { data: analytics, isLoading: analyticsLoading } = useAnalyticsOverview();
-  const {
-    data: users,
-    isLoading: usersLoading,
-    isError: usersError,
-    refetch: refetchUsers,
-  } = useAdminUsers();
-  const updateAdminUser = useUpdateAdminUser();
-
-  const {
-    data: pairings,
-    isLoading: pairingsLoading,
-    isError: pairingsError,
-    refetch: refetchPairings,
-  } = useAdminPairings();
-  const forceUnpair = useForceUnpair();
-
-  const { data: consentLogs, isLoading: consentLoading, isError: consentError, refetch: refetchConsent } = useConsentLogs();
-  const { data: aiInteractions, isLoading: aiLoading, isError: aiError, refetch: refetchAI } = useAIInteractions();
-
-  const {
-    data: mythArticles,
-    isLoading: mythsLoading,
-    isError: mythsError,
-    refetch: refetchMyths,
-  } = useMythArticles();
-  const upsertMythArticle = useUpsertMythArticle();
-  const deleteMythArticle = useDeleteMythArticle();
-
+export default function ComprehensiveAdminDashboard() {
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [updatingUserId, setUpdatingUserId] = useState<string | null>(null);
-  const [unpairingId, setUnpairingId] = useState<string | null>(null);
-  const [mythForm, setMythForm] = useState({ title: '', content: '', tags: '', isPublished: true });
-  const [savingMyth, setSavingMyth] = useState(false);
-  const [deletingMythId, setDeletingMythId] = useState<string | null>(null);
+  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
+    profile: true,
+    partner: false,
+    cycles: true,
+    symptoms: false,
+    journals: false,
+    chatbot: false,
+    activity: false,
+  });
 
-  const stats = useMemo(
-    () => [
-      {
-        label: 'Total Users',
-        value: analytics ? analytics.total_users.toLocaleString() : '—',
-        icon: Users,
-        color: 'bg-primary-soft text-primary',
-      },
-      {
-        label: 'Active Pairings',
-        value: analytics ? analytics.active_pairings.toLocaleString() : '—',
-        icon: Link2,
-        color: 'bg-lavender/30 text-lavender-foreground',
-      },
-      {
-        label: 'AI Interactions (24h)',
-        value: analytics ? analytics.ai_interactions_count.toLocaleString() : '—',
-        icon: Sparkles,
-        color: 'bg-peach/30 text-peach-foreground',
-      },
-      {
-        label: 'Snapshot Date',
-        value: analytics ? new Date(analytics.snapshot_date).toLocaleDateString() : '—',
-        icon: Activity,
-        color: 'bg-muted text-muted-foreground',
-      },
-    ],
-    [analytics]
-  );
+  const { data: users, isLoading: usersLoading } = useAdminUsers();
+  const { data: userDetails } = useUserDetails(selectedUserId);
+  const { data: userActivity } = useUserActivity(selectedUserId);
+  const { data: chatbotHistory } = useUserChatbot(selectedUserId);
+  const { data: cycleData } = useUserCycles(selectedUserId);
 
-  const filteredUsers = useMemo(() => {
-    if (!users) return [];
-    return users.filter((user) =>
-      [user.id, user.profiles?.name, user.profiles?.timezone]
-        .concat()
-        .join(' ')
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase())
+  const toggleSection = (section: string) => {
+    setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
+  };
+
+  const filteredUsers = users?.filter(user => {
+    const searchLower = searchQuery.toLowerCase();
+    const profile = user.profiles;
+    return (
+      user.id.toLowerCase().includes(searchLower) ||
+      profile?.name?.toLowerCase().includes(searchLower) ||
+      user.role.toLowerCase().includes(searchLower)
     );
-  }, [users, searchQuery]);
+  });
 
-  const handleUserUpdate = async (
-    userId: string,
-    changes: Partial<{ status: 'ACTIVE' | 'SUSPENDED' | 'DELETED'; role: 'PRIMARY' | 'PARTNER' | 'ADMIN' }>
-  ) => {
-    setUpdatingUserId(userId);
-    try {
-      await updateAdminUser.mutateAsync({ userId, ...changes });
-      toast({ title: 'User updated', description: 'Changes applied successfully.' });
-    } catch (error) {
-      toast({
-        title: 'Unable to update user',
-        description: error instanceof Error ? error.message : 'Please try again later.',
-        variant: 'destructive',
-      });
-    } finally {
-      setUpdatingUserId(null);
-    }
-  };
+  const selectedUser = users?.find(u => u.id === selectedUserId);
 
-  const handleForceUnpair = async (pairingId: string) => {
-    setUnpairingId(pairingId);
-    try {
-      await forceUnpair.mutateAsync(pairingId);
-      toast({ title: 'Pairing revoked', description: 'The users have been unpaired.' });
-    } catch (error) {
-      toast({
-        title: 'Unable to revoke pairing',
-        description: error instanceof Error ? error.message : 'Please try again later.',
-        variant: 'destructive',
-      });
-    } finally {
-      setUnpairingId(null);
-    }
-  };
-
-  const handleCreateMyth = async () => {
-    if (!mythForm.title.trim() || !mythForm.content.trim()) {
-      toast({
-        title: 'Missing information',
-        description: 'Please provide both a title and content for the myth article.',
-        variant: 'destructive',
-      });
-      return;
-    }
-
-    setSavingMyth(true);
-    try {
-      const tags = mythForm.tags
-        .split(',')
-        .map((tag) => tag.trim())
-        .filter(Boolean);
-      await upsertMythArticle.mutateAsync({
-        title: mythForm.title.trim(),
-        content: mythForm.content.trim(),
-        tags,
-        isPublished: mythForm.isPublished,
-      });
-      setMythForm({ title: '', content: '', tags: '', isPublished: true });
-      toast({ title: 'Myth article saved', description: 'It is now available in the knowledge base.' });
-    } catch (error) {
-      toast({
-        title: 'Unable to save myth',
-        description: error instanceof Error ? error.message : 'Please try again later.',
-        variant: 'destructive',
-      });
-    } finally {
-      setSavingMyth(false);
-    }
-  };
-
-  const handleTogglePublish = async (id: string, isPublished: boolean, title: string, content: string, tags?: string[] | null) => {
-    try {
-      await upsertMythArticle.mutateAsync({
-        id,
-        title,
-        content,
-        tags: tags ?? [],
-        isPublished,
-      });
-      toast({ title: 'Myth updated', description: `Article is now ${isPublished ? 'published' : 'draft'}.'` });
-    } catch (error) {
-      toast({
-        title: 'Unable to update myth',
-        description: error instanceof Error ? error.message : 'Please try again later.',
-        variant: 'destructive',
-      });
-    }
-  };
-
-  const handleDeleteMyth = async (id: string) => {
-    setDeletingMythId(id);
-    try {
-      await deleteMythArticle.mutateAsync(id);
-      toast({ title: 'Myth deleted', description: 'The article has been removed.' });
-    } catch (error) {
-      toast({
-        title: 'Unable to delete myth',
-        description: error instanceof Error ? error.message : 'Please try again later.',
-        variant: 'destructive',
-      });
-    } finally {
-      setDeletingMythId(null);
-    }
+  // Convert IST timestamp
+  const formatIST = (timestamp: string | null) => {
+    if (!timestamp) return 'Never';
+    const date = new Date(timestamp);
+    return format(date, 'dd MMM yyyy, hh:mm a') + ' IST';
   };
 
   return (
-    <AppLayout title="Admin Dashboard">
+    <AppLayout title="Admin Dashboard" showNav={false}>
       <div className="space-y-6 animate-fade-in">
-        <div className="grid grid-cols-2 gap-3">
-          {stats.map((stat) => {
-            const Icon = stat.icon;
-            return (
-              <Card key={stat.label} variant="elevated" className="p-4">
-                <div className="flex items-center gap-3">
-                  <div className={cn('p-2 rounded-lg', stat.color)}>
-                    {analyticsLoading ? (
-                      <Loader2 className="h-5 w-5 animate-spin" />
-                    ) : (
-                      <Icon className="h-5 w-5" />
-                    )}
-                  </div>
-                  <div>
-                    <span className="text-2xl font-bold font-display text-foreground">{stat.value}</span>
-                    <span className="text-xs text-muted-foreground block">{stat.label}</span>
-                  </div>
-                </div>
-              </Card>
-            );
-          })}
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-display font-bold text-foreground">Admin Dashboard</h1>
+            <p className="text-muted-foreground">Complete data overview for all users</p>
+          </div>
+          <Badge variant="outline" className="gap-2">
+            <Shield className="h-4 w-4" />
+            Admin Access
+          </Badge>
         </div>
 
-        <Tabs defaultValue="users" className="w-full">
-          <TabsList className="w-full grid grid-cols-4 h-auto p-1 bg-muted">
-            <TabsTrigger value="users" className="text-xs py-2">
-              Users
-            </TabsTrigger>
-            <TabsTrigger value="pairings" className="text-xs py-2">
-              Pairings
-            </TabsTrigger>
-            <TabsTrigger value="consent" className="text-xs py-2">
-              Consent
-            </TabsTrigger>
-            <TabsTrigger value="ai" className="text-xs py-2">
-              AI Logs
-            </TabsTrigger>
+        {/* Statistics Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <Card variant="elevated">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Total Users</p>
+                  <p className="text-2xl font-bold">{users?.length || 0}</p>
+                </div>
+                <Users className="h-8 w-8 text-primary" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card variant="elevated">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Active Users</p>
+                  <p className="text-2xl font-bold">
+                    {users?.filter(u => u.status === 'ACTIVE').length || 0}
+                  </p>
+                </div>
+                <Activity className="h-8 w-8 text-sage" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card variant="elevated">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Primary Users</p>
+                  <p className="text-2xl font-bold">
+                    {users?.filter(u => u.role === 'PRIMARY').length || 0}
+                  </p>
+                </div>
+                <Heart className="h-8 w-8 text-rose" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card variant="elevated">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Partners</p>
+                  <p className="text-2xl font-bold">
+                    {users?.filter(u => u.role === 'PARTNER').length || 0}
+                  </p>
+                </div>
+                <Users className="h-8 w-8 text-lavender" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Main Content */}
+        <Tabs defaultValue="users" className="space-y-4">
+          <TabsList>
+            <TabsTrigger value="users">User Management</TabsTrigger>
+            <TabsTrigger value="analytics">Analytics & Insights</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="users" className="mt-4 space-y-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search users..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-
-            {usersError ? (
-              <Card variant="destructive">
-                <CardContent className="py-8 text-center text-sm text-destructive-foreground">
-                  <p className="mb-3">Unable to load users right now.</p>
-                  <Button variant="outline" size="sm" onClick={() => refetchUsers()}>
-                    Try again
-                  </Button>
-                </CardContent>
-              </Card>
-            ) : usersLoading ? (
-              <Card variant="soft">
-                <CardContent className="py-8 text-center text-sm text-muted-foreground flex items-center justify-center gap-2">
-                  <Loader2 className="h-4 w-4 animate-spin" /> Loading users...
-                </CardContent>
-              </Card>
-            ) : filteredUsers.length === 0 ? (
-              <Card variant="soft">
-                <CardContent className="py-8 text-center text-sm text-muted-foreground">
-                  No users match your search.
-                </CardContent>
-              </Card>
-            ) : (
-              <div className="space-y-2">
-                {filteredUsers.map((user) => (
-                  <Card key={user.id} variant="default" className="p-4">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex items-start gap-3">
-                        <div
-                          className={cn(
-                            'w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold uppercase',
-                            user.role === 'PRIMARY'
-                              ? 'bg-primary-soft text-primary'
-                              : user.role === 'ADMIN'
-                              ? 'bg-peach/30 text-peach-foreground'
-                              : 'bg-lavender/30 text-lavender-foreground'
-                          )}
-                        >
-                          {(user.profiles?.name?.[0] ?? user.id[0] ?? 'U').toUpperCase()}
-                        </div>
-                        <div className="space-y-1">
-                          <p className="font-medium text-foreground text-sm">{user.id}</p>
-                          <div className="flex items-center gap-2">
-                            <span className={cn('text-xs px-2 py-0.5 rounded-full capitalize', statusTone[user.status] ?? 'bg-muted')}>
-                              {user.status.toLowerCase()}
-                            </span>
-                            <span className="text-xs text-muted-foreground capitalize">{user.role.toLowerCase()}</span>
-                          </div>
-                          {user.profiles?.name && (
-                            <p className="text-xs text-muted-foreground">{user.profiles.name}</p>
-                          )}
-                        </div>
-                      </div>
-                      <div className="flex flex-col gap-2 w-36">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          disabled={updatingUserId === user.id || user.status === 'ACTIVE'}
-                          onClick={() => handleUserUpdate(user.id, { status: 'ACTIVE' })}
-                        >
-                          Set Active
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          disabled={updatingUserId === user.id || user.status === 'SUSPENDED'}
-                          onClick={() => handleUserUpdate(user.id, { status: 'SUSPENDED' })}
-                        >
-                          Suspend
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          disabled={updatingUserId === user.id || user.role === 'ADMIN'}
-                          onClick={() => handleUserUpdate(user.id, { role: 'ADMIN' })}
-                        >
-                          Promote to Admin
-                        </Button>
-                      </div>
-                    </div>
-                  </Card>
-                ))}
+          <TabsContent value="users">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* User List */}
+          <Card variant="elevated" className="lg:col-span-1">
+            <CardHeader>
+              <CardTitle>All Users</CardTitle>
+              <CardDescription>Select a user to view complete data</CardDescription>
+              <div className="relative mt-4">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search users..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
               </div>
-            )}
-          </TabsContent>
+            </CardHeader>
+            <CardContent className="max-h-[600px] overflow-y-auto space-y-2">
+              {usersLoading ? (
+                <p className="text-center text-muted-foreground py-8">Loading users...</p>
+              ) : filteredUsers?.length === 0 ? (
+                <p className="text-center text-muted-foreground py-8">No users found</p>
+              ) : (
+                filteredUsers?.map((user) => (
+                  <button
+                    key={user.id}
+                    onClick={() => setSelectedUserId(user.id)}
+                    className={cn(
+                      "w-full text-left p-3 rounded-lg border transition-all",
+                      selectedUserId === user.id
+                        ? "border-primary bg-primary-soft"
+                        : "border-border hover:border-primary/50 hover:bg-muted"
+                    )}
+                  >
+                    <div className="flex items-center justify-between mb-1">
+                      <p className="font-medium text-sm">
+                        {user.profiles?.name || 'Unnamed User'}
+                      </p>
+                      <Badge variant={user.status === 'ACTIVE' ? 'default' : 'secondary'} className="text-xs">
+                        {user.role}
+                      </Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground truncate">{user.id}</p>
+                    <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
+                      <Clock className="h-3 w-3" />
+                      <span>
+                        {user.last_login 
+                          ? formatDistanceToNow(new Date(user.last_login)) + ' ago'
+                          : 'Never logged in'}
+                      </span>
+                    </div>
+                  </button>
+                ))
+              )}
+            </CardContent>
+          </Card>
 
-          <TabsContent value="pairings" className="mt-4 space-y-3">
-            {pairingsError ? (
-              <Card variant="destructive">
-                <CardContent className="py-8 text-center text-destructive-foreground text-sm">
-                  Unable to load pairings.
-                  <div className="mt-3">
-                    <Button variant="outline" size="sm" onClick={() => refetchPairings()}>
-                      Try again
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ) : pairingsLoading ? (
-              <Card variant="soft">
-                <CardContent className="py-8 text-center text-sm text-muted-foreground flex items-center justify-center gap-2">
-                  <Loader2 className="h-4 w-4 animate-spin" /> Loading pairings...
-                </CardContent>
-              </Card>
-            ) : !pairings || pairings.length === 0 ? (
-              <Card variant="soft">
-                <CardContent className="py-8 text-center text-sm text-muted-foreground">
-                  No pairings found.
-                </CardContent>
-              </Card>
-            ) : (
-              pairings.map((pairing) => (
-                <Card key={pairing.id} variant="default" className="p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className={cn('text-xs px-2 py-0.5 rounded-full capitalize', statusTone[pairing.status] ?? 'bg-muted')}>
-                      {pairing.status.toLowerCase()}
-                    </span>
-                    <span className="text-xs text-muted-foreground">
-                      {new Date(pairing.created_at).toLocaleString()}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <span className="text-foreground font-medium">Primary: {pairing.primary_user_id}</span>
-                    <Link2 className="h-3 w-3 text-muted-foreground" />
-                    <span className="text-muted-foreground">
-                      Partner: {pairing.partner_user_id ?? 'Pending acceptance'}
-                    </span>
-                  </div>
-                  <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
-                    <span>
-                      Consent keys: {pairing.consent_settings ? Object.keys(pairing.consent_settings).length : 0}
-                    </span>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      disabled={pairing.status !== 'ACTIVE' || unpairingId === pairing.id}
-                      onClick={() => handleForceUnpair(pairing.id)}
-                    >
-                      {unpairingId === pairing.id ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        'Force unpair'
+          {/* User Details */}
+          <Card variant="elevated" className="lg:col-span-2">
+            <CardHeader>
+              <CardTitle>
+                {selectedUser ? `${selectedUser.profiles?.name || 'User'} - Complete Data` : 'Select a User'}
+              </CardTitle>
+              <CardDescription>
+                {selectedUser ? 'All collected data from Supabase' : 'Click on a user to view their complete information'}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="max-h-[600px] overflow-y-auto">
+              {!selectedUserId ? (
+                <div className="text-center py-12">
+                  <Users className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                  <p className="text-muted-foreground">Select a user from the list to view their data</p>
+                </div>
+              ) : (
+                <Tabs defaultValue="overview" className="w-full">
+                  <TabsList className="grid w-full grid-cols-4">
+                    <TabsTrigger value="overview">Overview</TabsTrigger>
+                    <TabsTrigger value="health">Health Data</TabsTrigger>
+                    <TabsTrigger value="chatbot">Chatbot</TabsTrigger>
+                    <TabsTrigger value="activity">Activity</TabsTrigger>
+                  </TabsList>
+
+                  {/* Overview Tab */}
+                  <TabsContent value="overview" className="space-y-4 mt-4">
+                    {/* Profile Information */}
+                    <div className="space-y-3">
+                      <button
+                        onClick={() => toggleSection('profile')}
+                        className="flex items-center justify-between w-full p-3 rounded-lg bg-muted hover:bg-muted/80 transition-colors"
+                      >
+                        <div className="flex items-center gap-2">
+                          {expandedSections.profile ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                          <h3 className="font-semibold">Profile Information</h3>
+                        </div>
+                      </button>
+                      
+                      {expandedSections.profile && userDetails && (
+                        <div className="grid grid-cols-2 gap-3 p-4 border rounded-lg">
+                          <div>
+                            <p className="text-xs text-muted-foreground">User ID</p>
+                            <p className="text-sm font-mono">{userDetails.user.id}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-muted-foreground">Role</p>
+                            <Badge>{userDetails.user.role}</Badge>
+                          </div>
+                          <div>
+                            <p className="text-xs text-muted-foreground">Status</p>
+                            <Badge variant={userDetails.user.status === 'ACTIVE' ? 'default' : 'destructive'}>
+                              {userDetails.user.status}
+                            </Badge>
+                          </div>
+                          <div>
+                            <p className="text-xs text-muted-foreground">Name</p>
+                            <p className="text-sm">{userDetails.user.profiles?.name || 'N/A'}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-muted-foreground">Age</p>
+                            <p className="text-sm">{userDetails.user.profiles?.age || 'N/A'}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-muted-foreground">Phone</p>
+                            <p className="text-sm">{userDetails.user.profiles?.phone || 'N/A'}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-muted-foreground">City</p>
+                            <p className="text-sm">{userDetails.user.profiles?.city || 'N/A'}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-muted-foreground">Timezone</p>
+                            <p className="text-sm">{userDetails.user.profiles?.timezone || 'N/A'}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-muted-foreground">Account Created</p>
+                            <p className="text-sm">{formatIST(userDetails.user.created_at)}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-muted-foreground">Last Login</p>
+                            <p className="text-sm">{formatIST(userDetails.user.last_login)}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-muted-foreground">Last Activity</p>
+                            <p className="text-sm">
+                              {userDetails.user.last_activity 
+                                ? formatIST(userDetails.user.last_activity)
+                                : 'Never'}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-muted-foreground">Onboarding</p>
+                            <Badge variant={userDetails.user.profiles?.onboarding_completed ? 'default' : 'secondary'}>
+                              {userDetails.user.profiles?.onboarding_completed ? 'Complete' : 'Incomplete'}
+                            </Badge>
+                          </div>
+                        </div>
                       )}
-                    </Button>
-                  </div>
-                </Card>
-              ))
-            )}
+                    </div>
+
+                    {/* Partner Information */}
+                    {userDetails.pairing && (
+                      <div className="space-y-3">
+                        <button
+                          onClick={() => toggleSection('partner')}
+                          className="flex items-center justify-between w-full p-3 rounded-lg bg-muted hover:bg-muted/80 transition-colors"
+                        >
+                          <div className="flex items-center gap-2">
+                            {expandedSections.partner ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                            <h3 className="font-semibold">Partner Connection</h3>
+                          </div>
+                          <Badge variant="outline" className="ml-auto">
+                            {userDetails.pairing.status}
+                          </Badge>
+                        </button>
+                        
+                        {expandedSections.partner && (
+                          <div className="grid grid-cols-2 gap-3 p-4 border rounded-lg animate-fade-in">
+                            <div>
+                              <p className="text-xs text-muted-foreground">Pairing ID</p>
+                              <p className="text-sm font-mono truncate" title={userDetails.pairing.id}>{userDetails.pairing.id}</p>
+                            </div>
+                            <div>
+                              <p className="text-xs text-muted-foreground">Connected Partner</p>
+                              <p className="text-sm font-medium">
+                                {userDetails.user.id === userDetails.pairing.primary_user_id 
+                                  ? (userDetails.pairing.partner?.profiles?.name || 'Unknown') 
+                                  : (userDetails.pairing.primary?.profiles?.name || 'Unknown')}
+                              </p>
+                            </div>
+                            <div>
+                              <p className="text-xs text-muted-foreground">Partner Role</p>
+                              <Badge variant="secondary">
+                                {userDetails.user.id === userDetails.pairing.primary_user_id 
+                                  ? (userDetails.pairing.partner?.role || 'PARTNER') 
+                                  : (userDetails.pairing.primary?.role || 'PRIMARY')}
+                              </Badge>
+                            </div>
+                            <div>
+                              <p className="text-xs text-muted-foreground">Connected Since</p>
+                              <p className="text-sm">{format(new Date(userDetails.pairing.created_at), 'dd MMM yyyy')}</p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </TabsContent>
+
+                  {/* Health Data Tab */}
+                  <TabsContent value="health" className="space-y-4 mt-4">
+                    {/* Cycle Data */}
+                    <div className="space-y-3">
+                      <button
+                        onClick={() => toggleSection('cycles')}
+                        className="flex items-center justify-between w-full p-3 rounded-lg bg-muted hover:bg-muted/80 transition-colors"
+                      >
+                        <div className="flex items-center gap-2">
+                          {expandedSections.cycles ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                          <h3 className="font-semibold">Cycle History ({cycleData?.length || 0})</h3>
+                        </div>
+                      </button>
+                      
+                      {expandedSections.cycles && cycleData && (
+                        <div className="space-y-2">
+                          {cycleData.length === 0 ? (
+                            <p className="text-sm text-muted-foreground p-4 text-center">No cycle data</p>
+                          ) : (
+                            cycleData.slice(0, 5).map((cycle: any) => (
+                              <div key={cycle.id} className="p-3 border rounded-lg">
+                                <div className="grid grid-cols-2 gap-2 text-sm">
+                                  <div>
+                                    <p className="text-xs text-muted-foreground">Start Date</p>
+                                    <p>{format(new Date(cycle.start_date), 'dd MMM yyyy')}</p>
+                                  </div>
+                                  <div>
+                                    <p className="text-xs text-muted-foreground">End Date</p>
+                                    <p>{cycle.end_date ? format(new Date(cycle.end_date), 'dd MMM yyyy') : 'Ongoing'}</p>
+                                  </div>
+                                  <div>
+                                    <p className="text-xs text-muted-foreground">Cycle Length</p>
+                                    <p>{cycle.cycle_length} days</p>
+                                  </div>
+                                  <div>
+                                    <p className="text-xs text-muted-foreground">Period Length</p>
+                                    <p>{cycle.period_length} days</p>
+                                  </div>
+                                </div>
+                              </div>
+                            ))
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Symptoms */}
+                    {userDetails && (
+                      <div className="space-y-3">
+                        <button
+                          onClick={() => toggleSection('symptoms')}
+                          className="flex items-center justify-between w-full p-3 rounded-lg bg-muted hover:bg-muted/80 transition-colors"
+                        >
+                          <div className="flex items-center gap-2">
+                            {expandedSections.symptoms ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                            <h3 className="font-semibold">Recent Symptoms ({userDetails.symptoms?.length || 0})</h3>
+                          </div>
+                        </button>
+                        
+                        {expandedSections.symptoms && (
+                          <div className="space-y-2">
+                            {userDetails.symptoms?.length === 0 ? (
+                              <p className="text-sm text-muted-foreground p-4 text-center">No symptoms logged</p>
+                            ) : (
+                              userDetails.symptoms?.slice(0, 10).map((symptom: any) => (
+                                <div key={symptom.id} className="p-3 border rounded-lg">
+                                  <div className="flex items-center justify-between mb-2">
+                                    <Badge>{symptom.type}</Badge>
+                                    <span className="text-xs text-muted-foreground">
+                                      {formatDistanceToNow(new Date(symptom.logged_at))} ago
+                                    </span>
+                                  </div>
+                                  <p className="text-sm">Severity: {symptom.severity}/10</p>
+                                  {symptom.notes && <p className="text-xs text-muted-foreground mt-1">{symptom.notes}</p>}
+                                </div>
+                              ))
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Journals */}
+                    {userDetails && (
+                      <div className="space-y-3">
+                        <button
+                          onClick={() => toggleSection('journals')}
+                          className="flex items-center justify-between w-full p-3 rounded-lg bg-muted hover:bg-muted/80 transition-colors"
+                        >
+                          <div className="flex items-center gap-2">
+                            {expandedSections.journals ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                            <h3 className="font-semibold">Journal Entries ({userDetails.journals?.length || 0})</h3>
+                          </div>
+                        </button>
+                        
+                        {expandedSections.journals && (
+                          <div className="space-y-2">
+                            {userDetails.journals?.length === 0 ? (
+                              <p className="text-sm text-muted-foreground p-4 text-center">No journal entries</p>
+                            ) : (
+                              userDetails.journals?.slice(0, 5).map((journal: any) => (
+                                <div key={journal.id} className="p-3 border rounded-lg">
+                                  <div className="flex items-center justify-between mb-2">
+                                    <Badge>{journal.mood}</Badge>
+                                    <span className="text-xs text-muted-foreground">
+                                      {format(new Date(journal.created_at), 'dd MMM yyyy')}
+                                    </span>
+                                  </div>
+                                  {journal.tags && journal.tags.length > 0 && (
+                                    <div className="flex flex-wrap gap-1 mt-2">
+                                      {journal.tags.map((tag: string, i: number) => (
+                                        <Badge key={i} variant="outline" className="text-xs">{tag}</Badge>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
+                              ))
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </TabsContent>
+
+                  {/* Chatbot Tab */}
+                  <TabsContent value="chatbot" className="space-y-4 mt-4">
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="font-semibold">Chat History ({chatbotHistory?.length || 0} messages)</h3>
+                        <Badge variant="outline">Includes soft-deleted</Badge>
+                      </div>
+                      
+                      {!chatbotHistory || chatbotHistory.length === 0 ? (
+                        <p className="text-sm text-muted-foreground p-4 text-center">No chat history</p>
+                      ) : (
+                        <div className="space-y-3">
+                          {chatbotHistory.map((msg: any) => (
+                            <div
+                              key={msg.id}
+                              className={cn(
+                                "p-3 rounded-lg border",
+                                msg.is_deleted && "opacity-50 border-dashed border-destructive"
+                              )}
+                            >
+                              <div className="flex items-center justify-between mb-2">
+                                <div className="flex items-center gap-2">
+                                  <Badge variant={msg.role === 'USER' ? 'default' : 'secondary'}>
+                                    {msg.role}
+                                  </Badge>
+                                  {msg.is_deleted && (
+                                    <Badge variant="destructive" className="text-xs">
+                                      <Trash2 className="h-3 w-3 mr-1" />
+                                      Soft Deleted
+                                    </Badge>
+                                  )}
+                                </div>
+                                <span className="text-xs text-muted-foreground">
+                                  {format(new Date(msg.created_at), 'dd MMM, HH:mm')}
+                                </span>
+                              </div>
+                              <p className="text-sm whitespace-pre-wrap">{msg.message}</p>
+                              {msg.deleted_at && (
+                                <p className="text-xs text-destructive mt-2">
+                                  Deleted: {formatDistanceToNow(new Date(msg.deleted_at))} ago
+                                </p>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </TabsContent>
+
+                  {/* Activity Tab */}
+                  <TabsContent value="activity" className="space-y-4 mt-4">
+                    {userActivity && (
+                      <div className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                          <Card>
+                            <CardContent className="pt-6">
+                              <p className="text-sm text-muted-foreground mb-1">Last Login</p>
+                              <p className="text-lg font-semibold">
+                                {userActivity.lastLogin 
+                                  ? formatDistanceToNow(new Date(userActivity.lastLogin)) + ' ago'
+                                  : 'Never'}
+                              </p>
+                              {userActivity.lastLogin && (
+                                <p className="text-xs text-muted-foreground mt-1">
+                                  {formatIST(userActivity.lastLogin)}
+                                </p>
+                              )}
+                            </CardContent>
+                          </Card>
+
+                          <Card>
+                            <CardContent className="pt-6">
+                              <p className="text-sm text-muted-foreground mb-1">Account Created</p>
+                              <p className="text-lg font-semibold">
+                                {formatDistanceToNow(new Date(userActivity.accountCreated))} ago
+                              </p>
+                              <p className="text-xs text-muted-foreground mt-1">
+                                {formatIST(userActivity.accountCreated)}
+                              </p>
+                            </CardContent>
+                          </Card>
+                        </div>
+
+                        <div>
+                          <h3 className="font-semibold mb-3">Audit Logs ({userActivity.auditLogs?.length || 0})</h3>
+                          <div className="space-y-2 max-h-[400px] overflow-y-auto">
+                            {userActivity.auditLogs?.length === 0 ? (
+                              <p className="text-sm text-muted-foreground p-4 text-center">No audit logs</p>
+                            ) : (
+                              userActivity.auditLogs?.map((log: any) => (
+                                <div key={log.id} className="p-3 border rounded-lg">
+                                  <div className="flex items-center justify-between mb-1">
+                                    <Badge>{log.action}</Badge>
+                                    <span className="text-xs text-muted-foreground">
+                                      {formatDistanceToNow(new Date(log.created_at))} ago
+                                    </span>
+                                  </div>
+                                  {log.metadata && (
+                                    <pre className="text-xs bg-muted p-2 rounded mt-2 overflow-x-auto">
+                                      {JSON.stringify(log.metadata, null, 2)}
+                                    </pre>
+                                  )}
+                                </div>
+                              ))
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </TabsContent>
+                </Tabs>
+              )}
+            </CardContent>
+          </Card>
+        </div>
           </TabsContent>
 
-          <TabsContent value="consent" className="mt-4 space-y-3">
-            {consentError ? (
-              <Card variant="destructive">
-                <CardContent className="py-8 text-center text-destructive-foreground text-sm">
-                  Unable to load consent logs.
-                  <div className="mt-3">
-                    <Button variant="outline" size="sm" onClick={() => refetchConsent()}>
-                      Try again
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ) : consentLoading ? (
-              <Card variant="soft">
-                <CardContent className="py-8 text-center text-sm text-muted-foreground flex items-center justify-center gap-2">
-                  <Loader2 className="h-4 w-4 animate-spin" /> Loading consent logs...
-                </CardContent>
-              </Card>
-            ) : !consentLogs || consentLogs.length === 0 ? (
-              <Card variant="soft">
-                <CardContent className="py-8 text-center text-sm text-muted-foreground">
-                  No recent consent changes.
-                </CardContent>
-              </Card>
-            ) : (
-              consentLogs.map((log) => (
-                <Card key={log.id} variant="default" className="p-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="font-medium text-foreground text-sm">{log.action}</p>
-                      <p className="text-xs text-muted-foreground mt-1">Actor: {log.actor_user_id}</p>
-                    </div>
-                    <span className="text-xs text-muted-foreground">
-                      {new Date(log.created_at).toLocaleString()}
-                    </span>
-                  </div>
-                </Card>
-              ))
-            )}
-          </TabsContent>
-
-          <TabsContent value="ai" className="mt-4 space-y-3">
-            {aiError ? (
-              <Card variant="destructive">
-                <CardContent className="py-8 text-center text-destructive-foreground text-sm">
-                  Unable to load AI interactions.
-                  <div className="mt-3">
-                    <Button variant="outline" size="sm" onClick={() => refetchAI()}>
-                      Try again
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ) : aiLoading ? (
-              <Card variant="soft">
-                <CardContent className="py-8 text-center text-sm text-muted-foreground flex items-center justify-center gap-2">
-                  <Loader2 className="h-4 w-4 animate-spin" /> Loading AI activity...
-                </CardContent>
-              </Card>
-            ) : !aiInteractions || aiInteractions.length === 0 ? (
-              <Card variant="soft">
-                <CardContent className="py-8 text-center text-sm text-muted-foreground">
-                  No AI interactions recorded yet.
-                </CardContent>
-              </Card>
-            ) : (
-              aiInteractions.map((log) => (
-                <Card key={log.id} variant="default" className="p-4">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-peach/30">
-                      <Sparkles className="h-4 w-4 text-peach-foreground" />
-                    </div>
-                    <div className="flex-1 space-y-1">
-                      <p className="font-medium text-foreground text-sm">{log.type}</p>
-                      <p className="text-xs text-muted-foreground">User: {log.user_id}</p>
-                      <p className="text-xs text-muted-foreground line-clamp-2">Prompt: {log.prompt}</p>
-                    </div>
-                    <span className="text-xs text-muted-foreground">
-                      {new Date(log.created_at).toLocaleString()}
-                    </span>
-                  </div>
-                </Card>
-              ))
-            )}
+          <TabsContent value="analytics">
+            <AnalyticsDashboard />
           </TabsContent>
         </Tabs>
-
-        <Card variant="gradient">
-          <CardHeader>
-            <div className="flex items-center gap-2">
-              <BarChart3 className="h-5 w-5 text-primary" />
-              <CardTitle className="text-base">Myth Articles</CardTitle>
-            </div>
-            <CardDescription>Educate users with trustworthy, moderated content.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-5">
-            <div className="grid gap-3 md:grid-cols-2">
-              <div className="space-y-3">
-                <Input
-                  placeholder="Title"
-                  value={mythForm.title}
-                  onChange={(e) => setMythForm((prev) => ({ ...prev, title: e.target.value }))}
-                />
-                <Textarea
-                  placeholder="Content"
-                  value={mythForm.content}
-                  onChange={(e) => setMythForm((prev) => ({ ...prev, content: e.target.value }))}
-                  className="min-h-[140px]"
-                />
-                <Input
-                  placeholder="Tags (comma separated)"
-                  value={mythForm.tags}
-                  onChange={(e) => setMythForm((prev) => ({ ...prev, tags: e.target.value }))}
-                />
-                <div className="flex items-center justify-between rounded-xl bg-muted/40 px-3 py-2">
-                  <span className="text-sm text-foreground">Publish immediately</span>
-                  <Switch
-                    checked={mythForm.isPublished}
-                    onCheckedChange={(checked) => setMythForm((prev) => ({ ...prev, isPublished: checked }))}
-                  />
-                </div>
-                <Button onClick={handleCreateMyth} disabled={savingMyth}>
-                  {savingMyth ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Save article'}
-                </Button>
-              </div>
-
-              <div className="space-y-3">
-                {mythsError ? (
-                  <div className="flex flex-col items-center justify-center gap-3 text-sm text-destructive">
-                    <AlertTriangle className="h-5 w-5" />
-                    <p>Unable to load myth articles.</p>
-                    <Button variant="outline" size="sm" onClick={() => refetchMyths()}>
-                      Retry
-                    </Button>
-                  </div>
-                ) : mythsLoading ? (
-                  <div className="flex h-full flex-col items-center justify-center gap-3 text-sm text-muted-foreground">
-                    <Loader2 className="h-5 w-5 animate-spin" /> Loading articles...
-                  </div>
-                ) : !mythArticles || mythArticles.length === 0 ? (
-                  <div className="text-sm text-muted-foreground">No myth articles yet. Create one using the form.</div>
-                ) : (
-                  <div className="space-y-3 max-h-[360px] overflow-y-auto pr-1">
-                    {mythArticles.map((article) => (
-                      <Card key={article.id} variant="soft" className="p-4 space-y-3">
-                        <div className="flex items-start justify-between gap-3">
-                          <div>
-                            <p className="font-semibold text-sm text-foreground">{article.title}</p>
-                            <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{article.content}</p>
-                          </div>
-                          <span
-                            className={cn(
-                              'text-xs px-2 py-0.5 rounded-full',
-                              article.is_published ? 'bg-sage/30 text-sage-foreground' : 'bg-muted text-muted-foreground'
-                            )}
-                          >
-                            {article.is_published ? 'Published' : 'Draft'}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between text-xs text-muted-foreground">
-                          <span>{article.tags?.length ? article.tags.join(', ') : 'No tags'}</span>
-                          <span>{new Date(article.created_at).toLocaleString()}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() =>
-                              handleTogglePublish(
-                                article.id,
-                                !article.is_published,
-                                article.title,
-                                article.content,
-                                article.tags
-                              )
-                            }
-                          >
-                            {article.is_published ? 'Unpublish' : 'Publish'}
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="destructive"
-                            disabled={deletingMythId === article.id}
-                            onClick={() => handleDeleteMyth(article.id)}
-                          >
-                            {deletingMythId === article.id ? (
-                              <Loader2 className="h-4 w-4 animate-spin" />
-                            ) : (
-                              <>
-                                <Trash2 className="h-4 w-4 mr-1" /> Delete
-                              </>
-                            )}
-                          </Button>
-                        </div>
-                      </Card>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       </div>
     </AppLayout>
   );

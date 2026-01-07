@@ -51,20 +51,24 @@ const refreshSession = async () => {
 };
 
 export const apiFetch = async <T>(path: string, options: RequestOptions = {}): Promise<T> => {
-  const headers: HeadersInit = {
+  const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    ...(options.headers ?? {}),
+    ...(options.headers as Record<string, string> ?? {}),
   };
 
   let accessToken = getAccessToken();
 
   if (options.auth) {
     if (!accessToken) {
+      console.log('apiFetch: No access token found, attempting refresh');
       const refreshed = await refreshSession();
       accessToken = refreshed?.session?.access_token;
     }
     if (accessToken) {
+      // console.log('apiFetch: Attaching token', accessToken.substring(0, 10) + '...');
       headers.Authorization = `Bearer ${accessToken}`;
+    } else {
+      console.warn('apiFetch: Failed to retrieve access token even after refresh attempt');
     }
   }
 

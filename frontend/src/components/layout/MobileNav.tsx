@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Calendar, Book, Settings, Users, Heart, Shield } from 'lucide-react';
+import { Home, Calendar, Book, Settings, Users, Heart, Shield, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -10,9 +10,9 @@ export const MobileNav = () => {
   const primaryNavItems = [
     { href: '/dashboard', icon: Home, label: 'Home' },
     { href: '/log', icon: Calendar, label: 'Log' },
+    { href: '/chatbot', icon: Sparkles, label: 'Assistant' },
     { href: '/journal', icon: Book, label: 'Journal' },
     { href: '/connect', icon: Heart, label: 'Connect' },
-    { href: '/consent', icon: Settings, label: 'Settings' },
   ];
 
   const partnerNavItems = [

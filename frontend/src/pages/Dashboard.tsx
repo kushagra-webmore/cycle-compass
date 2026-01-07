@@ -165,7 +165,7 @@ export default function Dashboard() {
                 </Link>
               </Button>
               <Button asChild variant="lavender" size="lg" className="h-auto py-4 flex-col gap-2">
-                <Link to="/journal">
+                <Link to="/chatbot">
                   <Sparkles className="h-6 w-6" />
                   <span>Ask AI</span>
                 </Link>

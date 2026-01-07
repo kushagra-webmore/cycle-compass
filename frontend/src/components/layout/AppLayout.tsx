@@ -9,10 +9,10 @@ interface AppLayoutProps {
   showNav?: boolean;
 }
 
-export const AppLayout = ({ children, title, showNav = true }: AppLayoutProps) => {
+export const AppLayout = ({ children, title, showNav = true, showBack }: AppLayoutProps & { showBack?: boolean }) => {
   return (
     <div className="min-h-screen bg-background gradient-calm">
-      <Header title={title} />
+      <Header title={title} showBack={showBack} />
       <main className="pb-4 px-4 pt-4 max-w-4xl mx-auto">
         {children}
       </main>

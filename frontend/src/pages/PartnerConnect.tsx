@@ -1,17 +1,68 @@
-import { useState } from 'react';
-import { Copy, QrCode, Link2, Heart, Shield, Check } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { apiClient } from '@/lib/api-client';
+import { Copy, QrCode, Link2, Heart, Shield, Check, UserCheck, XCircle, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
+
+interface PairingData {
+  id: string;
+  status: 'active' | 'pending' | 'revoked';
+  partnerName?: string;
+  partnerUserId?: string;
+}
 
 export default function PartnerConnect() {
   const [copied, setCopied] = useState<string | null>(null);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
-  // Generate mock data
-  const inviteLink = 'https://cycle-aware.app/invite/abc123';
-  const pairingCode = '847291';
+  const [activePairing, setActivePairing] = useState<PairingData | null>(null);
+  const [inviteLink, setInviteLink] = useState('');
+  const [pairingCode, setPairingCode] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [isRevoking, setIsRevoking] = useState(false);
+
+  useEffect(() => {
+    checkStatus();
+  }, []);
+
+  const checkStatus = async () => {
+    try {
+      // Check for existing active pairing
+      try {
+        const { data: pairing } = await apiClient.get<PairingData | null>('/pairings/me');
+        if (pairing && pairing.status === 'active') {
+          setActivePairing(pairing);
+          setLoading(false);
+          return;
+        }
+      } catch (e) {
+        // Ignore 404 or missing
+      }
+
+      // If no active pairing, generate invite
+      const { data } = await apiClient.post<{ 
+        inviteLink: string; 
+        pairCode: string; 
+        expiresAt: string 
+      }>('/pairings/create', { method: 'ALL' });
+
+      setInviteLink(data.inviteLink);
+      setPairingCode(data.pairCode);
+    } catch (error) {
+      console.error('Failed to init connect page:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to load connection settings.',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleCopy = async (text: string, type: string) => {
     await navigator.clipboard.writeText(text);
@@ -22,6 +73,84 @@ export default function PartnerConnect() {
     });
     setTimeout(() => setCopied(null), 2000);
   };
+
+  const handleUnlink = async () => {
+    if (!activePairing) return;
+    if (!confirm('Are you sure you want to disconnect? Your partner will lose access to your shared data.')) return;
+
+    setIsRevoking(true);
+    try {
+      await apiClient.post('/pairings/revoke', { pairingId: activePairing.id });
+      toast({
+        title: 'Disconnected',
+        description: 'You have successfully unlinked from your partner.',
+      });
+      setActivePairing(null);
+      // Reload to generate new invite
+      checkStatus();
+    } catch (error) {
+      toast({
+        title: 'Failed to disconnect',
+        description: 'Something went wrong. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsRevoking(false);
+    }
+  };
+
+  if (activePairing) {
+    return (
+      <AppLayout title="Partner Connection">
+        <div className="space-y-6 animate-fade-in">
+          <Card variant="gradient" className="border-2 border-primary/20">
+            <CardHeader className="text-center pb-2">
+              <div className="mx-auto w-16 h-16 rounded-full bg-white/20 flex items-center justify-center mb-2">
+                <UserCheck className="h-8 w-8 text-primary-foreground" />
+              </div>
+              <CardTitle className="text-xl">You are connected!</CardTitle>
+              <CardDescription className="text-primary-foreground/80">
+                Sharing insights with {activePairing.partnerName || 'your partner'}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="text-center">
+              <p className="text-sm text-primary-foreground/70 mb-6">
+                Your partner can see the data you've chosen to share in their dashboard.
+              </p>
+              <Button 
+                variant="secondary" 
+                className="w-full sm:w-auto"
+                onClick={() => navigate('/consent')}
+              >
+                Manage Sharing Settings
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card variant="destructive" className="opacity-80 hover:opacity-100 transition-opacity">
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <XCircle className="h-5 w-5" />
+                <CardTitle className="text-base">Disconnect Partner</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground mb-4">
+                Revoking access will immediately stop sharing all data. Your partner will no longer be able to see your cycle insights.
+              </p>
+              <Button 
+                variant="destructive" 
+                onClick={handleUnlink}
+                disabled={isRevoking}
+              >
+                {isRevoking ? 'Disconnecting...' : 'Unlink Partner'}
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </AppLayout>
+    );
+  }
 
   return (
     <AppLayout title="Partner Connection">
@@ -34,6 +163,11 @@ export default function PartnerConnect() {
           <h2 className="font-display text-xl font-bold text-foreground">
             Connect with Your Partner
           </h2>
+          {loading && (
+            <div className="flex justify-center py-4">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            </div>
+          )}
           <p className="text-sm text-muted-foreground max-w-sm mx-auto">
             Share selected insights with someone you trust. You control exactly what they see.
           </p>

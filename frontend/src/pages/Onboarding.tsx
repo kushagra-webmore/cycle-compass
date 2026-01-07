@@ -129,13 +129,51 @@ export default function Onboarding() {
   };
 
   const handleFinish = async () => {
-    await queryClient.invalidateQueries();
-    updateUser({ onboardingCompleted: true });
-    toast({
-      title: "You're all set! 🌸",
-      description: 'Your cycle companion is ready to support you.',
-    });
-    navigate('/dashboard', { replace: true });
+    try {
+      console.log('Starting onboarding completion...');
+      
+      // Invalidate all queries to ensure fresh data
+      console.log('Invalidating queries...');
+      await queryClient.invalidateQueries();
+      
+      // Update the user's onboarding status
+      console.log('Updating user with onboardingCompleted: true');
+      const updates = { 
+        onboardingCompleted: true,
+        lastPeriodDate: cycles[0]?.startDate, // Use the most recent cycle's start date
+        cycleLength: cycles[0]?.cycleLength || 28 // Default to 28 if not set
+      };
+      
+      console.log('Sending user updates:', updates);
+      const updatedUser = await updateUser(updates);
+      console.log('User update response:', updatedUser);
+      
+      if (!updatedUser?.onboardingCompleted) {
+        console.warn('onboardingCompleted flag not set in response');
+        // Continue anyway as the update might have succeeded but response is incomplete
+      }
+      
+      // Force a refresh of the auth state
+      console.log('Refreshing auth state...');
+      await queryClient.invalidateQueries({ queryKey: ['currentUser'] });
+      
+      // Show success message
+      toast({
+        title: "You're all set! 🌸",
+        description: 'Your cycle companion is ready to support you.',
+      });
+      
+      console.log('Navigation to dashboard...');
+      // Navigate to dashboard
+      navigate('/dashboard', { replace: true });
+    } catch (error) {
+      console.error('Failed to complete onboarding:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to complete onboarding. Please try again.',
+        variant: 'destructive',
+      });
+    }
   };
 
   return (

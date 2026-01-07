@@ -15,6 +15,8 @@ export interface PairingInfo {
   role: 'PRIMARY' | 'PARTNER' | 'ADMIN';
   isPrimary: boolean;
   partnerUserId: string | null;
+  partnerUserName?: string;
+  primaryUserName?: string;
   consent: ConsentSettings | null;
   inviteLink?: string;
   pairCode?: string;

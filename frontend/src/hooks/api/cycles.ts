@@ -24,6 +24,12 @@ interface CreateCyclePayload {
   isPredicted?: boolean;
 }
 
+interface UpdateCyclePayload {
+  id: string;
+  startDate?: string;
+  endDate?: string;
+}
+
 interface BulkCyclePayload {
   cycles: CreateCyclePayload[];
 }
@@ -52,8 +58,15 @@ export interface SymptomEntry {
 
 const cycleKeys = {
   current: ['cycle', 'current'] as const,
+  list: ['cycles', 'list'] as const,
   history: (days: number) => ['symptoms', 'history', days] as const,
 };
+
+export const useCycles = () =>
+  useQuery({
+    queryKey: cycleKeys.list,
+    queryFn: () => apiFetch<CycleSummary[]>('/cycles/history', { auth: true }),
+  });
 
 export const useCurrentCycle = () =>
   useQuery({
@@ -72,6 +85,40 @@ export const useCreateCycle = () => {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: cycleKeys.current });
+      queryClient.invalidateQueries({ queryKey: cycleKeys.list });
+      queryClient.invalidateQueries({ queryKey: cycleKeys.history(30) });
+    },
+  });
+};
+
+export const useUpdateCycle = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, ...payload }: UpdateCyclePayload) =>
+      apiFetch<CycleSummary>(`/cycles/${id}`, {
+        method: 'PATCH',
+        auth: true,
+        body: JSON.stringify(payload),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: cycleKeys.current });
+      queryClient.invalidateQueries({ queryKey: cycleKeys.list });
+      queryClient.invalidateQueries({ queryKey: cycleKeys.history(30) });
+    },
+  });
+};
+
+export const useDeleteCycle = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) =>
+      apiFetch<{ success: true }>(`/cycles/${id}`, {
+        method: 'DELETE',
+        auth: true,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: cycleKeys.current });
+      queryClient.invalidateQueries({ queryKey: cycleKeys.list });
       queryClient.invalidateQueries({ queryKey: cycleKeys.history(30) });
     },
   });
@@ -88,6 +135,7 @@ export const useBulkCreateCycles = () => {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: cycleKeys.current });
+      queryClient.invalidateQueries({ queryKey: cycleKeys.list });
       queryClient.invalidateQueries({ queryKey: cycleKeys.history(30) });
     },
   });
