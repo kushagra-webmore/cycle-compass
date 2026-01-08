@@ -47,6 +47,7 @@ CRITICAL RULES:
 - Avoid stereotypes or assumptions
 - Respect privacy and be non-judgmental
 - If someone's in serious pain or distress, gently suggest seeing a doctor
+- **FERTILITY TIMING EXCEPTION**: If the 'User Goal' in context is 'CONCEIVE' or is asking for fertility timing related questions, you MAY share the "Estimated Fertile Window" dates provided in the context. However, you MUST explicitly state that these are "estimates based on your cycle history" and recommend using ovulation tests or consulting a doctor for pinpoint accuracy. Do NOT guarantee pregnancy.
 
 CYCLE PHASE QUICK GUIDE:
 • **Menstrual (Days 1-5)**: Bleeding, possible cramps, lower energy - self-care mode activated!
@@ -107,9 +108,39 @@ const buildUserContext = async (userId: string) => {
   context += `- User's First Name: ${firstName}\n`;
   context += `- Address them as: ${firstName} (use their name naturally in conversation!)\n`;
   
+  // Get User Goal
+  context += `- User Goal: ${userProfile.goal || 'TRACKING'} (If 'CONCEIVE', prioritize fertility support)\n`;
+
   if (currentCycle) {
     context += `- Current Cycle Phase: ${currentCycle.context.phase ?? 'Unknown'}\n`;
     context += `- Day in Cycle: ${currentCycle.context.currentDay ?? 'Unknown'}\n`;
+
+    // Inject Fertility Window if Goal is CONCEIVE
+    if (userProfile.goal === 'CONCEIVE') {
+       const startDate = new Date(currentCycle.startDate);
+       const cycleLength = currentCycle.cycleLength || 28;
+       
+       // Calculate dates based on Anchor Method
+       // Ovulation = CycleLength - 14
+       const ovulationDayIndex = cycleLength - 14; 
+       // Fertile Window = Ovulation - 5 to Ovulation + 1
+       const fertileStartIndex = ovulationDayIndex - 5;
+       const fertileEndIndex = ovulationDayIndex + 1;
+       
+       const fertileStart = new Date(startDate);
+       fertileStart.setDate(startDate.getDate() + fertileStartIndex);
+       
+       const fertileEnd = new Date(startDate);
+       fertileEnd.setDate(startDate.getDate() + fertileEndIndex);
+       
+       const ovulationDate = new Date(startDate);
+       ovulationDate.setDate(startDate.getDate() + ovulationDayIndex);
+       
+       const options: Intl.DateTimeFormatOptions = { month: 'long', day: 'numeric' };
+
+       context += `- **Estimated Fertile Window**: ${fertileStart.toLocaleDateString('en-US', options)} to ${fertileEnd.toLocaleDateString('en-US', options)}\n`;
+       context += `- **Estimated Ovulation Date**: ${ovulationDate.toLocaleDateString('en-US', options)}\n`;
+    }
   } else {
     context += `- No active cycle data available\n`;
   }
@@ -190,18 +221,114 @@ const buildPartnerContext = async (partnerUserId: string) => {
 };
 
 /**
+ * Generate a title for the session using Gemini
+ */
+const generateSessionTitle = async (firstMessage: string) => {
+  const model = createModel();
+  // We use a lighter prompt or even a different model if available for speed/cost, but Flash is fine.
+  const prompt = `Generate a very short title (3-5 words max) for a chat that starts with this message: "${firstMessage}". 
+  Do not use quotes. Just the text. E.g. "Ovulation Symptoms", "Period Pain Relief", "Cycle Tracking Help".`;
+
+  try {
+    const result = await model.generateContent(prompt);
+    const title = result.response.text().trim();
+    // Fallback if empty or too long
+    if (!title || title.length > 50) return 'New Conversation';
+    return title.replace(/^["']|["']$/g, ''); // Remove quotes if any
+  } catch (error) {
+    console.error('Title generation failed:', error);
+    return 'New Conversation';
+  }
+};
+
+/**
+ * Create a new chat session
+ */
+export const createSession = async (userId: string) => {
+  const supabase = getSupabaseClient();
+  
+  const { data, error } = await supabase
+    .from('chatbot_sessions')
+    .insert({
+      user_id: userId,
+      title: 'New Chat',
+    })
+    .select()
+    .single();
+
+  if (error) {
+    throw new HttpError(400, 'Failed to create chat session', error);
+  }
+
+  return data;
+};
+
+/**
+ * Get user sessions (active only for users, all for admins)
+ */
+export const getUserSessions = async (userId: string, isAdmin: boolean = false) => {
+  const supabase = getSupabaseClient();
+  
+  let query = supabase
+    .from('chatbot_sessions')
+    .select('*')
+    .eq('user_id', userId)
+    .order('updated_at', { ascending: false });
+
+  if (!isAdmin) {
+    query = query.eq('is_deleted', false);
+  }
+
+  const { data, error } = await query;
+  
+  if (error) {
+    throw new HttpError(400, 'Failed to fetch sessions', error);
+  }
+
+  return data ?? [];
+};
+
+/**
+ * Soft delete a session
+ */
+export const deleteSession = async (userId: string, sessionId: string) => {
+  const supabase = getSupabaseClient();
+  
+  // Verify ownership
+  const { error } = await supabase
+    .from('chatbot_sessions')
+    .update({
+      is_deleted: true,
+      deleted_at: new Date().toISOString(),
+    })
+    .eq('id', sessionId)
+    .eq('user_id', userId);
+
+  if (error) {
+    throw new HttpError(400, 'Failed to delete session', error);
+  }
+
+  return { success: true };
+};
+
+/**
  * Send a message to the chatbot and get AI response
  */
-export const sendChatMessage = async (userId: string, message: string) => {
+export const sendChatMessage = async (userId: string, message: string, sessionId?: string) => {
   const supabase = getSupabaseClient();
   const model = createModel();
 
+  // Ensure session exists or create one if not provided
+  let activeSessionId = sessionId;
+  if (!activeSessionId) {
+    const newSession = await createSession(userId);
+    activeSessionId = newSession.id;
+  }
+
   // Determine if user is PARTNER or PRIMARY
-  // Since we don't pass role here, we might need to fetch it or try both contexts.
-  // However, simpler is to check profile role.
   const { data: userData } = await supabase.auth.admin.getUserById(userId);
   const userProfile = await getUserWithProfile(userId, userData.user?.email ?? '');
-  const role = userProfile.role || 'PRIMARY'; // Default to Primary if undefined (legacy)
+  const role = userProfile.role || 'PRIMARY'; 
 
   let systemPrompt: string;
   let userContext: string;
@@ -216,15 +343,35 @@ export const sendChatMessage = async (userId: string, message: string) => {
     userContext = await buildUserContext(userId);
   }
   
-  // Get recent chat history for context (last 5 messages, non-deleted only)
+  // Get recent chat history for context (last 10 messages from THIS session)
   const { data: recentMessages } = await supabase
     .from('chatbot_messages')
     .select('role, message')
     .eq('user_id', userId)
+    .eq('session_id', activeSessionId)
     .eq('is_deleted', false)
     .order('created_at', { ascending: false })
-    .limit(5);
+    .limit(10);
   
+  // Check if this is the first message (or close to it) to generate title
+  // Only generate if title is "New Chat"
+  const { data: sessionData } = await supabase
+    .from('chatbot_sessions')
+    .select('title')
+    .eq('id', activeSessionId)
+    .single();
+    
+  let needsTitle = false;
+  if (sessionData && sessionData.title === 'New Chat') {
+    needsTitle = true;
+  }
+  
+  // Always update updated_at
+  await supabase
+    .from('chatbot_sessions')
+    .update({ updated_at: new Date().toISOString() })
+    .eq('id', activeSessionId);
+
   // Build conversation history
   const conversationHistory = (recentMessages ?? [])
     .reverse()
@@ -232,13 +379,25 @@ export const sendChatMessage = async (userId: string, message: string) => {
     .join('\n');
   
   // Build full prompt
-  const fullPrompt = `${systemPrompt}\n\n${userContext}\n\nRecent Conversation:\n${conversationHistory}\n\nUser: ${message}`;
+  let fullPrompt = `${systemPrompt}\n\n${userContext}\n\nRecent Conversation:\n${conversationHistory}\n\nUser: ${message}`;
+  
+  if (needsTitle) {
+    fullPrompt += `\n\nIMPORTANT INSTRUCTION: Since this is the first message of a new conversation, please also generate a short title (3-5 words) for this chat. 
+    Format your response EXACTLY like this:
+    TITLE: [The Title]
+    [Your actual helpful response to the user...]
+    
+    Example:
+    TITLE: Cycle Tracking Help
+    Hi there! I can certainly help with that...`;
+  }
   
   // Store user message
   const { error: userMsgError } = await supabase
     .from('chatbot_messages')
     .insert({
       user_id: userId,
+      session_id: activeSessionId,
       role: 'USER',
       message,
       context_type: contextType,
@@ -259,10 +418,40 @@ export const sendChatMessage = async (userId: string, message: string) => {
       }],
     });
     
-    aiResponse = result.response.text();
-  } catch (error) {
+    const rawText = result.response.text();
+    
+    // Parse out the title if requested
+    if (needsTitle) {
+        const titleMatch = rawText.match(/^TITLE:\s*(.+?)(\n|$)/i);
+        if (titleMatch) {
+            const newTitle = titleMatch[1].trim().replace(/^["']|["']$/g, ''); // Clean quotes
+            aiResponse = rawText.replace(titleMatch[0], '').trim(); // Remove title line from response
+            
+            // Update session title (fire and forget)
+            if (newTitle && newTitle.length < 60) {
+                 supabase
+                .from('chatbot_sessions')
+                .update({ title: newTitle })
+                .eq('id', activeSessionId)
+                .then();
+            }
+        } else {
+            // Fallback if AI ignored instruction
+             aiResponse = rawText;
+        }
+    } else {
+        aiResponse = rawText;
+    }
+    
+  } catch (error: any) {
     console.error('AI generation error:', error);
-    aiResponse = "I'm having trouble responding right now. Please try again in a moment. 💕";
+    if (error.status === 429 || error.message?.includes('429') || error.message?.includes('Quota exceeded')) {
+        aiResponse = "I've reached my thinking(API) limit for now! 🧠💨 Please give me a minute to recharge and try asking again shortly.";
+    } else if (error.status === 503 || error.message?.includes('503') || error.message?.includes('overloaded')) {
+        aiResponse = "My brain is a bit overloaded right now (Server Busy). 😵 Please try again in a few seconds!";
+    } else {
+        aiResponse = "I'm having trouble responding right now. Please try again in a moment. 💕";
+    }
   }
   
   // Store AI response
@@ -270,6 +459,7 @@ export const sendChatMessage = async (userId: string, message: string) => {
     .from('chatbot_messages')
     .insert({
       user_id: userId,
+      session_id: activeSessionId,
       role: 'ASSISTANT',
       message: aiResponse,
       context_type: contextType,
@@ -285,22 +475,22 @@ export const sendChatMessage = async (userId: string, message: string) => {
     messageLength: message.length,
     responseLength: aiResponse.length,
     role,
+    sessionId: activeSessionId,
   });
   
   return {
     message: aiResponse,
+    sessionId: activeSessionId,
     disclaimer: 'This is educational information, not medical advice.',
   };
 };
 
 /**
- * Get chat history for a user
- * @param userId - User ID
- * @param isAdmin - Whether the requester is an admin (sees all messages including deleted)
- * @param limit - Maximum number of messages to return
+ * Get chat history for a user/session
  */
 export const getChatHistory = async (
   userId: string,
+  sessionId?: string,
   isAdmin: boolean = false,
   limit: number = 50
 ) => {
@@ -308,11 +498,33 @@ export const getChatHistory = async (
   
   let query = supabase
     .from('chatbot_messages')
-    .select('id, role, message, context_type, created_at, is_deleted, deleted_at')
+    .select('id, role, message, context_type, created_at, is_deleted, deleted_at, session_id')
     .eq('user_id', userId)
     .order('created_at', { ascending: true })
     .limit(limit);
   
+  if (sessionId) {
+    query = query.eq('session_id', sessionId);
+  } else {
+    // If no session provided, we might want to return the MOST RECENT session's messages
+    // or just empty to force user to select a session.
+    // For now, let's look for the most recent active session
+    if (!isAdmin) {
+      const { data: latestSession } = await supabase
+        .from('chatbot_sessions')
+        .select('id')
+        .eq('user_id', userId)
+        .eq('is_deleted', false)
+        .order('updated_at', { ascending: false })
+        .limit(1)
+        .single();
+        
+      if (latestSession) {
+        query = query.eq('session_id', latestSession.id);
+      }
+    }
+  }
+
   // Non-admin users only see non-deleted messages
   if (!isAdmin) {
     query = query.eq('is_deleted', false);
@@ -335,6 +547,16 @@ export const getChatHistory = async (
 export const softDeleteChatHistory = async (userId: string) => {
   const supabase = getSupabaseClient();
   
+  // Start by deleting all sessions
+  await supabase
+    .from('chatbot_sessions')
+    .update({
+      is_deleted: true,
+      deleted_at: new Date().toISOString(),
+    })
+    .eq('user_id', userId)
+    .eq('is_deleted', false);
+
   const { error } = await supabase
     .from('chatbot_messages')
     .update({

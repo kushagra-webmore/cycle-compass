@@ -26,7 +26,7 @@ export const logAuditEvent = async (actorUserId: string | null, action: AuditAct
 
 export const logAIInteraction = async (
   userId: string,
-  contextType: 'EXPLAINER' | 'GUIDANCE' | 'JOURNAL',
+  contextType: 'EXPLAINER' | 'GUIDANCE' | 'JOURNAL' | 'DAILY_INSIGHTS',
   promptContext: Record<string, unknown>,
   response: string,
 ) => {

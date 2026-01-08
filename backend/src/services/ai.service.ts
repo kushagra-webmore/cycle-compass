@@ -32,16 +32,25 @@ export const generateCycleExplainer = async (
 ) => {
   const model = createModel();
   const prompt = buildCycleExplainerUserPrompt(params);
-  const result = await model.generateContent({
-    contents: [{
-      role: 'user',
-      parts: [{ text: `${cycleExplainerSystemPrompt}\n\n${prompt}` }],
-    }],
-  });
-
-  const text = result.response.text();
-  await logAIInteraction(userId, 'EXPLAINER', params, text);
-  return text;
+  try {
+    const result = await model.generateContent({
+      contents: [{
+        role: 'user',
+        parts: [{ text: `${cycleExplainerSystemPrompt}\n\n${prompt}` }],
+      }],
+    });
+    const text = result.response.text();
+    await logAIInteraction(userId, 'EXPLAINER', params, text);
+    return text;
+  } catch (error: any) {
+    if (error.status === 429 || error.message?.includes('429')) {
+       return "I'm a bit overwhelmed right now! 🧠💨 Please check back in a minute.";
+    }
+    if (error.status === 503 || error.message?.includes('503') || error.message?.includes('overloaded')) {
+       return "Service momentarily overloaded. Please try again shortly!";
+    }
+    throw error;
+  }
 };
 
 export const generatePartnerGuidance = async (
@@ -55,14 +64,37 @@ export const generatePartnerGuidance = async (
   const model = createModel();
   const prompt = buildPartnerGuidanceUserPrompt(params);
   
-  const result = await model.generateContent({
-    contents: [{
-      role: 'user',
-      parts: [{ text: `${partnerGuidanceSystemPrompt}\n\n${prompt}` }],
-    }],
-  });
+  let text = '';
+  try {
+    const result = await model.generateContent({
+        contents: [{
+        role: 'user',
+        parts: [{ text: `${partnerGuidanceSystemPrompt}\n\n${prompt}` }],
+        }],
+    });
+    text = result.response.text();
+  } catch (error: any) {
+     if (error.status === 429 || error.message?.includes('429')) {
+        return {
+            explanation: "I'm taking a short break. Please try again soon.",
+            actions: ["Be patient", "Try again in a minute"],
+            foodRecommendation: "N/A",
+            activityRecommendation: "N/A"
+        };
+     }
+     if (error.status === 503 || error.message?.includes('503') || error.message?.includes('overloaded')) {
+        return {
+            explanation: "Server is busy right now. Please try again in a moment.",
+            actions: ["Wait a moment"],
+            foodRecommendation: "N/A",
+            activityRecommendation: "N/A"
+        };
+     }
+     // For other errors, we might let it fall through to the mock JSON below or throw.
+     // Let's let it fall through but log it.
+     console.error("Partner guidance error", error);
+  }
 
-  const text = result.response.text();
   const cleaned = text.replace(/```json/g, '').replace(/```/g, '').trim();
 
   let json = {
@@ -115,7 +147,13 @@ export const generateJournalSummary = async (userId: string, entries: string[]) 
       const text = result.response.text();
       await logAIInteraction(userId, 'JOURNAL', { entries, attempt: attempt + 1 }, text);
       return text;
-    } catch (error) {
+    } catch (error: any) {
+      if (error.status === 429 || error.message?.includes('429')) {
+         return "Summary temporarily unavailable due to high usage. Please try again later.";
+      }
+      if (error.status === 503 || error.message?.includes('503') || error.message?.includes('overloaded')) {
+         return "Service temporarily busy. Please retry in a moment.";
+      }
       lastError = error;
       attempt += 1;
       if (attempt >= 3) {
@@ -127,6 +165,8 @@ export const generateJournalSummary = async (userId: string, entries: string[]) 
   throw lastError ?? new Error('Failed to generate journal summary');
 };
 
+import { getSupabaseClient } from '../lib/supabase.js';
+
 export const generateDailyInsights = async (
   userId: string,
   params: {
@@ -136,21 +176,72 @@ export const generateDailyInsights = async (
     goal?: 'TRACKING' | 'CONCEIVE';
   },
 ) => {
+  // Check cache first
+  const supabase = getSupabaseClient();
+  const startOfDay = new Date();
+  startOfDay.setHours(0, 0, 0, 0);
+
+  const { data: cachedAuth } = await supabase
+    .from('ai_interactions')
+    .select('llm_response, context_type')
+    .eq('user_id', userId)
+    .gte('created_at', startOfDay.toISOString())
+    .order('created_at', { ascending: false });
+
+  // Iterate to find a valid daily insight
+  if (cachedAuth && cachedAuth.length > 0) {
+     for (const entry of cachedAuth) {
+        // Filter in memory to be safe
+        const type = entry.context_type as string;
+        if (type !== 'DAILY_INSIGHTS' && type !== 'GUIDANCE') {
+            continue;
+        }
+
+        try {
+           const cleanedCached = entry.llm_response.replace(/```json/g, '').replace(/```/g, '').trim();
+           const cachedJson = JSON.parse(cleanedCached);
+           // Check if it has the keys specific to Daily Insights
+           if (cachedJson.food || cachedJson.activity || cachedJson.wisdom) {
+              return cachedJson;
+           }
+        } catch (e) {
+           // Continue
+        }
+     }
+  }
+
   const model = createModel();
   const prompt = buildDailyInsightsUserPrompt(params);
   
-  // Enforce JSON format in the prompt (already done) but also can use generation config if available.
-  // For now, reliance on prompt instruction.
-  
-  const result = await model.generateContent({
-    contents: [{
-      role: 'user',
-      parts: [{ text: `${dailyInsightsSystemPrompt}\n\n${prompt}` }],
-    }],
-  });
+  let text = '';
+  try {
+    const result = await model.generateContent({
+      contents: [{
+        role: 'user',
+        parts: [{ text: `${dailyInsightsSystemPrompt}\n\n${prompt}` }],
+      }],
+    });
+    text = result.response.text();
+  } catch (error: any) {
+    console.error('AI generation error:', error);
+    if (error.status === 429 || error.message?.includes('429') || error.message?.includes('Quota exceeded')) {
+        // Return a special fallback that indicates limit reached but doesn't crash UI
+        return {
+           food: "Brain freeze! 🧠💨 I'm thinking too hard.",
+           activity: "API limit reached. Please try again in a minute.",
+           wisdom: "Patience is a virtue (and a necessity right now)! 💕"
+        };
+    }
+    if (error.status === 503 || error.message?.includes('503') || error.message?.includes('overloaded')) {
+        return {
+           food: "Service overloaded.",
+           activity: "Server is busy. Please try again shortly.",
+           wisdom: "Even AI needs a deep breath sometimes! 🌬️"
+        };
+    }
+    // Re-throw other errors to be handled by the caller or allow fallback below
+  }
 
-  const text = result.response.text();
-  
   // Attempt to clean markdown code blocks if present
   const cleaned = text.replace(/```json/g, '').replace(/```/g, '').trim();
   
@@ -158,8 +249,8 @@ export const generateDailyInsights = async (
   try {
     json = JSON.parse(cleaned);
   } catch (e) {
-    console.error('Failed to parse AI daily insights JSON', text);
-    // Fallback or throw
+    console.error('Failed to parse AI daily insights JSON or empty response', text);
+    // Fallback
     json = {
       food: "Hydrate well today.",
       activity: "Listen to your body.",
@@ -167,6 +258,8 @@ export const generateDailyInsights = async (
     };
   }
 
-  await logAIInteraction(userId, 'GUIDANCE', params, text); // Reusing GUIDANCE or make new type if needed
+  if (text) {
+     await logAIInteraction(userId, 'DAILY_INSIGHTS', params, text);
+  }
   return json;
 };
