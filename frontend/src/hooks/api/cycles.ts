@@ -43,6 +43,8 @@ interface SymptomLogPayload {
   sleepHours?: number;
   cravings?: string;
   bloating?: boolean;
+  intercourse?: boolean;
+  protection?: boolean;
 }
 
 export interface SymptomEntry {

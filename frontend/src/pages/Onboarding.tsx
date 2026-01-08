@@ -22,6 +22,7 @@ interface ImportedCycle {
 
 export default function Onboarding() {
   const [step, setStep] = useState(1);
+  const [goal, setGoal] = useState<'TRACKING' | 'CONCEIVE'>('TRACKING');
   const [error, setError] = useState<string | null>(null);
   const [submittedCycles, setSubmittedCycles] = useState<ImportedCycle[]>([]);
   const { updateUser } = useAuth();
@@ -30,18 +31,25 @@ export default function Onboarding() {
   const queryClient = useQueryClient();
   const bulkCreate = useBulkCreateCycles();
 
-  const totalSteps = 3;
+  const totalSteps = 4;
   const MIN_CYCLES = 2;
   const DEFAULT_CYCLES = 6;
   const MAX_CYCLES = 12;
 
   const generateCycle = (monthsAgo: number) => ({
-    startDate: format(subMonths(new Date(), monthsAgo), 'yyyy-MM-dd'),
+    startDate: '', // Default to empty to allow user to input
     endDate: '',
     cycleLength: 28,
   });
 
+  // Helper to calculate difference in days
+  const getDaysDiff = (start: string, end: string) => {
+    const diff = new Date(end).getTime() - new Date(start).getTime();
+    return Math.round(diff / (1000 * 60 * 60 * 24));
+  };
+
   const [cycles, setCycles] = useState(() =>
+    // Initialize with empty start dates, user fills them
     Array.from({ length: DEFAULT_CYCLES }, (_, index) => generateCycle(index)),
   );
 
@@ -51,16 +59,38 @@ export default function Onboarding() {
   );
 
   const handleCycleChange = (index: number, field: 'startDate' | 'endDate' | 'cycleLength', value: string) => {
-    setCycles((prev) =>
-      prev.map((cycle, i) =>
-        i === index
-          ? {
-              ...cycle,
-              [field]: field === 'cycleLength' ? Number(value) || 0 : value,
+    setCycles((prev) => {
+      const newCycles = [...prev];
+      const cycle = { ...newCycles[index], [field]: field === 'cycleLength' ? Number(value) || 0 : value };
+      newCycles[index] = cycle;
+
+      // Auto-calculate cycle length if start date changes
+      if (field === 'startDate') {
+         // If we have a newer cycle (index - 1), update ITS length based on this cycle's start
+         // Wait, cycle[i] length = days from cycle[i].start to cycle[i-1].start (next period)
+         // Actually, typically Cycle N length is (Start N+1 - Start N).
+         // Here, index 0 is Most Recent. Index 1 is Month Before.
+         // So Length of Index 1 = (Date of Index 0 - Date of Index 1).
+         
+         // Update THIS cycle's length if we have a Newer cycle (index - 1)
+         if (index > 0 && newCycles[index - 1].startDate && value) {
+            const days = getDaysDiff(value, newCycles[index - 1].startDate);
+            if (days > 0 && days < 100) {
+               newCycles[index] = { ...newCycles[index], cycleLength: days };
             }
-          : cycle,
-      ),
-    );
+         }
+
+         // Update OLDER cycle's length (index + 1) if it exists
+         if (index < newCycles.length - 1 && newCycles[index + 1].startDate && value) {
+            const olderIndex = index + 1;
+            const days = getDaysDiff(newCycles[olderIndex].startDate, value);
+            if (days > 0 && days < 100) {
+              newCycles[olderIndex] = { ...newCycles[olderIndex], cycleLength: days };
+            }
+         }
+      }
+      return newCycles;
+    });
   };
 
   const handleAddCycle = () => {
@@ -69,21 +99,24 @@ export default function Onboarding() {
   };
 
   const handleRemoveCycle = (index: number) => {
-    if (index < MIN_CYCLES) return;
     setCycles((prev) => prev.filter((_, i) => i !== index));
   };
 
   const validateCycles = () => {
-    if (completedCycles.length < MIN_CYCLES) {
-      return 'Please provide at least your two most recent cycles.';
-    }
+    // Filter out empty rows
+    const validRows = cycles.filter(c => !!c.startDate);
 
-    const invalid = completedCycles.slice(0, MIN_CYCLES).some((cycle) => !cycle.startDate);
-    if (invalid) {
-      return 'Your two most recent cycles need a start date.';
+    if (validRows.length < 2) {
+      return 'Please provide at least 2 recent cycles.';
     }
-
-    const futureDates = completedCycles.some((cycle) => new Date(cycle.startDate) > new Date());
+    
+    // Check for consecutiveness?
+    // We can assume if they fill 2 rows, they are the 2 relevant ones.
+    // Ensure chronological order? (We assume index 0 is latest, index 1 is earlier...)
+    // Actually the user might fill index 1 and 2 and leave 0 empty.
+    // We should just check that we have 2 cycles.
+    
+    const futureDates = validRows.some((cycle) => new Date(cycle.startDate) > new Date());
     if (futureDates) {
       return 'Cycle start dates cannot be in the future.';
     }
@@ -141,7 +174,8 @@ export default function Onboarding() {
       const updates = { 
         onboardingCompleted: true,
         lastPeriodDate: cycles[0]?.startDate, // Use the most recent cycle's start date
-        cycleLength: cycles[0]?.cycleLength || 28 // Default to 28 if not set
+        cycleLength: cycles[0]?.cycleLength || 28, // Default to 28 if not set
+        goal: goal
       };
       
       console.log('Sending user updates:', updates);
@@ -214,8 +248,62 @@ export default function Onboarding() {
             </p>
           </div>
 
-          {/* Step 1: Introduction */}
+          {/* Step 1: Goal Selection */}
           {step === 1 && (
+            <Card variant="elevated" className="animate-slide-up">
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <div className="p-3 rounded-xl bg-purple-100/50">
+                    <Sparkles className="h-6 w-6 text-purple-600" />
+                  </div>
+                  <div>
+                    <CardTitle>What brings you here?</CardTitle>
+                    <CardDescription>
+                      We'll customize your experience based on your goal.
+                    </CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                 <div className="grid grid-cols-1 gap-3">
+                    <button
+                      onClick={() => { setGoal('TRACKING'); setStep(2); }}
+                      className={cn(
+                        "flex items-center gap-4 p-4 rounded-xl border-2 transition-all duration-200 text-left hover:border-primary/50 hover:bg-primary/5",
+                        goal === 'TRACKING' ? "border-primary bg-primary/5 ring-1 ring-primary/20" : "border-gray-100 bg-white"
+                      )}
+                    >
+                       <div className="p-3 bg-blue-100 text-blue-600 rounded-full">
+                          <Calendar className="h-5 w-5" />
+                       </div>
+                       <div>
+                          <p className="font-semibold text-gray-900">Track my cycle</p>
+                          <p className="text-sm text-gray-500">I want to understand my body and symptoms.</p>
+                       </div>
+                    </button>
+
+                    <button
+                      onClick={() => { setGoal('CONCEIVE'); setStep(2); }}
+                      className={cn(
+                        "flex items-center gap-4 p-4 rounded-xl border-2 transition-all duration-200 text-left hover:border-rose-400/50 hover:bg-rose-50",
+                        goal === 'CONCEIVE' ? "border-rose-400 bg-rose-50 ring-1 ring-rose-400/20" : "border-gray-100 bg-white"
+                      )}
+                    >
+                       <div className="p-3 bg-rose-100 text-rose-600 rounded-full">
+                          <Sparkles className="h-5 w-5" />
+                       </div>
+                       <div>
+                          <p className="font-semibold text-gray-900">Conceive a baby</p>
+                          <p className="text-sm text-gray-500">I want to identify my most fertile days.</p>
+                       </div>
+                    </button>
+                 </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Step 2: Introduction (shifted) */}
+          {step === 2 && (
             <Card variant="elevated" className="animate-slide-up">
               <CardHeader>
                 <div className="flex items-center gap-3">
@@ -243,16 +331,19 @@ export default function Onboarding() {
                   </p>
                 </div>
 
-                <Button variant="gradient" className="w-full" onClick={() => setStep(2)}>
-                  Continue
-                  <ChevronRight className="h-4 w-4 ml-2" />
-                </Button>
+                <div className="flex gap-3">
+                    <Button variant="calm" className="flex-1" onClick={() => setStep(1)}>Back</Button>
+                    <Button variant="gradient" className="flex-1" onClick={() => setStep(3)}>
+                      Continue
+                      <ChevronRight className="h-4 w-4 ml-2" />
+                    </Button>
+                </div>
               </CardContent>
             </Card>
           )}
 
-          {/* Step 2: Cycle History */}
-          {step === 2 && (
+          {/* Step 3: Cycle History */}
+          {step === 3 && (
             <Card variant="elevated" className="animate-slide-up">
               <CardHeader>
                 <div className="flex items-center gap-3">
@@ -270,34 +361,32 @@ export default function Onboarding() {
               <CardContent className="space-y-5">
                 <div className="space-y-3">
                   {cycles.map((cycle, index) => {
-                    const isMandatory = index < MIN_CYCLES;
-                    const label = format(subMonths(new Date(), index), 'MMMM yyyy');
+                    const label = index === 0 ? "Current / Most Recent Cycle" : `Previous Cycle ${index}`;
                     return (
                       <div key={index} className="p-4 rounded-xl border border-border/60 bg-background/80 space-y-4">
                         <div className="flex items-center justify-between">
                           <div>
                             <p className="text-sm font-medium text-foreground">{label}</p>
                             <p className="text-xs text-muted-foreground">
-                              {isMandatory ? 'Required' : 'Optional'} entry
+                               {index === 0 ? "If started, enter date" : "Enter details"}
                             </p>
                           </div>
-                          {!isMandatory && (
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleRemoveCycle(index)}
-                              className="text-muted-foreground hover:text-destructive"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          )}
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleRemoveCycle(index)}
+                            className="text-muted-foreground hover:text-destructive"
+                            disabled={cycles.length <= 1} 
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                           <div className="space-y-1">
                             <label className="text-xs uppercase tracking-wide text-muted-foreground">
-                              Start Date{isMandatory && ' *'}
+                              Start Date
                             </label>
                             <Input
                               type="date"
@@ -359,7 +448,7 @@ export default function Onboarding() {
                   <Button
                     variant="calm"
                     className="flex-1"
-                    onClick={() => setStep(1)}
+                    onClick={() => setStep(2)}
                     disabled={bulkCreate.isPending}
                   >
                     Back
@@ -384,8 +473,8 @@ export default function Onboarding() {
             </Card>
           )}
 
-          {/* Step 3: Confirmation */}
-          {step === 3 && (
+          {/* Step 4: Confirmation */}
+          {step === 4 && (
             <Card variant="elevated" className="animate-slide-up">
               <CardHeader>
                 <div className="flex items-center gap-3">
@@ -429,7 +518,7 @@ export default function Onboarding() {
                 )}
 
                 <div className="flex gap-3">
-                  <Button variant="calm" className="flex-1" onClick={() => setStep(2)}>
+                  <Button variant="calm" className="flex-1" onClick={() => setStep(3)}>
                     Back
                   </Button>
                   <Button

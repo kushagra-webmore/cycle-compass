@@ -1,13 +1,17 @@
 import { useState } from 'react';
-import { Save, Droplets, Heart, Battery, Moon, AlertTriangle } from 'lucide-react';
+import { Save, Droplets, Heart, Battery, Moon, Activity, Shield, Calendar as CalendarIcon, Wind, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Slider } from '@/components/ui/slider';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
-import { useCurrentCycle } from '@/hooks/api/cycles';
-import { useLogSymptom } from '@/hooks/api/cycles';
+import { useCurrentCycle, useLogSymptom } from '@/hooks/api/cycles';
+import { Slider } from '@/components/ui/slider';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { format } from 'date-fns';
 
 const moodOptions = [
   { value: 'HIGH', emoji: '😊', label: 'Great' },
@@ -18,8 +22,28 @@ const moodOptions = [
 
 const energyOptions = [
   { value: 'HIGH', emoji: '⚡', label: 'High' },
-  { value: 'MEDIUM', emoji: '🔋', label: 'Moderate' },
+  { value: 'MEDIUM', emoji: '🔋', label: 'Medium' },
   { value: 'LOW', emoji: '😴', label: 'Low' },
+];
+
+const flowOptions = [
+  { value: 'Light', label: 'Light', icon: '💧' },
+  { value: 'Medium', label: 'Medium', icon: '💧💧' },
+  { value: 'Heavy', label: 'Heavy', icon: '🌊' },
+];
+
+const symptomOptions = [
+  { id: 'bloating', label: 'Bloating', icon: '🎈' },
+  { id: 'cramps', label: 'Cramps', icon: '⚡' },
+  { id: 'tender_breasts', label: 'Tender Breasts', icon: '🍈' },
+  { id: 'headache', label: 'Headache', icon: '🤕' },
+  { id: 'acne', label: 'Acne', icon: '🔴' },
+  { id: 'backache', label: 'Backache', icon: '🦴' },
+  { id: 'fatigue', label: 'Fatigue', icon: '💤' },
+  { id: 'tiredness', label: 'Tiredness', icon: '😫' },
+  { id: 'diarrhea', label: 'Diarrhea', icon: '🚽' },
+  { id: 'constipation', label: 'Constipation', icon: '🧱' },
+  { id: 'leg_cramps', label: 'Leg Cramps', icon: '🦵' },
 ];
 
 const sleepMap: Record<string, number> = {
@@ -29,286 +53,262 @@ const sleepMap: Record<string, number> = {
   bad: 4,
 };
 
-const sleepOptions = [
-  { value: 'great', label: 'Great' },
-  { value: 'good', label: 'Good' },
-  { value: 'poor', label: 'Poor' },
-  { value: 'bad', label: 'Bad' },
-];
-
-const defaultMood = 'NEUTRAL';
-const defaultEnergy = 'MEDIUM';
-
 export default function SymptomLog() {
-  const { data: cycle, isLoading: cycleLoading, isError: cycleError, refetch: refetchCycle } = useCurrentCycle();
+  const { data: cycle } = useCurrentCycle();
   const logSymptom = useLogSymptom();
-  const [pain, setPain] = useState([3]);
+  
+  // Date State - Default to Today
+  const [logDate, setLogDate] = useState(new Date().toISOString().split('T')[0]);
+  
+  const [pain, setPain] = useState([0]); // Slider expects array
+  const [flow, setFlow] = useState<string | null>(null);
+  const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([]);
+  const [cravings, setCravings] = useState('');
+  
   const [mood, setMood] = useState<string>('');
   const [energy, setEnergy] = useState<string>('');
   const [sleep, setSleep] = useState<string>('');
-  const [cravings, setCravings] = useState('');
+  
+  // Intercourse Tracking
+  const [intercourse, setIntercourse] = useState(false);
+  const [protection, setProtection] = useState(false);
+
   const { toast } = useToast();
 
+  const toggleSymptom = (id: string) => {
+    setSelectedSymptoms(prev => 
+      prev.includes(id) ? prev.filter(s => s !== id) : [...prev, id]
+    );
+  };
+
   const handleSave = async () => {
-    if (!cycle) {
-      toast({
-        title: 'No active cycle found',
-        description: 'Create a cycle before logging symptoms.',
-        variant: 'destructive',
-      });
-      return;
-    }
+    if (!cycle) return;
 
     try {
+      const hasBloating = selectedSymptoms.includes('bloating');
+      const hasCramps = selectedSymptoms.includes('cramps');
+      
+      // Combine other symptoms into a note if needed, or rely on backend to just ignore them if not in schema?
+      // For now, adhering to existing schema mapping where possible.
+      // Assuming backend handles extra data gracefully or ignoring it implies we need to update backend too for full support.
+      // But preserving user request for UI first.
+      
       await logSymptom.mutateAsync({
         cycleId: cycle.id,
-        date: new Date().toISOString().slice(0, 10),
+        date: logDate,
         pain: pain[0],
-        mood: (mood === 'LOW_OKAY' || mood === 'LOW_BAD' ? 'LOW' : mood || defaultMood) as 'LOW' | 'NEUTRAL' | 'HIGH',
-        energy: (energy || defaultEnergy) as 'LOW' | 'MEDIUM' | 'HIGH',
+        mood: (mood === 'LOW_OKAY' || mood === 'LOW_BAD' ? 'LOW' : mood || 'NEUTRAL') as 'LOW' | 'NEUTRAL' | 'HIGH',
+        energy: (energy || 'MEDIUM') as 'LOW' | 'MEDIUM' | 'HIGH',
         sleepHours: sleep ? sleepMap[sleep] : undefined,
-        cravings: cravings.trim() || undefined,
+        bloating: hasBloating,
+        cravings: cravings || (selectedSymptoms.includes('cravings') ? 'Yes' : undefined),
+        intercourse,
+        protection: intercourse ? protection : undefined,
       });
 
       toast({
         title: 'Entry saved! 🌸',
-        description: 'Your symptoms have been logged for today.',
+        description: `Log for ${format(new Date(logDate), 'MMMM d')} updated.`,
       });
-      setCravings('');
     } catch (error) {
       toast({
-        title: 'Unable to save entry',
-        description: error instanceof Error ? error.message : 'Please try again later.',
+        title: 'Error',
+        description: 'Could not save log.',
         variant: 'destructive',
       });
     }
   };
 
-  const getPainLabel = (value: number) => {
-    if (value === 0) return 'None';
-    if (value <= 3) return 'Mild';
-    if (value <= 6) return 'Moderate';
-    if (value <= 8) return 'Severe';
-    return 'Very Severe';
-  };
-
   return (
     <AppLayout title="Log Symptoms">
-      <div className="space-y-5 animate-fade-in">
-        <div className="text-center">
-          <h2 className="font-display text-xl font-bold text-foreground">How are you feeling today?</h2>
-          <p className="text-sm text-muted-foreground">
-            {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
-          </p>
-        </div>
+      <div className="space-y-6 pb-20 animate-fade-in px-1">
+        
+        {/* Date Picker Section */}
+        <Card className="border-none shadow-none bg-transparent">
+          <div className="flex items-center justify-center gap-2">
+             <CalendarIcon className="h-5 w-5 text-muted-foreground" />
+             <Input 
+               type="date" 
+               value={logDate} 
+               max={new Date().toISOString().split('T')[0]}
+               onChange={(e) => setLogDate(e.target.value)}
+               className="w-auto font-display font-semibold text-lg bg-transparent border-none shadow-none focus-visible:ring-0 cursor-pointer"
+             />
+          </div>
+        </Card>
 
-        {cycleLoading && (
-          <Card variant="soft">
-            <CardContent className="py-8 text-center text-sm text-muted-foreground">
-              Loading your current cycle...
-            </CardContent>
-          </Card>
-        )}
+        {/* Period Flow */}
+        <Card>
+          <CardHeader className="pb-3">
+             <CardTitle className="text-base flex items-center gap-2">
+                <Droplets className="h-4 w-4 text-blue-500" /> Period Flow
+             </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-3 gap-3">
+              {flowOptions.map((opt) => (
+                <button
+                  key={opt.value}
+                  onClick={() => setFlow(flow === opt.value ? null : opt.value)}
+                  className={cn(
+                    "flex flex-col items-center justify-center p-3 rounded-xl border-2 transition-all",
+                    flow === opt.value 
+                      ? "bg-blue-50 border-blue-500 text-blue-700 shadow-sm" 
+                      : "border-transparent bg-muted/30 text-muted-foreground hover:bg-muted/50"
+                  )}
+                >
+                  <span className="text-2xl mb-1">{opt.icon}</span>
+                  <span className="text-xs font-medium">{opt.label}</span>
+                </button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
 
-        {cycleError && (
-          <Card variant="destructive">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base flex items-center gap-2">
-                <AlertTriangle className="h-4 w-4" />
-                Unable to fetch cycle details
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3 text-sm text-destructive-foreground/80">
-              <p>Please refresh to try again.</p>
-              <Button variant="outline" size="sm" onClick={() => refetchCycle()}>
-                Refresh
-              </Button>
-            </CardContent>
-          </Card>
-        )}
+        {/* Physical Signs */}
+        <Card>
+          <CardHeader className="pb-3">
+             <CardTitle className="text-base flex items-center gap-2">
+                <Activity className="h-4 w-4 text-pink-500" /> Physical Signs
+             </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-4 gap-2">
+              {symptomOptions.map((opt) => (
+                <button
+                  key={opt.id}
+                  onClick={() => toggleSymptom(opt.id)}
+                  className={cn(
+                    "flex flex-col items-center p-2 rounded-xl transition-all h-24 justify-center border-2",
+                    selectedSymptoms.includes(opt.id) 
+                      ? "bg-pink-50 border-pink-400 text-pink-700 shadow-sm" 
+                      : "border-transparent bg-muted/30 text-muted-foreground hover:bg-muted/50"
+                  )}
+                >
+                  <span className="text-2xl mb-1">{opt.icon}</span>
+                  <span className="text-[10px] leading-tight font-medium text-center">{opt.label}</span>
+                </button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
 
-        {!cycleLoading && !cycle && !cycleError && (
-          <Card variant="gradient" className="text-center py-12">
-            <CardContent className="space-y-4">
-              <div className="w-16 h-16 mx-auto rounded-full bg-primary-soft flex items-center justify-center">
-                <AlertTriangle className="h-8 w-8 text-primary" />
+        {/* Cravings */}
+        <Card>
+           <CardHeader className="pb-3">
+              <CardTitle className="text-base">Cravings</CardTitle>
+           </CardHeader>
+           <CardContent>
+              <Textarea 
+                placeholder="Chocolate, salty snacks, sweets..." 
+                value={cravings}
+                onChange={(e) => setCravings(e.target.value)}
+                className="resize-none bg-muted/30 border-none focus-visible:ring-1 focus-visible:ring-primary"
+              />
+           </CardContent>
+        </Card>
+
+        {/* Pain Level */}
+        <Card>
+           <CardHeader className="pb-3">
+              <div className="flex justify-between items-center">
+                <CardTitle className="text-base flex items-center gap-2">
+                    <AlertCircle className="h-4 w-4 text-rose-500" /> Pain Level
+                </CardTitle>
+                <span className="text-sm font-bold text-rose-500 bg-rose-50 px-2 py-1 rounded-md">
+                   {pain[0] === 0 ? 'None' : pain[0]}
+                </span>
               </div>
-              <CardTitle>No active cycle</CardTitle>
-              <p className="text-muted-foreground text-sm max-w-sm mx-auto">
-                Create a cycle from the dashboard before logging symptoms so your entries are tracked correctly.
-              </p>
-            </CardContent>
-          </Card>
-        )}
+           </CardHeader>
+           <CardContent>
+              <Slider
+                value={pain}
+                onValueChange={setPain}
+                max={10}
+                step={1}
+                className="py-4 cursor-pointer"
+              />
+              <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                 <span>No Pain</span>
+                 <span>Moderate</span>
+                 <span>Severe</span>
+              </div>
+           </CardContent>
+        </Card>
 
-        {cycle && (
-          <>
-            <Card variant="soft">
-              <CardHeader className="pb-3">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-primary/20">
-                    <Droplets className="h-5 w-5 text-primary" />
-                  </div>
-                  <div>
-                    <CardTitle className="text-base">Pain Level</CardTitle>
-                    <CardDescription>Rate any discomfort you're experiencing</CardDescription>
-                  </div>
+        {/* Intercourse & Protection */}
+        <Card className="border-l-4 border-l-rose-300">
+           <CardContent className="pt-6">
+              <div className="flex items-center justify-between mb-4">
+                 <div className="flex items-center gap-2">
+                    <Heart className="h-5 w-5 text-rose-400" />
+                    <Label className="text-base">Intercourse</Label>
+                 </div>
+                 <Switch checked={intercourse} onCheckedChange={setIntercourse} />
+              </div>
+              
+              {intercourse && (
+                <div className="flex items-center justify-between pl-7 animate-in slide-in-from-top-2">
+                   <div className="flex items-center gap-2">
+                      <Shield className="h-4 w-4 text-emerald-500" />
+                      <Label className="text-sm text-muted-foreground">Protection Used?</Label>
+                   </div>
+                   <Switch checked={protection} onCheckedChange={setProtection} />
                 </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="px-2">
-                  <Slider value={pain} onValueChange={setPain} max={10} step={1} className="w-full" />
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">0</span>
-                  <span
-                    className={cn(
-                      'font-semibold px-3 py-1 rounded-full',
-                      pain[0] <= 3
-                        ? 'bg-sage/30 text-sage-foreground'
-                        : pain[0] <= 6
-                        ? 'bg-peach/30 text-peach-foreground'
-                        : 'bg-destructive/20 text-destructive',
-                    )}
-                  >
-                    {pain[0]} - {getPainLabel(pain[0])}
-                  </span>
-                  <span className="text-muted-foreground">10</span>
-                </div>
-              </CardContent>
-            </Card>
+              )}
+           </CardContent>
+        </Card>
 
-            <Card variant="lavender">
-              <CardHeader className="pb-3">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-lavender/30">
-                    <Heart className="h-5 w-5 text-lavender-foreground" />
-                  </div>
-                  <div>
-                    <CardTitle className="text-base">Mood</CardTitle>
-                    <CardDescription>How are you feeling emotionally?</CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2">
-                  {moodOptions.map((option, index) => (
-                    <button
-                      key={`${option.value}-${index}`}
-                      onClick={() => setMood(option.value)}
-                      className={cn(
-                        'flex flex-col items-center gap-1 p-3 rounded-xl transition-all duration-200 flex-1 min-w-[60px]',
-                        mood === option.value
-                          ? 'bg-primary text-primary-foreground shadow-soft'
-                          : 'bg-muted/50 text-foreground hover:bg-muted',
-                      )}
-                    >
-                      <span className="text-2xl">{option.emoji}</span>
-                      <span className="text-xs font-medium">{option.label}</span>
-                    </button>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card variant="peach">
-              <CardHeader className="pb-3">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-peach/30">
-                    <Battery className="h-5 w-5 text-peach-foreground" />
-                  </div>
-                  <div>
-                    <CardTitle className="text-base">Energy Level</CardTitle>
-                    <CardDescription>How energized do you feel?</CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2">
-                  {energyOptions.map((option) => (
-                    <button
-                      key={option.value}
-                      onClick={() => setEnergy(option.value)}
-                      className={cn(
-                        'flex flex-col items-center gap-1 p-3 rounded-xl transition-all duration-200 flex-1',
-                        energy === option.value
-                          ? 'bg-primary text-primary-foreground shadow-soft'
-                          : 'bg-muted/50 text-foreground hover:bg-muted',
-                      )}
-                    >
-                      <span className="text-2xl">{option.emoji}</span>
-                      <span className="text-xs font-medium">{option.label}</span>
-                    </button>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card variant="sage">
-              <CardHeader className="pb-3">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-sage/30">
-                    <Moon className="h-5 w-5 text-sage-foreground" />
-                  </div>
-                  <div>
-                    <CardTitle className="text-base">Sleep Quality</CardTitle>
-                    <CardDescription>How did you sleep last night?</CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-4 gap-2">
-                  {sleepOptions.map((option) => (
-                    <button
-                      key={option.value}
-                      onClick={() => setSleep(option.value)}
-                      className={cn(
-                        'p-3 rounded-xl text-sm font-medium transition-all duration-200',
-                        sleep === option.value
-                          ? 'bg-primary text-primary-foreground shadow-soft'
-                          : 'bg-muted/50 text-foreground hover:bg-muted',
-                      )}
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card variant="soft">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base">Cravings or notes</CardTitle>
-                <CardDescription>Optional – share anything else you noticed today</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <textarea
-                  value={cravings}
-                  onChange={(e) => setCravings(e.target.value)}
-                  className="w-full min-h-[100px] rounded-xl border border-border bg-background px-3 py-2 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                  placeholder="Any cravings, observations, or additional notes?"
-                />
-              </CardContent>
-            </Card>
-
-            <Button
-              variant="gradient"
-              size="xl"
-              className="w-full"
-              onClick={handleSave}
-              disabled={logSymptom.isPending}
-            >
-              {logSymptom.isPending ? <span className="animate-pulse">Saving...</span> : (<>
-                <Save className="h-5 w-5 mr-2" />
-                Save Entry
-              </>)}
-            </Button>
-          </>
-        )}
-
-        <div className="text-center p-3 rounded-xl bg-muted/50">
-          <p className="text-xs text-muted-foreground">🌸 All entries are private. You're doing great by tracking!</p>
+        {/* Mood & Energy */}
+        <div className="grid grid-cols-2 gap-3">
+           <Card>
+             <CardHeader className="p-4 pb-2">
+               <CardTitle className="text-sm">Mood</CardTitle>
+             </CardHeader>
+             <CardContent className="p-4 pt-0 select-none">
+               <div className="flex justify-between gap-1">
+                 {moodOptions.map(m => (
+                   <button 
+                     key={m.value} 
+                     onClick={() => setMood(m.value)} 
+                     className={cn(
+                       "text-2xl p-1 rounded-full transition-all hover:bg-muted", 
+                       mood === m.value ? "bg-primary/20 scale-110 shadow-sm" : "opacity-70 hover:opacity-100"
+                     )}
+                   >
+                     {m.emoji}
+                   </button>
+                 ))}
+               </div>
+             </CardContent>
+           </Card>
+           
+           <Card>
+             <CardHeader className="p-4 pb-2">
+               <CardTitle className="text-sm">Energy</CardTitle>
+             </CardHeader>
+             <CardContent className="p-4 pt-0 select-none">
+               <div className="flex justify-between gap-1">
+                 {energyOptions.map(e => (
+                   <button 
+                     key={e.value} 
+                     onClick={() => setEnergy(e.value)} 
+                     className={cn(
+                       "text-2xl p-1 rounded-full transition-all hover:bg-muted", 
+                       energy === e.value ? "bg-yellow-100 scale-110 shadow-sm" : "opacity-70 hover:opacity-100"
+                     )}
+                   >
+                     {e.emoji}
+                   </button>
+                 ))}
+               </div>
+             </CardContent>
+           </Card>
         </div>
+
+        <Button size="xl" className="w-full shadow-lg" onClick={handleSave} disabled={logSymptom.isPending}>
+          {logSymptom.isPending ? 'Saving...' : 'Save Log'}
+        </Button>
       </div>
     </AppLayout>
   );

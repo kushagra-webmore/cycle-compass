@@ -10,7 +10,10 @@ import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
+import { useAuth } from '@/contexts/AuthContext';
+
 export default function Chatbot() {
+  const { user } = useAuth();
   const [message, setMessage] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
@@ -18,6 +21,30 @@ export default function Chatbot() {
   const { data: history, isLoading: historyLoading } = useChatHistory();
   const sendMessage = useSendMessage();
   const clearHistory = useClearHistory();
+
+  const isPartner = user?.role === 'partner';
+
+  const config = {
+    title: isPartner ? "Luna 🌙 - Partner Guide" : "Luna 🌙 - Your Cycle Companion",
+    description: isPartner 
+      ? "Ask me how to support your partner based on her cycle"
+      : "Ask me anything about your cycle, symptoms, or how you're feeling",
+    emptyTitle: isPartner ? "Ask for guidance" : "Start a conversation",
+    emptyDescription: isPartner 
+      ? "I can explain your partner's current phase and suggest ways to help."
+      : "Ask me about your cycle, symptoms, mood, or anything else you'd like to understand better.",
+    prompts: isPartner 
+      ? [
+          "How can I support her today?",
+          "What phase is she in?",
+          "Why is she feeling tired?",
+        ]
+      : [
+          "How am I feeling today?",
+          "What should I eat?",
+          "Why do I feel tired?",
+        ]
+  };
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -78,9 +105,9 @@ export default function Chatbot() {
                   <Sparkles className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <CardTitle className="text-lg">Luna 🌙 - Your Cycle Companion</CardTitle>
+                  <CardTitle className="text-lg">{config.title}</CardTitle>
                   <CardDescription>
-                    Ask me anything about your cycle, symptoms, or how you're feeling
+                    {config.description}
                   </CardDescription>
                 </div>
               </div>
@@ -125,33 +152,22 @@ export default function Chatbot() {
                   <Sparkles className="h-8 w-8 text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-foreground mb-1">Start a conversation</h3>
+                  <h3 className="font-semibold text-foreground mb-1">{config.emptyTitle}</h3>
                   <p className="text-sm text-muted-foreground max-w-sm">
-                    Ask me about your cycle, symptoms, mood, or anything else you'd like to understand better.
+                    {config.emptyDescription}
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2 justify-center max-w-md">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setMessage("How am I feeling today?")}
-                  >
-                    How am I feeling today?
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setMessage("What should I eat?")}
-                  >
-                    What should I eat?
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setMessage("Why do I feel tired?")}
-                  >
-                    Why do I feel tired?
-                  </Button>
+                  {config.prompts.map((prompt, i) => (
+                    <Button
+                      key={i}
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setMessage(prompt)}
+                    >
+                      {prompt}
+                    </Button>
+                  ))}
                 </div>
               </div>
             ) : (

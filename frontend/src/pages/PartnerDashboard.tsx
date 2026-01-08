@@ -1,5 +1,6 @@
-import { useState } from 'react';
-import { Heart, Lightbulb, Coffee, MessageCircle, Gift, Moon, Sparkles, HelpCircle, Loader, AlertTriangle } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Heart, Lightbulb, Coffee, MessageCircle, Gift, Moon, Sparkles, HelpCircle, Loader, AlertTriangle, Utensils, Activity, Smile } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { cn } from '@/lib/utils';
@@ -22,6 +23,11 @@ const phaseInfo = {
     description: 'Energy is rising! A great time for new activities together.',
     color: 'phase-follicular',
   },
+  FERTILE: {
+    title: 'Fertile Window',
+    description: 'Energy is high and optimism is peaking.',
+    color: 'phase-ovulatory', // Reusing Ovulatory color for now or add new
+  },
   OVULATION: {
     title: 'Ovulation Phase',
     description: 'Peak energy and sociability. Great for quality time!',
@@ -34,50 +40,41 @@ const phaseInfo = {
   },
 };
 
+interface GuidanceData {
+  explanation: string;
+  actions: string[];
+  foodRecommendation: string;
+  activityRecommendation: string;
+}
+
 export default function PartnerDashboard() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const { data, isLoading, isError, refetch } = usePartnerSummary();
   const partnerGuidance = usePartnerGuidance();
   const { toast } = useToast();
-  const [guidanceText, setGuidanceText] = useState<string | null>(null);
+  const [guidance, setGuidance] = useState<GuidanceData | null>(null);
 
   const phaseKey = data?.cycle?.context.phase ?? 'MENSTRUAL';
-  const phase = phaseInfo[phaseKey as keyof typeof phaseInfo];
+  const phase = phaseInfo[phaseKey as keyof typeof phaseInfo] || phaseInfo.MENSTRUAL;
 
   const sharedMood = data?.summaries.moodSummary;
   const sharedEnergy = data?.summaries.energySummary;
 
-  const suggestions = [
-    {
-      icon: Coffee,
-      title: 'Bring a comfort treat',
-      description: 'Warm drinks or favorite snacks can feel extra soothing right now.',
-      color: 'bg-peach/30',
-    },
-    {
-      icon: Moon,
-      title: 'Create a calm space',
-      description: 'Offer a quiet evening in or gentle activities together.',
-      color: 'bg-lavender/30',
-    },
-    {
-      icon: MessageCircle,
-      title: 'Check in kindly',
-      description: 'Ask open questions and listen without trying to fix things.',
-      color: 'bg-primary-soft',
-    },
-  ];
-
-  const dailyTip = {
-    icon: Gift,
-    title: "Today's Tip",
-    content: 'Tiny gestures matter—preparing a cozy spot, drawing a bath, or handling chores shows your care.',
-  };
-
   const handleGuidance = async () => {
     try {
       const response = await partnerGuidance.mutateAsync();
-      setGuidanceText(response.guidance);
+      // Response is now expected to be the JSON object directly or { guidance: JSON } depending on backend return.
+      // ai.service returns JSON. api router might wrap it?
+      // Usually apiFetch returns the body. If service returns JSON, api returns JSON.
+      // Let's assume response IS the guidance object or has a property.
+      
+      // Check structure based on backend router. backend router usually sends { guidance: result }.
+      // If result is object, then response.guidance is the object.
+      // If result was text, response.guidance was text.
+      // We need to verify backend router. Assuming `res.json({ guidance: result })`.
+      
+      setGuidance(response.guidance);
     } catch (error) {
       toast({
         title: 'Unable to fetch guidance',
@@ -87,11 +84,9 @@ export default function PartnerDashboard() {
     }
   };
 
-  const consentAllowsGuidance = Boolean(data?.consent?.share_phase);
-
   return (
     <AppLayout title="Partner View">
-      <div className="space-y-6 animate-fade-in">
+      <div className="space-y-6 animate-fade-in pb-20">
         {isLoading && (
           <Card variant="soft">
             <CardContent className="py-8 text-center text-sm text-muted-foreground flex items-center justify-center gap-2">
@@ -137,7 +132,6 @@ export default function PartnerDashboard() {
 
         {data && (
           <>
-
             <div className="text-center pt-2">
               <h2 className="font-display text-2xl font-bold text-foreground">
                 Hey {user?.name ? user.name.split(' ')[0] : 'there'} 💕
@@ -189,92 +183,94 @@ export default function PartnerDashboard() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-foreground">{phase.description}</p>
+                  {/* Show AI explanation if loaded */}
+                  {guidance && (
+                    <div className="mt-3 p-3 bg-white/50 rounded-lg text-sm italic text-slate-700 animate-fade-in">
+                       "{guidance.explanation}"
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             )}
 
-            {/* Shared Data Sections */}
-            {(data.sharedData?.symptoms?.length > 0 || data.sharedData?.journals?.length > 0) && (
-              <div className="space-y-4">
-                {data.sharedData.symptoms.length > 0 && (
-                  <Card variant="soft">
-                    <CardHeader className="pb-2">
-                       <CardTitle className="text-base">Recent Symptoms</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-2">
-                       {data.sharedData.symptoms.slice(0, 3).map((log: any, i: number) => (
-                        <div key={i} className="flex flex-col gap-2 p-3 bg-background/50 rounded-lg text-sm">
-                           <div className="flex justify-between items-center border-b border-border/50 pb-2 mb-1">
-                             <span className="font-medium text-foreground">{new Date(log.date).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}</span>
-                           </div>
-                           <div className="flex flex-wrap gap-2">
-                             {log.pain > 0 && (
-                               <Badge variant="outline" className="bg-destructive/10 text-destructive border-destructive/20">
-                                 Pain: {log.pain}/5
-                               </Badge>
-                             )}
-                             {log.bloating && (
-                               <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
-                                 Bloating
-                               </Badge>
-                             )}
-                             {log.mood && (
-                               <Badge variant="outline" className="bg-lavender/30 text-lavender-foreground border-lavender/50">
-                                 Mood: {log.mood.toLowerCase()}
-                               </Badge>
-                             )}
-                             {log.energy && (
-                               <Badge variant="outline" className="bg-peach/30 text-peach-foreground border-peach/50">
-                                 Energy: {log.energy.toLowerCase()}
-                               </Badge>
-                             )}
-                             {log.sleep_hours !== null && (
-                               <Badge variant="outline" className="bg-sage/30 text-sage-foreground border-sage/50">
-                                 Sleep: {log.sleep_hours}h
-                               </Badge>
-                             )}
-                             {log.cravings && (
-                               <Badge variant="outline" className="bg-muted text-muted-foreground border-border">
-                                 Craving: {log.cravings}
-                               </Badge>
-                             )}
-                             
-                             {/* Fallback if practically empty */}
-                             {log.pain === 0 && !log.bloating && !log.mood && !log.energy && !log.sleep_hours && !log.cravings && (
-                               <span className="text-muted-foreground italic text-xs">No details logged for this day</span>
-                             )}
-                           </div>
-                        </div>
-                       ))}
+            {/* AI Guidance Section */}
+            <div>
+               <div className="flex items-center justify-between mb-3">
+                  <h3 className="font-display font-bold text-foreground flex items-center gap-2">
+                    <Lightbulb className="h-5 w-5 text-primary" />
+                    How to support today
+                  </h3>
+                  {!guidance && (
+                    <Button 
+                      size="sm" 
+                      onClick={handleGuidance} 
+                      disabled={partnerGuidance.isPending}
+                      variant="outline"
+                      className="text-xs h-8"
+                    >
+                      {partnerGuidance.isPending ? 'Generating...' : 'Get Suggestions'}
+                    </Button>
+                  )}
+               </div>
+               
+               {!guidance && !partnerGuidance.isPending && (
+                 <Card variant="soft" className="border-dashed">
+                    <CardContent className="py-6 text-center text-muted-foreground text-sm">
+                       Tap "Get Suggestions" to see personalized food, activity, and support ideas for this phase.
                     </CardContent>
-                  </Card>
-                )}
+                 </Card>
+               )}
 
-                {data.sharedData.journals.length > 0 && (
-                  <Card variant="soft">
-                    <CardHeader className="pb-2">
-                       <CardTitle className="text-base">Journal Entries</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-2">
-                      {data.sharedData.journals.map((entry: any, i: number) => (
-                        <div key={i} className="p-3 bg-background/50 rounded-lg text-sm">
-                           <div className="flex justify-between mb-1 text-xs text-muted-foreground">
-                             <span>{new Date(entry.date).toLocaleDateString()}</span>
-                           </div>
-                           {entry.ai_summary ? (
-                             <p className="text-foreground">{entry.ai_summary}</p>
-                           ) : (
-                             <p className="italic text-muted-foreground">Written entry (Private)</p>
-                           )}
-                        </div>
+               {guidance && (
+                 <div className="space-y-4 animate-in slide-in-from-bottom-2 fade-in duration-500">
+                    {/* Actions */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                      {guidance.actions.map((action, i) => (
+                        <Card key={i} className="bg-gradient-to-br from-emerald-50 to-white border-emerald-100">
+                          <CardContent className="p-4 flex items-start gap-3">
+                             <div className="p-2 bg-emerald-100 rounded-full text-emerald-600 shrink-0">
+                                <Smile className="h-4 w-4" />
+                             </div>
+                             <p className="text-sm font-medium text-emerald-900">{action}</p>
+                          </CardContent>
+                        </Card>
                       ))}
-                    </CardContent>
-                  </Card>
-                )}
-              </div>
-            )}
+                    </div>
 
-            <div className="grid grid-cols-2 gap-3">
+                    {/* Food & Activity Split */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                       <Card className="bg-gradient-to-br from-orange-50 to-white border-orange-100">
+                          <CardHeader className="pb-2">
+                             <CardTitle className="flex items-center gap-2 text-base text-orange-800">
+                                <Utensils className="h-4 w-4" /> Suggested Food
+                             </CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                             <p className="text-sm text-orange-900/80 font-medium">
+                               {guidance.foodRecommendation}
+                             </p>
+                          </CardContent>
+                       </Card>
+
+                       <Card className="bg-gradient-to-br from-blue-50 to-white border-blue-100">
+                          <CardHeader className="pb-2">
+                             <CardTitle className="flex items-center gap-2 text-base text-blue-800">
+                                <Activity className="h-4 w-4" /> Suggested Activity
+                             </CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                             <p className="text-sm text-blue-900/80 font-medium">
+                               {guidance.activityRecommendation}
+                             </p>
+                          </CardContent>
+                       </Card>
+                    </div>
+                 </div>
+               )}
+            </div>
+
+            {/* Shared Data Stats */}
+            <div className="grid grid-cols-2 gap-3 mt-4">
               <Card variant="lavender" className="p-4">
                 <div className="flex items-center gap-3">
                   <div className="p-2 rounded-lg bg-lavender/30">
@@ -283,7 +279,7 @@ export default function PartnerDashboard() {
                   <div>
                     <span className="text-xs text-muted-foreground block">Mood</span>
                     <span className="font-semibold text-foreground capitalize">
-                      {data.consent?.share_mood_summary ? sharedMood ?? 'Not shared yet' : 'Not shared'}
+                      {data.consent?.share_mood_summary ? sharedMood ?? 'Not shared' : 'Private'}
                     </span>
                   </div>
                 </div>
@@ -296,99 +292,32 @@ export default function PartnerDashboard() {
                   <div>
                     <span className="text-xs text-muted-foreground block">Energy</span>
                     <span className="font-semibold text-foreground capitalize">
-                      {data.consent?.share_energy_summary ? sharedEnergy ?? 'Not shared yet' : 'Not shared'}
+                      {data.consent?.share_energy_summary ? sharedEnergy ?? 'Not shared' : 'Private'}
                     </span>
                   </div>
                 </div>
               </Card>
             </div>
 
-            <Card variant="gradient">
-              <CardHeader className="pb-2">
-                <div className="flex items-center gap-2">
-                  <HelpCircle className="h-5 w-5 text-primary" />
-                  <CardTitle className="text-base">What does this mean?</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  Use these shared insights to offer the kind of support that feels best right now. Focus on gentle check-ins,
-                  patience, and meeting your partner where they are today.
-                </p>
-              </CardContent>
-            </Card>
-
-            <div>
-              <h3 className="font-display font-bold text-foreground mb-3 flex items-center gap-2">
-                <Lightbulb className="h-5 w-5 text-primary" />
-                Supportive actions
-              </h3>
-              <div className="space-y-3">
-                {suggestions.map((suggestion, i) => {
-                  const Icon = suggestion.icon;
-                  return (
-                    <Card key={i} variant="default" className="overflow-hidden">
-                      <CardContent className="flex items-start gap-4 py-4">
-                        <div className={cn('p-3 rounded-xl shrink-0', suggestion.color)}>
-                          <Icon className="h-5 w-5 text-foreground" />
-                        </div>
-                        <div>
-                          <h4 className="font-semibold text-foreground text-sm">{suggestion.title}</h4>
-                          <p className="text-xs text-muted-foreground mt-1">{suggestion.description}</p>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  );
-                })}
-              </div>
-            </div>
-
-            <Card variant="sage" className="border-2 border-sage/50">
-              <CardContent className="flex items-start gap-4 py-4">
-                <div className="p-3 rounded-xl bg-sage/30 shrink-0">
-                  <Gift className="h-5 w-5 text-sage-foreground" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-sage-foreground text-sm">{dailyTip.title}</h4>
-                  <p className="text-xs text-muted-foreground mt-1">{dailyTip.content}</p>
-                </div>
-              </CardContent>
-            </Card>
-
             <Card variant="soft">
               <CardHeader className="pb-2">
-                <CardTitle className="text-base">Need a gentle nudge?</CardTitle>
-                <CardDescription>Get AI-powered guidance aligned with today’s phase.</CardDescription>
+                <CardTitle className="text-base">Have questions?</CardTitle>
+                <CardDescription>Chat safely with Luna to understand better.</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-3">
+              <CardContent>
                 <Button
                   variant="primary"
                   size="sm"
-                  onClick={handleGuidance}
-                  disabled={!consentAllowsGuidance || partnerGuidance.status === 'pending'}
+                  onClick={() => navigate('/chatbot')}
+                  className="w-full"
                 >
-                  {partnerGuidance.status === 'pending' ? 'Fetching guidance...' : 'Ask for guidance'}
+                  <MessageCircle className="h-4 w-4 mr-2" />
+                  Ask Luna
                 </Button>
-                {!consentAllowsGuidance && (
-                  <p className="text-xs text-muted-foreground">
-                    Your partner disabled phase sharing, so we can’t provide guidance right now.
-                  </p>
-                )}
-                {guidanceText && (
-                  <div className="rounded-xl bg-muted/40 p-3 text-sm text-muted-foreground whitespace-pre-line">
-                    {guidanceText}
-                  </div>
-                )}
               </CardContent>
             </Card>
           </>
         )}
-
-        <div className="text-center p-3 rounded-xl bg-muted/50">
-          <p className="text-xs text-muted-foreground">
-            💚 Only seeing what’s been shared. Respect their privacy.
-          </p>
-        </div>
       </div>
     </AppLayout>
   );

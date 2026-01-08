@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { User, Calendar, MapPin, Phone, Mail, Clock, Edit2, Save, X, Lock, Shield } from 'lucide-react';
+import { User as UserIcon, Calendar, MapPin, Phone, Mail, Clock, Edit2, Save, X, Lock, Shield, Sparkles } from 'lucide-react';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -22,6 +22,7 @@ export default function Profile() {
     city: user?.city || '',
     timezone: user?.timezone || 'Asia/Kolkata',
     dateOfBirth: user?.dateOfBirth ? new Date(user.dateOfBirth).toISOString().split('T')[0] : '',
+    goal: user?.goal || 'TRACKING',
   });
 
   // Calculate age from DOB
@@ -63,6 +64,7 @@ export default function Profile() {
       city: user?.city || '',
       timezone: user?.timezone || 'Asia/Kolkata',
       dateOfBirth: user?.dateOfBirth ? new Date(user.dateOfBirth).toISOString().split('T')[0] : '',
+      goal: user?.goal || 'TRACKING',
     });
     setIsEditing(false);
   };
@@ -100,6 +102,7 @@ export default function Profile() {
       toast({
         title: 'Success',
         description: 'Password updated successfully.',
+        variant: 'destructive',
       });
       setIsPasswordDialogOpen(false);
       setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
@@ -224,7 +227,7 @@ export default function Profile() {
                     />
                   ) : (
                     <div className="flex items-center gap-2 p-2 rounded-lg bg-muted">
-                      <User className="h-4 w-4 text-muted-foreground" />
+                      <UserIcon className="h-4 w-4 text-muted-foreground" />
                       <span>{user.name || 'Not set'}</span>
                     </div>
                   )}
@@ -259,7 +262,7 @@ export default function Profile() {
                 <div className="space-y-2">
                   <Label htmlFor="age">Age</Label>
                   <div className="flex items-center gap-2 p-2 rounded-lg bg-muted">
-                    <User className="h-4 w-4 text-muted-foreground" />
+                    <UserIcon className="h-4 w-4 text-muted-foreground" />
                     <span>{age !== null ? `${age} years old` : 'Not set'}</span>
                   </div>
                 </div>
@@ -310,6 +313,35 @@ export default function Profile() {
                     <div className="flex items-center gap-2 p-2 rounded-lg bg-muted">
                       <Clock className="h-4 w-4 text-muted-foreground" />
                       <span>{user.timezone || 'Asia/Kolkata'}</span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="goal">Primary Goal</Label>
+                  {isEditing ? (
+                    <div className="flex gap-2">
+                      <Button
+                        type="button"
+                        variant={formData.goal === 'TRACKING' ? 'default' : 'outline'}
+                        className="flex-1"
+                        onClick={() => setFormData({ ...formData, goal: 'TRACKING' as any })}
+                      >
+                        Track Cycle
+                      </Button>
+                      <Button
+                        type="button"
+                        variant={formData.goal === 'CONCEIVE' ? 'default' : 'outline'}
+                        className="flex-1"
+                        onClick={() => setFormData({ ...formData, goal: 'CONCEIVE' as any })}
+                      >
+                        Conceive
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2 p-2 rounded-lg bg-muted">
+                      <Sparkles className="h-4 w-4 text-muted-foreground" />
+                      <span>{user.goal === 'CONCEIVE' ? 'Conceive a baby' : 'Track my cycle'}</span>
                     </div>
                   )}
                 </div>

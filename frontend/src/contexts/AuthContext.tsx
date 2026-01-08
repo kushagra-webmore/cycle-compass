@@ -19,6 +19,7 @@ export interface User {
   timezone?: string | null;
   lastLogin?: string | null;
   lastActivity?: string | null;
+  goal?: 'TRACKING' | 'CONCEIVE' | 'PREGNANCY' | null;
 }
 
 interface AuthResponse {
@@ -41,6 +42,7 @@ interface AuthResponse {
     cycleLength?: number | null;
     lastLogin?: string | null;
     lastActivity?: string | null;
+    goal?: 'TRACKING' | 'CONCEIVE' | 'PREGNANCY' | null;
   };
 }
 
@@ -85,6 +87,7 @@ const mapUserFromResponse = (payload: AuthResponse['user']): User => ({
   timezone: payload.timezone ?? null,
   lastLogin: payload.lastLogin ?? null,
   lastActivity: payload.lastActivity ?? null,
+  goal: payload.goal ?? 'TRACKING',
 });
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -309,6 +312,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         onboardingCompleted: updates.onboardingCompleted,
         lastPeriodDate: updates.lastPeriodDate,
         cycleLength: updates.cycleLength,
+        goal: updates.goal,
       };
       
       console.log('Sending user updates to backend:', backendUpdates);

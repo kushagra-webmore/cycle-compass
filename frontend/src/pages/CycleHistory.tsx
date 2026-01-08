@@ -21,6 +21,7 @@ import { useCycles, useCreateCycle, useUpdateCycle, useDeleteCycle } from '@/hoo
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
+import { CycleHistoryChart } from '@/components/dashboard/CycleHistoryChart';
 
 export default function CycleHistory() {
   const { user } = useAuth();
@@ -123,7 +124,7 @@ export default function CycleHistory() {
       await updateCycle.mutateAsync({
         id,
         startDate: formData.startDate,
-        endDate: formData.endDate || undefined,
+        endDate: formData.endDate || null, // Send null to clear the date
       });
       
       setEditingCycle(null);
@@ -160,9 +161,14 @@ export default function CycleHistory() {
   };
 
   const openEdit = (cycle: any) => {
+    // Use raw date strings to avoid timezone shifts during Date conversion
+    // Ensure we only look at the date part (YYYY-MM-DD)
+    const startDate = typeof cycle.startDate === 'string' ? cycle.startDate.split('T')[0] : '';
+    const endDate = cycle.endDate && typeof cycle.endDate === 'string' ? cycle.endDate.split('T')[0] : '';
+    
     setFormData({
-      startDate: new Date(cycle.startDate).toISOString().split('T')[0],
-      endDate: cycle.endDate ? new Date(cycle.endDate).toISOString().split('T')[0] : '',
+      startDate,
+      endDate: endDate && endDate < startDate ? '' : endDate, // Clear invalid end dates
     });
     setEditingCycle(cycle.id);
   };
@@ -231,54 +237,61 @@ export default function CycleHistory() {
 
         {/* Stats Cards */}
         {stats && (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <Card className="bg-primary/5 border-primary/20">
-              <CardContent className="p-4 flex flex-col items-center justify-center text-center">
-                <div className="p-2 mb-2 rounded-full bg-primary/10 text-primary">
-                  <CalendarIcon className="h-4 w-4" />
-                </div>
-                <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Avg Cycle</p>
-                <p className="text-2xl font-bold">{stats.avgCycleLength || user?.cycleLength || '-'}</p>
-                <p className="text-xs text-muted-foreground">days</p>
-              </CardContent>
-            </Card>
-            
-            <Card className="bg-rose-500/5 border-rose-500/20">
-              <CardContent className="p-4 flex flex-col items-center justify-center text-center">
-                <div className="p-2 mb-2 rounded-full bg-rose-500/10 text-rose-500">
-                  <Clock className="h-4 w-4" />
-                </div>
-                <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Avg Period</p>
-                <p className="text-2xl font-bold">{stats.avgPeriodLength}</p>
-                <p className="text-xs text-muted-foreground">days</p>
-              </CardContent>
-            </Card>
-            
-            <Card className="bg-purple-500/5 border-purple-500/20">
-              <CardContent className="p-4 flex flex-col items-center justify-center text-center">
-                <div className="p-2 mb-2 rounded-full bg-purple-500/10 text-purple-500">
-                  <Info className="h-4 w-4" />
-                </div>
-                <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Total logged</p>
-                <p className="text-2xl font-bold">{stats.totalCycles}</p>
-                <p className="text-xs text-muted-foreground">cycles</p>
-              </CardContent>
-            </Card>
+          <div className="grid grid-cols-1 gap-6">
+              
+             {/* Charts */}
+             <CycleHistoryChart cycles={cycles} />
 
-            <Card className="bg-sky-500/5 border-sky-500/20">
-              <CardContent className="p-4 flex flex-col items-center justify-center text-center">
-                <div className="p-2 mb-2 rounded-full bg-sky-500/10 text-sky-500">
-                  <CalendarIcon className="h-4 w-4" />
-                </div>
-                <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Shortest/Longest</p>
-                <div className="flex items-center gap-2">
-                  <span className="text-xl font-bold">{stats.shortestCycle || '-'}</span>
-                  <span className="text-muted-foreground">/</span>
-                  <span className="text-xl font-bold">{stats.longestCycle || '-'}</span>
-                </div>
-                <p className="text-xs text-muted-foreground">days</p>
-              </CardContent>
-            </Card>
+             {/* Metric Cards */}
+             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <Card className="bg-primary/5 border-primary/20">
+                  <CardContent className="p-4 flex flex-col items-center justify-center text-center">
+                    <div className="p-2 mb-2 rounded-full bg-primary/10 text-primary">
+                      <CalendarIcon className="h-4 w-4" />
+                    </div>
+                    <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Avg Cycle</p>
+                    <p className="text-2xl font-bold">{stats.avgCycleLength || user?.cycleLength || '-'}</p>
+                    <p className="text-xs text-muted-foreground">days</p>
+                  </CardContent>
+                </Card>
+                
+                <Card className="bg-rose-500/5 border-rose-500/20">
+                  <CardContent className="p-4 flex flex-col items-center justify-center text-center">
+                    <div className="p-2 mb-2 rounded-full bg-rose-500/10 text-rose-500">
+                      <Clock className="h-4 w-4" />
+                    </div>
+                    <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Avg Period</p>
+                    <p className="text-2xl font-bold">{stats.avgPeriodLength}</p>
+                    <p className="text-xs text-muted-foreground">days</p>
+                  </CardContent>
+                </Card>
+                
+                <Card className="bg-purple-500/5 border-purple-500/20">
+                  <CardContent className="p-4 flex flex-col items-center justify-center text-center">
+                    <div className="p-2 mb-2 rounded-full bg-purple-500/10 text-purple-500">
+                      <Info className="h-4 w-4" />
+                    </div>
+                    <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Total logged</p>
+                    <p className="text-2xl font-bold">{stats.totalCycles}</p>
+                    <p className="text-xs text-muted-foreground">cycles</p>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-sky-500/5 border-sky-500/20">
+                  <CardContent className="p-4 flex flex-col items-center justify-center text-center">
+                    <div className="p-2 mb-2 rounded-full bg-sky-500/10 text-sky-500">
+                      <CalendarIcon className="h-4 w-4" />
+                    </div>
+                    <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Shortest/Longest</p>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xl font-bold">{stats.shortestCycle || '-'}</span>
+                      <span className="text-muted-foreground">/</span>
+                      <span className="text-xl font-bold">{stats.longestCycle || '-'}</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">days</p>
+                  </CardContent>
+                </Card>
+             </div>
           </div>
         )}
 

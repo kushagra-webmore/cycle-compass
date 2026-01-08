@@ -17,6 +17,7 @@ export const MobileNav = () => {
 
   const partnerNavItems = [
     { href: '/partner-dashboard', icon: Home, label: 'Home' },
+    { href: '/chatbot', icon: Sparkles, label: 'Assistant' },
     { href: '/profile', icon: User, label: 'Profile' },
   ];
 

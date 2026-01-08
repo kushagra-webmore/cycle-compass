@@ -1,4 +1,4 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { apiFetch } from '@/lib/api';
 
 interface CycleExplainPayload {
@@ -15,7 +15,12 @@ interface CycleExplainResponse {
 }
 
 interface PartnerGuidanceResponse {
-  guidance: string;
+  guidance: {
+    explanation: string;
+    actions: string[];
+    foodRecommendation: string;
+    activityRecommendation: string;
+  };
   disclaimer: string;
 }
 
@@ -23,6 +28,26 @@ interface JournalSummaryResponse {
   summary: string;
   disclaimer: string;
 }
+
+interface DailyInsightsResponse {
+  insights: {
+    food: string;
+    activity: string;
+    wisdom: string;
+  };
+  disclaimer: string;
+}
+
+
+  
+// Actually, to avoid complexity, I will use `useQuery`.
+export const useDailyInsights = () => 
+  useQuery({
+    queryKey: ['daily-insights'],
+    queryFn: () => apiFetch<DailyInsightsResponse>('/ai/daily-insights', { method: 'POST', auth: true }),
+    staleTime: 1000 * 60 * 60 * 24, // 24 hours
+    retry: false,
+  });
 
 export const useCycleExplainer = () =>
   useMutation({
