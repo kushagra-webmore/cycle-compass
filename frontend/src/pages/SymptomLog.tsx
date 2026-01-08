@@ -104,6 +104,8 @@ export default function SymptomLog() {
         cravings: cravings || (selectedSymptoms.includes('cravings') ? 'Yes' : undefined),
         intercourse,
         protection: intercourse ? protection : undefined,
+        flow: flow || undefined,
+        otherSymptoms: selectedSymptoms,
       });
 
       toast({

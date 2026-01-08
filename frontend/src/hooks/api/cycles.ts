@@ -45,6 +45,8 @@ interface SymptomLogPayload {
   bloating?: boolean;
   intercourse?: boolean;
   protection?: boolean;
+  flow?: string;
+  otherSymptoms?: string[];
 }
 
 export interface SymptomEntry {
@@ -56,6 +58,8 @@ export interface SymptomEntry {
   sleep_hours: number | null;
   cravings: string | null;
   bloating: boolean | null;
+  flow: string | null;
+  other_symptoms: string[] | null;
 }
 
 const cycleKeys = {

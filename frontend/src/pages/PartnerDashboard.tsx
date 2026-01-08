@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Heart, Lightbulb, Coffee, MessageCircle, Gift, Moon, Sparkles, HelpCircle, Loader, AlertTriangle, Utensils, Activity, Smile } from 'lucide-react';
+import { Heart, Lightbulb, Coffee, MessageCircle, Gift, Moon, Sparkles, HelpCircle, Loader, AlertTriangle, Utensils, Activity, Smile, BookOpen } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { cn } from '@/lib/utils';
@@ -299,7 +299,77 @@ export default function PartnerDashboard() {
               </Card>
             </div>
 
-            <Card variant="soft">
+            {/* Shared Symptoms Section */}
+            {data.sharedData?.symptoms && data.sharedData.symptoms.length > 0 && (
+              <div className="mt-6">
+                <h3 className="font-display font-bold text-lg mb-3 flex items-center gap-2">
+                 <Activity className="h-5 w-5 text-primary" />
+                 Recent Symptoms
+                </h3>
+                <div className="space-y-2">
+                  {data.sharedData.symptoms.map((symptom: any) => (
+                    <Card key={symptom.id} className="p-3">
+                      <div className="flex justify-between items-start">
+                        <div className="w-full">
+                          <p className="text-sm font-medium mb-2">{new Date(symptom.date).toLocaleDateString()}</p>
+                          <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
+                            {symptom.mood && <Badge variant="outline" className="bg-lavender/20 border-lavender/50 text-foreground capitalize">Mood: {symptom.mood.toLowerCase()}</Badge>}
+                            {symptom.energy && <Badge variant="outline" className="bg-peach/20 border-peach/50 text-foreground capitalize">Energy: {symptom.energy.toLowerCase()}</Badge>}
+                            {symptom.pain !== null && <Badge variant="outline" className="bg-red-50 border-red-200 text-foreground">Pain: {symptom.pain}/10</Badge>}
+                            {symptom.sleep_hours !== null && <Badge variant="outline" className="bg-blue-50 border-blue-200 text-foreground">Sleep: {symptom.sleep_hours}h</Badge>}
+                            {symptom.cravings && <Badge variant="outline" className="bg-orange-50 border-orange-200 text-foreground">Craving: {symptom.cravings}</Badge>}
+                            {symptom.flow && <Badge variant="outline" className="bg-blue-100 border-blue-300 text-blue-800">Flow: {symptom.flow}</Badge>}
+                            {symptom.intercourse && (
+                                <Badge variant="outline" className="bg-pink-50 border-pink-200 text-foreground">
+                                    Intercourse {symptom.protection_used !== null ? (symptom.protection_used ? '(Protected)' : '(Unprotected)') : ''}
+                                </Badge>
+                            )}
+                            {symptom.other_symptoms && symptom.other_symptoms.map((s: string) => (
+                              <Badge key={s} variant="outline" className="bg-rose-50 border-rose-200 text-rose-800 capitalize">
+                                {s.replace('_', ' ')}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Shared Journals Section */}
+            {data.sharedData?.journals && data.sharedData.journals.length > 0 && (
+              <div className="mt-6">
+                 <h3 className="font-display font-bold text-lg mb-3 flex items-center gap-2">
+                  <BookOpen className="h-5 w-5 text-primary" />
+                  Recent Journal Entries
+                 </h3>
+                 <div className="space-y-3">
+                   {data.sharedData.journals.map((journal: any) => (
+                     <Card key={journal.id} className="bg-muted/30">
+                       <CardHeader className="py-3">
+                         <CardTitle className="text-sm font-medium">
+                           {new Date(journal.date).toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' })}
+                         </CardTitle>
+                       </CardHeader>
+                       <CardContent className="py-2 pb-4 text-sm text-muted-foreground">
+                         <p className="text-foreground whitespace-pre-line line-clamp-3 mb-2">
+                            {journal.encrypted_text}
+                         </p>
+                         {journal.ai_summary && (
+                           <div className="rounded-lg bg-primary/5 p-2 text-xs italic text-muted-foreground">
+                             ✨ "{journal.ai_summary}"
+                           </div>
+                         )}
+                       </CardContent>
+                     </Card>
+                   ))}
+                 </div>
+              </div>
+            )}
+
+            <Card variant="soft" className="mt-6">
               <CardHeader className="pb-2">
                 <CardTitle className="text-base">Have questions?</CardTitle>
                 <CardDescription>Chat safely with Luna to understand better.</CardDescription>

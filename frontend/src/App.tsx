@@ -184,7 +184,7 @@ const AppRoutes = () => {
       <Route
         path="/chatbot"
         element={
-          <ProtectedRoute allowedRoles={['primary']}>
+          <ProtectedRoute allowedRoles={['primary', 'partner']}>
             <Chatbot />
           </ProtectedRoute>
         }
