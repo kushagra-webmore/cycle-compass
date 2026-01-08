@@ -26,6 +26,10 @@ export const logSymptomSchema = z.object({
   sleepHours: z.number().min(0).max(24).optional(),
   cravings: z.string().max(500).optional(),
   bloating: z.boolean().optional(),
+  intercourse: z.boolean().optional(),
+  protection: z.boolean().optional(),
+  flow: z.string().optional(),
+  otherSymptoms: z.array(z.string()).optional(),
 });
 
 export type CreateCycleInput = z.infer<typeof createCycleSchema>;

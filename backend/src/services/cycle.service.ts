@@ -19,6 +19,8 @@ export interface SymptomLogInput {
   bloating?: boolean;
   intercourse?: boolean;
   protection?: boolean;
+  flow?: string;
+  otherSymptoms?: string[];
 }
 
 export interface CycleSummary {
@@ -41,6 +43,8 @@ export interface SymptomEntry {
   bloating: boolean | null;
   intercourse: boolean | null;
   protection_used: boolean | null;
+  flow: string | null;
+  other_symptoms: string[] | null;
 }
 
 const mapCycleRow = (row: any): CycleSummary => {
@@ -193,6 +197,8 @@ export const logSymptom = async (userId: string, cycleId: string, input: Symptom
         bloating: input.bloating,
         intercourse: input.intercourse,
         protection_used: input.protection,
+        flow: input.flow,
+        other_symptoms: input.otherSymptoms,
       },
       {
         onConflict: 'user_id,date',

@@ -86,7 +86,7 @@ export const getPartnerSummary = async (partnerUserId: string) => {
   let sharedJournals: any[] = [];
 
   if (consent.share_symptoms) {
-    sharedSymptoms = await getSymptomHistory(primaryUserId, 7); // Last 7 days
+    sharedSymptoms = await getSymptomHistory(primaryUserId, 30); // Last 30 days
   }
 
   if (consent.share_journals) {

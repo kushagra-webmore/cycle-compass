@@ -337,7 +337,7 @@ export const sendChatMessage = async (userId: string, message: string, sessionId
   if (role === 'PARTNER') {
     systemPrompt = buildPartnerChatbotSystemPrompt();
     userContext = await buildPartnerContext(userId);
-    contextType = 'PARTNER_GUIDANCE';
+    contextType = 'GUIDANCE';
   } else {
     systemPrompt = buildChatbotSystemPrompt();
     userContext = await buildUserContext(userId);
