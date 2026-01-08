@@ -15,8 +15,19 @@ import {
   useUserDetails, 
   useUserActivity, 
   useUserChatbot, 
-  useUserCycles 
+  useUserCycles,
+  useDeleteUser
 } from '@/hooks/api/admin';
+import { 
+  AlertDialog, 
+  AlertDialogAction, 
+  AlertDialogCancel, 
+  AlertDialogContent, 
+  AlertDialogDescription, 
+  AlertDialogFooter, 
+  AlertDialogHeader, 
+  AlertDialogTitle 
+} from '@/components/ui/alert-dialog';
 import { formatDistanceToNow, format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { AnalyticsDashboard } from '@/components/admin/AnalyticsDashboard';
@@ -39,6 +50,19 @@ export default function ComprehensiveAdminDashboard() {
   const { data: userActivity } = useUserActivity(selectedUserId);
   const { data: chatbotHistory } = useUserChatbot(selectedUserId);
   const { data: cycleData } = useUserCycles(selectedUserId);
+  const deleteUserMutation = useDeleteUser();
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+
+  const handleDeleteUser = async () => {
+    if (!selectedUserId) return;
+    try {
+      await deleteUserMutation.mutateAsync(selectedUserId);
+      setDeleteDialogOpen(false);
+      setSelectedUserId(null);
+    } catch (error) {
+      console.error('Failed to delete user:', error);
+    }
+  };
 
   const toggleSection = (section: string) => {
     setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
@@ -239,10 +263,15 @@ export default function ComprehensiveAdminDashboard() {
                       </button>
                       
                       {expandedSections.profile && userDetails && (
+                        <>
                         <div className="grid grid-cols-2 gap-3 p-4 border rounded-lg">
                           <div>
                             <p className="text-xs text-muted-foreground">User ID</p>
                             <p className="text-sm font-mono">{userDetails.user.id}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-muted-foreground">Email</p>
+                            <p className="text-sm font-medium">{userDetails.user.email || 'N/A'}</p>
                           </div>
                           <div>
                             <p className="text-xs text-muted-foreground">Role</p>
@@ -297,11 +326,45 @@ export default function ComprehensiveAdminDashboard() {
                             </Badge>
                           </div>
                         </div>
+                        
+                         <div className="flex justify-end pt-4">
+                          <Button 
+                            variant="destructive" 
+                            size="sm"
+                            onClick={() => setDeleteDialogOpen(true)}
+                            className="gap-2"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                            Delete User Account
+                          </Button>
+
+                          <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  This action cannot be undone. This will permanently delete the user account
+                                  and remove their data from our servers.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction 
+                                  onClick={handleDeleteUser}
+                                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                >
+                                  {deleteUserMutation.isPending ? 'Deleting...' : 'Delete Account'}
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
+                        </>
                       )}
                     </div>
 
                     {/* Partner Information */}
-                    {userDetails.pairing && (
+                    {userDetails?.pairing && (
                       <div className="space-y-3">
                         <button
                           onClick={() => toggleSection('partner')}

@@ -3,6 +3,7 @@ import { apiFetch } from '@/lib/api';
 
 export interface AdminUser {
   id: string;
+  email?: string | null;
   role: 'PRIMARY' | 'PARTNER' | 'ADMIN';
   status: 'ACTIVE' | 'SUSPENDED' | 'DELETED';
   created_at: string;
@@ -89,6 +90,20 @@ export const useUpdateAdminUser = () => {
         method: 'POST',
         auth: true,
         body: JSON.stringify(payload),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: adminKeys.users });
+    },
+  });
+};
+
+export const useDeleteUser = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (userId: string) =>
+      apiFetch(`/admin/users/${userId}`, {
+        method: 'DELETE',
+        auth: true,
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: adminKeys.users });
