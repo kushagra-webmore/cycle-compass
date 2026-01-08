@@ -5566,3 +5566,898 @@
   "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
 }
 2026-01-08 23:29:26 [info]: Received SIGINT. Shutting down gracefully... 
+2026-01-08 23:30:41 [info]: 🚀 Server listening on port 3001 
+2026-01-08 23:30:41 [info]: Environment: development 
+2026-01-08 23:33:03 [http]: Request {
+  "method": "POST",
+  "url": "/auth/refresh",
+  "status": 200,
+  "responseTime": "1876ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:33:04 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users",
+  "status": 304,
+  "responseTime": "221ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:33:05 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/6c6dea5d-b701-4719-88a0-173304447c1e/chatbot",
+  "status": 400,
+  "responseTime": "293ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:33:06 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/6c6dea5d-b701-4719-88a0-173304447c1e/details",
+  "status": 200,
+  "responseTime": "837ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:33:06 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/6c6dea5d-b701-4719-88a0-173304447c1e/cycles",
+  "status": 200,
+  "responseTime": "861ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:33:06 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/6c6dea5d-b701-4719-88a0-173304447c1e/activity",
+  "status": 200,
+  "responseTime": "917ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:33:06 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/6c6dea5d-b701-4719-88a0-173304447c1e/chatbot",
+  "status": 400,
+  "responseTime": "156ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:33:09 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/6c6dea5d-b701-4719-88a0-173304447c1e/chatbot",
+  "status": 400,
+  "responseTime": "183ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:33:11 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/c8e9bac1-5669-44e6-9d80-67de4ffb7d41/chatbot",
+  "status": 400,
+  "responseTime": "284ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:33:11 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/c8e9bac1-5669-44e6-9d80-67de4ffb7d41/cycles",
+  "status": 200,
+  "responseTime": "491ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:33:11 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/c8e9bac1-5669-44e6-9d80-67de4ffb7d41/details",
+  "status": 200,
+  "responseTime": "561ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:33:11 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/c8e9bac1-5669-44e6-9d80-67de4ffb7d41/activity",
+  "status": 200,
+  "responseTime": "582ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:33:12 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/c8e9bac1-5669-44e6-9d80-67de4ffb7d41/chatbot",
+  "status": 400,
+  "responseTime": "219ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:33:14 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/c8e9bac1-5669-44e6-9d80-67de4ffb7d41/chatbot",
+  "status": 400,
+  "responseTime": "195ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:33:16 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/6c6dea5d-b701-4719-88a0-173304447c1e/chatbot",
+  "status": 400,
+  "responseTime": "276ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:33:16 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/6c6dea5d-b701-4719-88a0-173304447c1e/cycles",
+  "status": 304,
+  "responseTime": "283ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:33:16 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/6c6dea5d-b701-4719-88a0-173304447c1e/activity",
+  "status": 304,
+  "responseTime": "352ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:33:17 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/6c6dea5d-b701-4719-88a0-173304447c1e/details",
+  "status": 304,
+  "responseTime": "420ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:33:18 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/6c6dea5d-b701-4719-88a0-173304447c1e/chatbot",
+  "status": 400,
+  "responseTime": "190ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:33:20 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/6c6dea5d-b701-4719-88a0-173304447c1e/chatbot",
+  "status": 400,
+  "responseTime": "207ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:33:33 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users",
+  "status": 304,
+  "responseTime": "244ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:33:33 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/6c6dea5d-b701-4719-88a0-173304447c1e/chatbot",
+  "status": 400,
+  "responseTime": "228ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:33:33 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/6c6dea5d-b701-4719-88a0-173304447c1e/cycles",
+  "status": 304,
+  "responseTime": "301ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:33:33 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/6c6dea5d-b701-4719-88a0-173304447c1e/activity",
+  "status": 304,
+  "responseTime": "312ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:33:34 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/6c6dea5d-b701-4719-88a0-173304447c1e/details",
+  "status": 304,
+  "responseTime": "526ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:33:43 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users",
+  "status": 304,
+  "responseTime": "433ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:33:43 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/6c6dea5d-b701-4719-88a0-173304447c1e/chatbot",
+  "status": 400,
+  "responseTime": "471ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:33:43 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/6c6dea5d-b701-4719-88a0-173304447c1e/activity",
+  "status": 304,
+  "responseTime": "485ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:33:43 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/6c6dea5d-b701-4719-88a0-173304447c1e/cycles",
+  "status": 304,
+  "responseTime": "476ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:33:44 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/6c6dea5d-b701-4719-88a0-173304447c1e/details",
+  "status": 304,
+  "responseTime": "755ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:33:44 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/c8e9bac1-5669-44e6-9d80-67de4ffb7d41/chatbot",
+  "status": 400,
+  "responseTime": "268ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:33:44 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/c8e9bac1-5669-44e6-9d80-67de4ffb7d41/cycles",
+  "status": 304,
+  "responseTime": "378ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:33:44 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/c8e9bac1-5669-44e6-9d80-67de4ffb7d41/details",
+  "status": 304,
+  "responseTime": "545ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:33:44 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/c8e9bac1-5669-44e6-9d80-67de4ffb7d41/activity",
+  "status": 304,
+  "responseTime": "661ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:33:45 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/307dc803-82ff-4154-a838-fbeec530e240/chatbot",
+  "status": 400,
+  "responseTime": "206ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:33:45 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/307dc803-82ff-4154-a838-fbeec530e240/cycles",
+  "status": 200,
+  "responseTime": "270ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:33:45 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/307dc803-82ff-4154-a838-fbeec530e240/activity",
+  "status": 200,
+  "responseTime": "346ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:33:45 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/307dc803-82ff-4154-a838-fbeec530e240/details",
+  "status": 200,
+  "responseTime": "489ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:33:46 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/307dc803-82ff-4154-a838-fbeec530e240/chatbot",
+  "status": 400,
+  "responseTime": "205ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:33:48 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/307dc803-82ff-4154-a838-fbeec530e240/chatbot",
+  "status": 400,
+  "responseTime": "264ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:33:49 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/c8e9bac1-5669-44e6-9d80-67de4ffb7d41/cycles",
+  "status": 304,
+  "responseTime": "236ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:33:49 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/c8e9bac1-5669-44e6-9d80-67de4ffb7d41/chatbot",
+  "status": 400,
+  "responseTime": "247ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:33:49 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/c8e9bac1-5669-44e6-9d80-67de4ffb7d41/activity",
+  "status": 304,
+  "responseTime": "359ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:33:49 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/c8e9bac1-5669-44e6-9d80-67de4ffb7d41/details",
+  "status": 304,
+  "responseTime": "697ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:33:50 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/c8e9bac1-5669-44e6-9d80-67de4ffb7d41/chatbot",
+  "status": 400,
+  "responseTime": "268ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:33:52 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/c8e9bac1-5669-44e6-9d80-67de4ffb7d41/chatbot",
+  "status": 400,
+  "responseTime": "229ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:33:57 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/c8e9bac1-5669-44e6-9d80-67de4ffb7d41/chatbot",
+  "status": 400,
+  "responseTime": "855ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:34:00 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/307dc803-82ff-4154-a838-fbeec530e240/chatbot",
+  "status": 400,
+  "responseTime": "427ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:34:00 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/307dc803-82ff-4154-a838-fbeec530e240/cycles",
+  "status": 304,
+  "responseTime": "427ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:34:00 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/307dc803-82ff-4154-a838-fbeec530e240/activity",
+  "status": 304,
+  "responseTime": "549ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:34:00 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/307dc803-82ff-4154-a838-fbeec530e240/details",
+  "status": 304,
+  "responseTime": "719ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:34:01 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/307dc803-82ff-4154-a838-fbeec530e240/chatbot",
+  "status": 400,
+  "responseTime": "722ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:34:04 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/307dc803-82ff-4154-a838-fbeec530e240/chatbot",
+  "status": 400,
+  "responseTime": "317ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:34:40 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/307dc803-82ff-4154-a838-fbeec530e240/cycles",
+  "status": 304,
+  "responseTime": "529ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:34:40 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users",
+  "status": 304,
+  "responseTime": "557ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:34:40 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/307dc803-82ff-4154-a838-fbeec530e240/chatbot",
+  "status": 400,
+  "responseTime": "534ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:34:40 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/307dc803-82ff-4154-a838-fbeec530e240/activity",
+  "status": 304,
+  "responseTime": "640ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:34:40 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/307dc803-82ff-4154-a838-fbeec530e240/details",
+  "status": 304,
+  "responseTime": "925ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:34:43 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/6c6dea5d-b701-4719-88a0-173304447c1e/cycles",
+  "status": 304,
+  "responseTime": "313ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:34:43 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/6c6dea5d-b701-4719-88a0-173304447c1e/chatbot",
+  "status": 400,
+  "responseTime": "377ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:34:43 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/6c6dea5d-b701-4719-88a0-173304447c1e/activity",
+  "status": 304,
+  "responseTime": "420ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:34:44 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/6c6dea5d-b701-4719-88a0-173304447c1e/details",
+  "status": 304,
+  "responseTime": "1050ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:34:44 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/6c6dea5d-b701-4719-88a0-173304447c1e/chatbot",
+  "status": 400,
+  "responseTime": "294ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:34:47 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/6c6dea5d-b701-4719-88a0-173304447c1e/chatbot",
+  "status": 400,
+  "responseTime": "270ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:34:51 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/6c6dea5d-b701-4719-88a0-173304447c1e/chatbot",
+  "status": 400,
+  "responseTime": "645ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:34:53 [http]: Request {
+  "method": "GET",
+  "url": "/admin/analytics/dashboard?days=30",
+  "status": 304,
+  "responseTime": "984ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:35:13 [info]: 🚀 Server listening on port 3001 
+2026-01-08 23:35:13 [info]: Environment: development 
+2026-01-08 23:35:19 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users",
+  "status": 304,
+  "responseTime": "864ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:35:19 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/6c6dea5d-b701-4719-88a0-173304447c1e/activity",
+  "status": 304,
+  "responseTime": "703ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:35:19 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/6c6dea5d-b701-4719-88a0-173304447c1e/chatbot",
+  "status": 400,
+  "responseTime": "707ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:35:19 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/6c6dea5d-b701-4719-88a0-173304447c1e/cycles",
+  "status": 304,
+  "responseTime": "735ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:35:20 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/6c6dea5d-b701-4719-88a0-173304447c1e/details",
+  "status": 200,
+  "responseTime": "1122ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:35:31 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users",
+  "status": 304,
+  "responseTime": "532ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:35:31 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/6c6dea5d-b701-4719-88a0-173304447c1e/cycles",
+  "status": 304,
+  "responseTime": "712ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:35:31 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/6c6dea5d-b701-4719-88a0-173304447c1e/activity",
+  "status": 304,
+  "responseTime": "942ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:35:32 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/6c6dea5d-b701-4719-88a0-173304447c1e/details",
+  "status": 304,
+  "responseTime": "1400ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:35:53 [info]: 🚀 Server listening on port 3001 
+2026-01-08 23:35:53 [info]: Environment: development 
+2026-01-08 23:36:52 [info]: 🚀 Server listening on port 3001 
+2026-01-08 23:36:52 [info]: Environment: development 
+2026-01-08 23:37:35 [http]: Request {
+  "method": "POST",
+  "url": "/auth/refresh",
+  "status": 200,
+  "responseTime": "276ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:37:36 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users",
+  "status": 200,
+  "responseTime": "538ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:37:38 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/6c6dea5d-b701-4719-88a0-173304447c1e/activity",
+  "status": 200,
+  "responseTime": "462ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:37:38 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/6c6dea5d-b701-4719-88a0-173304447c1e/chatbot",
+  "status": 200,
+  "responseTime": "495ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:37:38 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/6c6dea5d-b701-4719-88a0-173304447c1e/cycles",
+  "status": 200,
+  "responseTime": "578ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:37:39 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/6c6dea5d-b701-4719-88a0-173304447c1e/details",
+  "status": 200,
+  "responseTime": "1182ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:38:22 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/6c6dea5d-b701-4719-88a0-173304447c1e/chatbot",
+  "status": 304,
+  "responseTime": "188ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:38:22 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/6c6dea5d-b701-4719-88a0-173304447c1e/cycles",
+  "status": 304,
+  "responseTime": "190ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:38:22 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/6c6dea5d-b701-4719-88a0-173304447c1e/activity",
+  "status": 304,
+  "responseTime": "274ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:38:22 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users",
+  "status": 304,
+  "responseTime": "418ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:38:22 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/6c6dea5d-b701-4719-88a0-173304447c1e/details",
+  "status": 304,
+  "responseTime": "426ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:38:50 [info]: 🚀 Server listening on port 3001 
+2026-01-08 23:38:50 [info]: Environment: development 
+2026-01-08 23:38:55 [http]: Request {
+  "method": "POST",
+  "url": "/auth/logout",
+  "status": 200,
+  "responseTime": "338ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:38:55 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users",
+  "status": 304,
+  "responseTime": "269ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:39:13 [info]: 🚀 Server listening on port 3001 
+2026-01-08 23:39:13 [info]: Environment: development 
+2026-01-08 23:39:28 [info]: 🚀 Server listening on port 3001 
+2026-01-08 23:39:28 [info]: Environment: development 
+2026-01-08 23:44:11 [http]: Request {
+  "method": "POST",
+  "url": "/auth/login",
+  "status": 200,
+  "responseTime": "1429ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:44:12 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users",
+  "status": 200,
+  "responseTime": "350ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:44:13 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/6c6dea5d-b701-4719-88a0-173304447c1e/activity",
+  "status": 304,
+  "responseTime": "394ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:44:14 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/6c6dea5d-b701-4719-88a0-173304447c1e/chatbot",
+  "status": 304,
+  "responseTime": "463ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:44:14 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/6c6dea5d-b701-4719-88a0-173304447c1e/cycles",
+  "status": 304,
+  "responseTime": "647ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:44:14 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/6c6dea5d-b701-4719-88a0-173304447c1e/details",
+  "status": 304,
+  "responseTime": "831ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:44:26 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/2f286530-d0a6-4019-8b3d-1c363a4eb833/cycles",
+  "status": 200,
+  "responseTime": "645ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:44:26 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/2f286530-d0a6-4019-8b3d-1c363a4eb833/chatbot",
+  "status": 200,
+  "responseTime": "719ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:44:26 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/2f286530-d0a6-4019-8b3d-1c363a4eb833/activity",
+  "status": 200,
+  "responseTime": "956ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:44:27 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/2f286530-d0a6-4019-8b3d-1c363a4eb833/details",
+  "status": 200,
+  "responseTime": "2129ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:44:29 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/307dc803-82ff-4154-a838-fbeec530e240/cycles",
+  "status": 304,
+  "responseTime": "355ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:44:29 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/307dc803-82ff-4154-a838-fbeec530e240/chatbot",
+  "status": 200,
+  "responseTime": "420ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:44:30 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/307dc803-82ff-4154-a838-fbeec530e240/activity",
+  "status": 304,
+  "responseTime": "544ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:44:30 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/307dc803-82ff-4154-a838-fbeec530e240/details",
+  "status": 200,
+  "responseTime": "892ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:44:33 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/c8e9bac1-5669-44e6-9d80-67de4ffb7d41/cycles",
+  "status": 304,
+  "responseTime": "428ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:44:33 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/c8e9bac1-5669-44e6-9d80-67de4ffb7d41/chatbot",
+  "status": 200,
+  "responseTime": "443ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:44:33 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/c8e9bac1-5669-44e6-9d80-67de4ffb7d41/activity",
+  "status": 304,
+  "responseTime": "482ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:44:34 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users/c8e9bac1-5669-44e6-9d80-67de4ffb7d41/details",
+  "status": 200,
+  "responseTime": "894ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:44:39 [http]: Request {
+  "method": "DELETE",
+  "url": "/admin/users/c8e9bac1-5669-44e6-9d80-67de4ffb7d41",
+  "status": 200,
+  "responseTime": "920ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:44:39 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users",
+  "status": 200,
+  "responseTime": "462ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:44:52 [http]: Request {
+  "method": "GET",
+  "url": "/admin/users",
+  "status": 304,
+  "responseTime": "472ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:44:52 [http]: Request {
+  "method": "POST",
+  "url": "/auth/logout",
+  "status": 200,
+  "responseTime": "502ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-08 23:45:06 [info]: Received SIGINT. Shutting down gracefully... 

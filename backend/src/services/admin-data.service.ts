@@ -50,8 +50,12 @@ export const getAllUserDetails = async (userId: string) => {
     .eq('status', 'ACTIVE')
     .single();
 
+  // Fetch email from auth
+  const { data: authData } = await supabase.auth.admin.getUserById(userId);
+  const email = authData.user?.email || null;
+
   return {
-    user,
+    user: { ...user, email },
     cycles: cycles ?? [],
     symptoms: symptoms ?? [],
     journals: journals ?? [],
@@ -96,7 +100,7 @@ export const getUserActivityLog = async (userId: string) => {
  */
 export const getChatbotHistoryForUser = async (userId: string) => {
   // Use the chatbot service but with admin flag to see all messages
-  return getChatHistory(userId, true, 100);
+  return getChatHistory(userId, undefined, true, 100);
 };
 
 /**

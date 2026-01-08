@@ -8,6 +8,7 @@ export type AuditAction =
   | 'consent.create'
   | 'consent.revoke'
   | 'admin.user-update'
+  | 'admin.user-delete'
   | 'admin.force-unpair'
   | 'ai.explain'
   | 'ai.partner-guidance'

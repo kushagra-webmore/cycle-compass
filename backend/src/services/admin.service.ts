@@ -55,6 +55,19 @@ export const updateUserAccount = async (
   return data;
 };
 
+export const deleteUserAccount = async (adminUserId: string, userId: string) => {
+  const supabase = getSupabaseClient();
+  
+  // Use supabase admin auth to delete the user
+  const { error } = await supabase.auth.admin.deleteUser(userId);
+
+  if (error) {
+    throw new HttpError(400, 'Failed to delete user', error);
+  }
+
+  await logAuditEvent(adminUserId, 'admin.user-delete', { userId });
+};
+
 export const listPairings = async () => {
   const supabase = getSupabaseClient();
   const { data, error } = await supabase

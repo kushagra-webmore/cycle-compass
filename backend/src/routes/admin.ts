@@ -17,6 +17,7 @@ import {
   listPairings,
   listUsers,
   updateUserAccount,
+  deleteUserAccount,
   upsertMythArticle,
 } from '../services/admin.service.js';
 import {
@@ -46,6 +47,15 @@ adminRouter.post(
     const { userId, status, role } = req.body;
     const result = await updateUserAccount(req.authUser!.id, { userId, status, role });
     res.json(result);
+  }),
+);
+
+adminRouter.delete(
+  '/users/:userId',
+  asyncHandler(async (req, res) => {
+    const { userId } = req.params;
+    await deleteUserAccount(req.authUser!.id, userId);
+    res.json({ success: true });
   }),
 );
 
