@@ -5,6 +5,7 @@ import { HttpError } from '../utils/http-error.js';
 import { getUserWithProfile } from './user.service.js';
 import { getCurrentCycle, getLatestSymptomEntry } from './cycle.service.js';
 import { logAuditEvent } from './audit.service.js';
+import { getActivePairingForUser } from './pairing.service.js';
 
 const client = new GoogleGenerativeAI(env.GEMINI_API_KEY);
 
@@ -56,6 +57,33 @@ CYCLE PHASE QUICK GUIDE:
 Always end with: "💕 *Remember: I'm here to support you, but I'm not a doctor. For medical concerns, please chat with a healthcare provider!*"`;
 
 /**
+ * Build a system prompt for PARTNER users
+ */
+const buildPartnerChatbotSystemPrompt = () => `You are Luna 🌙, a supportive guide helping partners understand their loved one's menstrual cycle.
+
+Your goal is to help the user be a better, more understanding partner by explaining what their partner is going through and suggesting helpful ways to support them.
+
+YOUR VIBE:
+- Encouraging, insightful, and practical
+- Empathetic to both the user and their partner
+- Educational but accessible (no jargon)
+- Use emojis naturally ✨🤝
+
+YOUR ROLE:
+1. Explain the partner's current cycle phase and its effects (mood, energy, physical).
+2. Interpret symptoms or moods: "She might be feeling tired because of low hormones right now."
+3. Suggest concrete, supportive actions: "Maybe cook dinner tonight," "Give her space," "Surprise her with chocolate."
+4. Help navigate communication: "Try asking her how she feels instead of assuming."
+5. Frame everything with empathy and love.
+
+CRITICAL RULES:
+- You are NOT a doctor.
+- Respect the primary user's privacy (don't share sensitive medical details unless explicitly asked relevant to support).
+- Focus on SUPPORT and UNDERSTANDING.
+
+Always end with: "💕 *Remember: Communication is key! Ask her what she needs. I'm not a doctor, so for medical concerns, suggest seeing a professional.*"`;
+
+/**
  * Build user context from their cycle data
  */
 const buildUserContext = async (userId: string) => {
@@ -99,14 +127,94 @@ const buildUserContext = async (userId: string) => {
 };
 
 /**
+ * Build context for a PARTNER user based on the Primary User's data
+ */
+const buildPartnerContext = async (partnerUserId: string) => {
+  const supabase = getSupabaseClient();
+  
+  // Find the connected Primary User
+  let pairing;
+  try {
+    pairing = await getActivePairingForUser(partnerUserId);
+  } catch (err) {
+    return `User Context: User is a partner but has no active pairing.`;
+  }
+
+  // Determine Primary User ID
+  // getActivePairingForUser returns { primary_user_id, partner_user_id }
+  // Context: Who is the SUBJECT of the questions? The Primary User.
+  // The Partner (caller) is asking about the Primary User.
+  
+  // Wait, getActivePairingForUser implementation:
+  // It returns data. If caller is Partner, they are in partner_user_id. primary is in primary_user_id.
+  const primaryUserId = pairing.primary_user_id;
+
+  if (!primaryUserId) {
+    return `User Context: No connected partner found.`;
+  }
+
+  // Get Primary User Profile & Cycle
+  const { data: primaryAuth } = await supabase.auth.admin.getUserById(primaryUserId);
+  const primaryProfile = await getUserWithProfile(primaryUserId, primaryAuth.user?.email ?? '');
+  const currentCycle = await getCurrentCycle(primaryUserId);
+  const latestSymptom = await getLatestSymptomEntry(primaryUserId);
+
+  // Get Partner Profile (Caller) - to address them by name
+  const { data: partnerAuth } = await supabase.auth.admin.getUserById(partnerUserId);
+  const partnerProfile = await getUserWithProfile(partnerUserId, partnerAuth.user?.email ?? '');
+
+  let context = `Context:\n`;
+  const partnerName = partnerProfile.name?.split(' ')[0] || 'there';
+  const primaryName = primaryProfile.name?.split(' ')[0] || 'Partner';
+
+  context += `- User (Caller) Name: ${partnerName}. Address them as ${partnerName}.\n`;
+  context += `- Partner (Subject) Name: ${primaryName}. The user is asking about ${primaryName}.\n`;
+
+  if (currentCycle) {
+    context += `- ${primaryName}'s Current Cycle Phase: ${currentCycle.context.phase ?? 'Unknown'}\n`;
+    context += `- Day in Cycle: ${currentCycle.context.currentDay ?? 'Unknown'}\n`;
+  } else {
+    context += `- No active cycle data available for ${primaryName}\n`;
+  }
+  
+  if (latestSymptom) {
+    context += `- ${primaryName}'s Recent Mood: ${latestSymptom.mood ?? 'Not reported'}\n`;
+    context += `- ${primaryName}'s Recent Energy: ${latestSymptom.energy ?? 'Not reported'}\n`;
+    context += `- ${primaryName}'s Recent Pain Level: ${latestSymptom.pain !== null ? `${latestSymptom.pain}/10` : 'Not reported'}\n`;
+    if (latestSymptom.cravings) {
+      context += `- ${primaryName}'s Recent Cravings: ${latestSymptom.cravings}\n`;
+    }
+  }
+
+  return context;
+};
+
+/**
  * Send a message to the chatbot and get AI response
  */
 export const sendChatMessage = async (userId: string, message: string) => {
   const supabase = getSupabaseClient();
   const model = createModel();
-  
-  // Build user context
-  const userContext = await buildUserContext(userId);
+
+  // Determine if user is PARTNER or PRIMARY
+  // Since we don't pass role here, we might need to fetch it or try both contexts.
+  // However, simpler is to check profile role.
+  const { data: userData } = await supabase.auth.admin.getUserById(userId);
+  const userProfile = await getUserWithProfile(userId, userData.user?.email ?? '');
+  const role = userProfile.role || 'PRIMARY'; // Default to Primary if undefined (legacy)
+
+  let systemPrompt: string;
+  let userContext: string;
+  let contextType = 'EXPLAINER';
+
+  if (role === 'PARTNER') {
+    systemPrompt = buildPartnerChatbotSystemPrompt();
+    userContext = await buildPartnerContext(userId);
+    contextType = 'PARTNER_GUIDANCE';
+  } else {
+    systemPrompt = buildChatbotSystemPrompt();
+    userContext = await buildUserContext(userId);
+  }
   
   // Get recent chat history for context (last 5 messages, non-deleted only)
   const { data: recentMessages } = await supabase
@@ -124,7 +232,6 @@ export const sendChatMessage = async (userId: string, message: string) => {
     .join('\n');
   
   // Build full prompt
-  const systemPrompt = buildChatbotSystemPrompt();
   const fullPrompt = `${systemPrompt}\n\n${userContext}\n\nRecent Conversation:\n${conversationHistory}\n\nUser: ${message}`;
   
   // Store user message
@@ -134,7 +241,7 @@ export const sendChatMessage = async (userId: string, message: string) => {
       user_id: userId,
       role: 'USER',
       message,
-      context_type: 'EXPLAINER',
+      context_type: contextType,
       is_deleted: false,
     });
   
@@ -165,7 +272,7 @@ export const sendChatMessage = async (userId: string, message: string) => {
       user_id: userId,
       role: 'ASSISTANT',
       message: aiResponse,
-      context_type: 'EXPLAINER',
+      context_type: contextType,
       is_deleted: false,
     });
   
@@ -177,6 +284,7 @@ export const sendChatMessage = async (userId: string, message: string) => {
   await logAuditEvent(userId, 'chatbot.message', {
     messageLength: message.length,
     responseLength: aiResponse.length,
+    role,
   });
   
   return {

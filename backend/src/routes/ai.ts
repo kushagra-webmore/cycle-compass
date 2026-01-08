@@ -1,25 +1,55 @@
 import { Router } from 'express';
-import { authenticate, requireRoles } from '../middleware/auth';
-import { validateBody } from '../middleware/validate';
+import { authenticate, requireRoles } from '../middleware/auth.js';
+import { validateBody } from '../middleware/validate.js';
 import {
   aiExplainSchema,
   aiJournalSummarySchema,
   aiPartnerGuidanceSchema,
-} from '../validators/ai';
-import { asyncHandler } from '../utils/async-handler';
+} from '../validators/ai.js';
+import { asyncHandler } from '../utils/async-handler.js';
 import {
   generateCycleExplainer,
   generateJournalSummary,
   generatePartnerGuidance,
-} from '../services/ai.service';
+  generateDailyInsights,
+} from '../services/ai.service.js';
 import {
   getCurrentCycle,
   getCycleById,
   getLatestSymptomEntry,
-} from '../services/cycle.service';
-import { getPartnerSummary } from '../services/partner.service';
+} from '../services/cycle.service.js';
+import { getPartnerSummary } from '../services/partner.service.js';
 
 export const aiRouter = Router();
+
+aiRouter.post(
+  '/daily-insights',
+  authenticate,
+  requireRoles('PRIMARY'),
+  asyncHandler(async (req, res) => {
+    const userId = req.authUser!.id;
+    // No specific body validation needed for now, getting params from backend state
+    const cycle = await getCurrentCycle(userId);
+    
+    if (!cycle) {
+       return res.status(400).json({ message: 'No cycle data found.' });
+    }
+
+    const latestSymptom = await getLatestSymptomEntry(userId);
+    
+    const insights = await generateDailyInsights(userId, {
+      phase: cycle.context.phase,
+      day: cycle.context.currentDay,
+      symptoms: latestSymptom ? `${latestSymptom.mood ?? ''} ${latestSymptom.pain ? `Pain: ${latestSymptom.pain}` : ''}` : undefined,
+      goal: 'TRACKING' // Defaults, could be from user profile
+    });
+
+    res.json({
+      insights,
+      disclaimer: 'This is not medical advice.'
+    });
+  })
+);
 
 aiRouter.post(
   '/explain',

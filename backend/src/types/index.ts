@@ -14,6 +14,7 @@ export interface AuthUser {
   timezone?: string;
   lastPeriodDate?: string | null;
   cycleLength?: number | null;
+  goal?: 'TRACKING' | 'CONCEIVE' | 'PREGNANCY' | null;
   lastLogin?: string | null;
   lastActivity?: string | null;
 }

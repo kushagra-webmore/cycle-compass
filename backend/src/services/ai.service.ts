@@ -4,9 +4,11 @@ import {
   cycleExplainerSystemPrompt,
   partnerGuidanceSystemPrompt,
   journalSummarySystemPrompt,
+  dailyInsightsSystemPrompt,
   buildCycleExplainerUserPrompt,
   buildPartnerGuidanceUserPrompt,
   buildJournalSummaryUserPrompt,
+  buildDailyInsightsUserPrompt,
 } from '../config/prompts.js';
 import { logAIInteraction } from './audit.service.js';
 import { getUserWithProfile } from './user.service.js';
@@ -52,6 +54,7 @@ export const generatePartnerGuidance = async (
 ) => {
   const model = createModel();
   const prompt = buildPartnerGuidanceUserPrompt(params);
+  
   const result = await model.generateContent({
     contents: [{
       role: 'user',
@@ -60,8 +63,23 @@ export const generatePartnerGuidance = async (
   });
 
   const text = result.response.text();
+  const cleaned = text.replace(/```json/g, '').replace(/```/g, '').trim();
+
+  let json = {
+    explanation: "Support your partner by listening and being present.",
+    actions: ["Ask how they are feeling", "Offer a warm drink", "Be patient"],
+    foodRecommendation: "Comfort food",
+    activityRecommendation: "Relaxing evening"
+  };
+
+  try {
+    json = JSON.parse(cleaned);
+  } catch (e) {
+    console.error('Failed to parse Partner Guidance JSON', text);
+  }
+
   await logAIInteraction(userId, 'GUIDANCE', params, text);
-  return text;
+  return json;
 };
 
 export const generateJournalSummary = async (userId: string, entries: string[]) => {
@@ -107,4 +125,48 @@ export const generateJournalSummary = async (userId: string, entries: string[]) 
   }
 
   throw lastError ?? new Error('Failed to generate journal summary');
+};
+
+export const generateDailyInsights = async (
+  userId: string,
+  params: {
+    phase: string;
+    day: number;
+    symptoms?: string;
+    goal?: 'TRACKING' | 'CONCEIVE';
+  },
+) => {
+  const model = createModel();
+  const prompt = buildDailyInsightsUserPrompt(params);
+  
+  // Enforce JSON format in the prompt (already done) but also can use generation config if available.
+  // For now, reliance on prompt instruction.
+  
+  const result = await model.generateContent({
+    contents: [{
+      role: 'user',
+      parts: [{ text: `${dailyInsightsSystemPrompt}\n\n${prompt}` }],
+    }],
+  });
+
+  const text = result.response.text();
+  
+  // Attempt to clean markdown code blocks if present
+  const cleaned = text.replace(/```json/g, '').replace(/```/g, '').trim();
+  
+  let json;
+  try {
+    json = JSON.parse(cleaned);
+  } catch (e) {
+    console.error('Failed to parse AI daily insights JSON', text);
+    // Fallback or throw
+    json = {
+      food: "Hydrate well today.",
+      activity: "Listen to your body.",
+      wisdom: "You are doing great."
+    };
+  }
+
+  await logAIInteraction(userId, 'GUIDANCE', params, text); // Reusing GUIDANCE or make new type if needed
+  return json;
 };

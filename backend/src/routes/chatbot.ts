@@ -11,8 +11,8 @@ import {
 
 export const chatbotRouter = Router();
 
-// All chatbot endpoints require authentication and PRIMARY role
-chatbotRouter.use(authenticate, requireRoles('PRIMARY'));
+// All chatbot endpoints require authentication
+chatbotRouter.use(authenticate);
 
 /**
  * POST /chatbot/message

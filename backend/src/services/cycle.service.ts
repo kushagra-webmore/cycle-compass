@@ -4,7 +4,7 @@ import { getCycleContext, CycleContext } from '../utils/cycle.js';
 
 export interface CreateCycleInput {
   startDate: string;
-  endDate?: string;
+  endDate?: string | null;
   cycleLength?: number;
   isPredicted?: boolean;
 }
@@ -17,6 +17,8 @@ export interface SymptomLogInput {
   sleepHours?: number;
   cravings?: string;
   bloating?: boolean;
+  intercourse?: boolean;
+  protection?: boolean;
 }
 
 export interface CycleSummary {
@@ -37,6 +39,8 @@ export interface SymptomEntry {
   sleep_hours: number | null;
   cravings: string | null;
   bloating: boolean | null;
+  intercourse: boolean | null;
+  protection_used: boolean | null;
 }
 
 const mapCycleRow = (row: any): CycleSummary => {
@@ -187,6 +191,8 @@ export const logSymptom = async (userId: string, cycleId: string, input: Symptom
         sleep_hours: input.sleepHours,
         cravings: input.cravings,
         bloating: input.bloating,
+        intercourse: input.intercourse,
+        protection_used: input.protection,
       },
       {
         onConflict: 'user_id,date',
@@ -253,7 +259,7 @@ export const updateCycle = async (
   
   const updates: any = {};
   if (input.startDate) updates.start_date = input.startDate;
-  if (input.endDate) updates.end_date = input.endDate; // Allow setting to null/undefined if needed, but typically updates send specific values
+  if (input.endDate !== undefined) updates.end_date = input.endDate; // Correctly handle null/undefined
   if (input.cycleLength) updates.cycle_length = input.cycleLength;
 
   const { data, error } = await supabase

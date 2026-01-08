@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 const baseCycleSchema = z.object({
   startDate: z.string().regex(/\d{4}-\d{2}-\d{2}/, 'Invalid date format (YYYY-MM-DD)'),
-  endDate: z.string().regex(/\d{4}-\d{2}-\d{2}/, 'Invalid date format (YYYY-MM-DD)').optional(),
+  endDate: z.string().regex(/\d{4}-\d{2}-\d{2}/, 'Invalid date format (YYYY-MM-DD)').nullable().optional(),
   cycleLength: z.number().min(15).max(60).optional(),
   isPredicted: z.boolean().optional(),
 });

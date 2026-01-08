@@ -19,6 +19,7 @@ interface UserRow {
     onboarding_completed: boolean;
     last_period_date?: string | null;
     cycle_length?: number | null;
+    goal?: 'TRACKING' | 'CONCEIVE' | 'PREGNANCY' | null;
   } | {
     name?: string | null;
     age?: number | null;
@@ -29,6 +30,7 @@ interface UserRow {
     onboarding_completed: boolean;
     last_period_date?: string | null;
     cycle_length?: number | null;
+    goal?: 'TRACKING' | 'CONCEIVE' | 'PREGNANCY' | null;
   }[] | null;
 }
 
@@ -52,6 +54,7 @@ const mapUserRowToAuthUser = (
     timezone: profileData?.timezone ?? undefined,
     lastPeriodDate: profileData?.last_period_date ?? null,
     cycleLength: profileData?.cycle_length ?? null,
+    goal: profileData?.goal ?? 'TRACKING',
     lastLogin: row.last_login ?? null,
     lastActivity: row.last_activity ?? null,
   };
@@ -65,7 +68,7 @@ export const getUserWithProfile = async (
   const { data, error }: PostgrestSingleResponse<UserRow> = await supabase
     .from('users')
     .select(
-      'id, role, status, last_login, last_activity, profiles(name, age, date_of_birth, phone, city, timezone, onboarding_completed, last_period_date, cycle_length)',
+      'id, role, status, last_login, last_activity, profiles(name, age, date_of_birth, phone, city, timezone, onboarding_completed, last_period_date, cycle_length, goal)',
     )
     .eq('id', userId)
     .single();
@@ -118,6 +121,7 @@ export const createUserRecord = async ({
     city,
     timezone,
     onboarding_completed: false,
+    goal: 'TRACKING',
   });
 
   if (profileError) {
@@ -134,6 +138,7 @@ interface UpdateProfileArgs {
   onboarding_completed?: boolean;
   last_period_date?: string | null;
   cycle_length?: number | null;
+  goal?: 'TRACKING' | 'CONCEIVE' | 'PREGNANCY' | null;
 }
 
 export const updateUserProfile = async (
