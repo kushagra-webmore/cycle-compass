@@ -16,6 +16,7 @@ export interface User {
   onboardingCompleted?: boolean;
   lastPeriodDate?: string | null;
   cycleLength?: number | null;
+  periodLength?: number | null;
   timezone?: string | null;
   lastLogin?: string | null;
   lastActivity?: string | null;
@@ -40,6 +41,7 @@ interface AuthResponse {
     timezone?: string | null;
     lastPeriodDate?: string | null;
     cycleLength?: number | null;
+    periodLength?: number | null;
     lastLogin?: string | null;
     lastActivity?: string | null;
     goal?: 'TRACKING' | 'CONCEIVE' | 'PREGNANCY' | null;
@@ -84,6 +86,7 @@ const mapUserFromResponse = (payload: AuthResponse['user']): User => ({
   onboardingCompleted: payload.onboardingCompleted ?? false,
   lastPeriodDate: payload.lastPeriodDate ?? null,
   cycleLength: payload.cycleLength ?? null,
+  periodLength: payload.periodLength ?? null,
   timezone: payload.timezone ?? null,
   lastLogin: payload.lastLogin ?? null,
   lastActivity: payload.lastActivity ?? null,
@@ -238,7 +241,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     role: UserRole,
     details: { name: string; dateOfBirth: string; phone: string; city: string; }
   ) => {
-    setIsLoading(true);
+    // Note: Do NOT set global isLoading here, as it causes RoleBasedRedirect to unmount the Auth component
     try {
       const data = await apiFetch<AuthResponse>('/auth/signup', {
         method: 'POST',
@@ -258,14 +261,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       handleAuthSuccess(data);
     } catch (error: any) {
       console.error('Signup failed:', error);
-      setError(
-        error?.code === 'password-too-short'
-          ? 'Password must be at least 8 characters long'
-          : 'Invalid email or password. Please try again.'
-      );
+      
+      let errorMessage = 'Invalid email or password. Please try again.';
+      
+      // Handle known error cases
+      if (error?.code === 'password-too-short') {
+        errorMessage = 'Password must be at least 8 characters long';
+      } else if (error?.details?.code === '23505') { // Postgres unique constraint violation
+         const detailText = error.details.details || '';
+         if (detailText.includes('phone')) {
+             errorMessage = 'This phone number is already registered.';
+         } else if (detailText.includes('email')) {
+             errorMessage = 'This email is already registered.';
+         } else {
+             errorMessage = 'Account with these details already exists.';
+         }
+      } else if (error?.message) {
+         // Fallback to backend error message if available and not generic
+         if (error.message.includes('email address has already been registered')) {
+            errorMessage = 'This email is already registered. Please sign in.';
+         } else if (error.message !== 'Failed to create user profile' && error.message !== 'Unexpected error') {
+            errorMessage = error.message;
+         }
+      }
+
+      setError(errorMessage);
       throw error;
-    } finally {
-      setIsLoading(false);
     }
   }, [handleAuthSuccess]);
 
@@ -312,6 +333,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         onboardingCompleted: updates.onboardingCompleted,
         lastPeriodDate: updates.lastPeriodDate,
         cycleLength: updates.cycleLength,
+        periodLength: updates.periodLength,
         goal: updates.goal,
       };
       

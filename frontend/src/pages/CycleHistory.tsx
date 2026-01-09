@@ -24,7 +24,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { CycleHistoryChart } from '@/components/dashboard/CycleHistoryChart';
 
 export default function CycleHistory() {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth(); // Destructure updateUser
   const { data: cycles = [], isLoading } = useCycles();
   const createCycle = useCreateCycle();
   const updateCycle = useUpdateCycle();
@@ -32,11 +32,50 @@ export default function CycleHistory() {
   const { toast } = useToast();
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [isStatsEditOpen, setIsStatsEditOpen] = useState(false);
+  const [statsForm, setStatsForm] = useState({
+    cycleLength: user?.cycleLength?.toString() || '28',
+    periodLength: user?.periodLength?.toString() || '5'
+  });
+  
   const [editingCycle, setEditingCycle] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     startDate: '',
     endDate: '',
   });
+
+  const handleStatsUpdate = async () => {
+    try {
+      const cycleLen = parseInt(statsForm.cycleLength);
+      const periodLen = parseInt(statsForm.periodLength);
+      
+      if (isNaN(cycleLen) || isNaN(periodLen) || cycleLen < 20 || cycleLen > 45 || periodLen < 1 || periodLen > 10) {
+        toast({
+          title: "Invalid input",
+          description: "Please enter reasonable values (Cycle: 20-45, Period: 1-10).",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      await updateUser({
+        cycleLength: cycleLen,
+        periodLength: periodLen
+      });
+      
+      setIsStatsEditOpen(false);
+      toast({
+         title: "Settings updated",
+         description: "Your cycle averages have been updated."
+      });
+    } catch (e) {
+      toast({
+        title: "Update failed",
+        description: "Could not update settings. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
 
   // Calculate stats
   const stats = useMemo(() => {
@@ -233,6 +272,45 @@ export default function CycleHistory() {
               </DialogFooter>
             </DialogContent>
           </Dialog>
+          
+          <Dialog open={isStatsEditOpen} onOpenChange={setIsStatsEditOpen}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Update Cycle Settings</DialogTitle>
+                <DialogDescription>
+                   Manually adjust your average cycle and period lengths.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                 <div className="grid gap-2">
+                    <Label htmlFor="cycleLen">Average Cycle Length (Days)</Label>
+                    <Input 
+                      id="cycleLen" 
+                      type="number" 
+                      min="20" 
+                      max="45"
+                      value={statsForm.cycleLength}
+                      onChange={e => setStatsForm(p => ({ ...p, cycleLength: e.target.value }))}
+                    />
+                 </div>
+                 <div className="grid gap-2">
+                    <Label htmlFor="periodLen">Average Period Length (Days)</Label>
+                    <Input 
+                      id="periodLen" 
+                      type="number" 
+                      min="1" 
+                      max="15"
+                      value={statsForm.periodLength}
+                      onChange={e => setStatsForm(p => ({ ...p, periodLength: e.target.value }))}
+                    />
+                 </div>
+              </div>
+              <DialogFooter>
+                 <Button variant="outline" onClick={() => setIsStatsEditOpen(false)}>Cancel</Button>
+                 <Button onClick={handleStatsUpdate}>Save Changes</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
 
         {/* Stats Cards */}
@@ -244,8 +322,16 @@ export default function CycleHistory() {
 
              {/* Metric Cards */}
              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <Card className="bg-primary/5 border-primary/20">
+                <Card className="bg-primary/5 border-primary/20 relative group">
                   <CardContent className="p-4 flex flex-col items-center justify-center text-center">
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => setIsStatsEditOpen(true)}
+                    >
+                      <Edit2 className="h-3 w-3 text-muted-foreground" />
+                    </Button>
                     <div className="p-2 mb-2 rounded-full bg-primary/10 text-primary">
                       <CalendarIcon className="h-4 w-4" />
                     </div>
@@ -255,8 +341,16 @@ export default function CycleHistory() {
                   </CardContent>
                 </Card>
                 
-                <Card className="bg-rose-500/5 border-rose-500/20">
+                <Card className="bg-rose-500/5 border-rose-500/20 relative group">
                   <CardContent className="p-4 flex flex-col items-center justify-center text-center">
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => setIsStatsEditOpen(true)}
+                    >
+                      <Edit2 className="h-3 w-3 text-muted-foreground" />
+                    </Button>
                     <div className="p-2 mb-2 rounded-full bg-rose-500/10 text-rose-500">
                       <Clock className="h-4 w-4" />
                     </div>

@@ -88,7 +88,11 @@ export const apiFetch = async <T>(path: string, options: RequestOptions = {}): P
   if (!response.ok) {
     const errorBody = await response.json().catch(() => null);
     const message = errorBody?.message ?? 'Unexpected error';
-    throw new Error(message);
+    const error = new Error(message);
+    // Attach additional error details if available
+    (error as any).details = errorBody?.details || errorBody; 
+    (error as any).code = errorBody?.code;
+    throw error;
   }
 
   if (response.status === 204) {

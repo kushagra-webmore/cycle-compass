@@ -8,8 +8,12 @@ import { PhaseCard } from '@/components/dashboard/PhaseCard';
 import { CycleDailyInsights } from '@/components/dashboard/CycleDailyInsights';
 import { AvgCycleStats } from '@/components/dashboard/AvgCycleStats';
 import { FertilityChart } from '@/components/dashboard/FertilityChart';
-import { useCurrentCycle, useSymptomHistory } from '@/hooks/api/cycles';
-import { format, addDays } from 'date-fns';
+import { HistoryChart } from '@/components/dashboard/HistoryChart';
+import { CycleCalendar } from '@/components/dashboard/CycleCalendar';
+import { useCurrentCycle, useSymptomHistory, useCycles } from '@/hooks/api/cycles';
+import { useAuth } from '@/contexts/AuthContext';
+import { format, addDays, differenceInDays } from 'date-fns';
+import { useMemo } from 'react';
 
 const moodLabels: Record<string, string> = {
   LOW: 'Low',
@@ -35,11 +39,66 @@ export default function Dashboard() {
     isLoading: symptomLoading,
     isError: symptomError,
     refetch: refetchSymptoms,
-  } = useSymptomHistory(14);
+  } = useSymptomHistory(90); // Increased to 90 days for better stats
+  const { data: cyclesHistory } = useCycles();
+  const { user } = useAuth();
 
   const latestSymptom = symptomHistory?.[0];
   const hasData = Boolean(cycle);
   const navigate = useNavigate();
+
+  // Calculate Average Cycle Length from history
+  const avgCycleLength = useMemo(() => {
+    if (!cyclesHistory || cyclesHistory.length === 0) return user?.cycleLength || 28;
+    const total = cyclesHistory.reduce((acc, c) => acc + c.cycleLength, 0);
+    return Math.round(total / cyclesHistory.length);
+  }, [cyclesHistory, user?.cycleLength]);
+
+  // Calculate Average Period Length based on recorded flow in symptoms
+  const avgPeriodLength = useMemo(() => {
+    if (!symptomHistory || symptomHistory.length === 0) return user?.periodLength || 5;
+
+    // Filter, sort and group consecutive flow days
+    const flowLogs = symptomHistory
+      .filter(log => log.flow && log.flow !== 'NONE')
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+    if (flowLogs.length === 0) return user?.periodLength || 5;
+
+    const periods: number[] = [];
+    let currentStreak = 1;
+
+    for (let i = 0; i < flowLogs.length - 1; i++) {
+       const current = new Date(flowLogs[i].date);
+       const next = new Date(flowLogs[i+1].date);
+       const diff = Math.round((next.getTime() - current.getTime()) / (1000 * 60 * 60 * 24));
+
+       if (diff === 1) {
+          currentStreak++;
+       } else {
+          if (currentStreak > 1) periods.push(currentStreak);
+          currentStreak = 1;
+       }
+    }
+    // Push the last streak if valid
+    if (currentStreak > 1) periods.push(currentStreak);
+
+    if (periods.length === 0) return user?.periodLength || 5;
+
+    const totalDays = periods.reduce((a, b) => a + b, 0);
+    return Math.round(totalDays / periods.length);
+  }, [symptomHistory, user?.periodLength]);
+
+  // Check for discrepancy
+  const discrepancy = useMemo(() => {
+    if (!cycle) return null;
+    const currentDay = cycle.context.currentDay;
+    const diff = currentDay - avgCycleLength;
+    if (diff > 2) { // 2 days buffer
+       return { type: 'longer', days: diff };
+    }
+    return null;
+  }, [cycle, avgCycleLength]);
 
   // Helper date formatting
   const formatDate = (dateString: string) => {
@@ -125,6 +184,25 @@ export default function Dashboard() {
 
         {hasData && cycle && (
           <>
+            {/* Discrepancy Alert */}
+            {discrepancy && (
+              <div className="mb-4 animate-in slide-in-from-top-2">
+                <Card className="bg-amber-50 border-amber-200">
+                  <CardContent className="p-3 flex items-start gap-3">
+                    <AlertTriangle className="h-5 w-5 text-amber-600 mt-0.5" />
+                    <div>
+                      <p className="font-semibold text-amber-800 text-sm">
+                        Cycle is {discrepancy.days} days longer than average
+                      </p>
+                      <p className="text-xs text-amber-700">
+                        Based on your history (avg. {avgCycleLength} days).
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+
             {/* Main Wheel & Phase */}
             <Card variant="gradient" className="py-6 border-none shadow-sm">
               <CardContent className="flex flex-col items-center justify-center">
@@ -190,7 +268,9 @@ export default function Dashboard() {
                    <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide mt-1">
                       Remaining
                    </span>
-                   <span className="text-xs text-muted-foreground mt-1">Next Period In</span>
+                   <span className="text-xs text-muted-foreground mt-1">
+                      Expected: {format(nextPeriodDate, 'MMM d')}
+                   </span>
                    <div className="flex items-center gap-2 mt-2">
                        <span className="h-2 w-2 rounded-full bg-slate-800" />
                        <span className="text-[10px] text-muted-foreground">Until Bleed</span>
@@ -198,9 +278,25 @@ export default function Dashboard() {
                 </div>
             </div>
 
+            {/* History & Calendar Section */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+               <HistoryChart data={cyclesHistory?.map(c => ({
+                  startDate: c.startDate,
+                  cycleLength: c.cycleLength,
+                  periodLength: avgPeriodLength // Ideally this should be per-cycle actual period length if we had it stored on the cycle record
+               })) || []} />
+               
+               <CycleCalendar 
+                  currentCycleStart={new Date(cycle.startDate)}
+                  avgCycleLength={avgCycleLength}
+                  avgPeriodLength={avgPeriodLength}
+                  cyclesHistory={cyclesHistory || []}
+               />
+            </div>
+
             <AvgCycleStats 
-               avgCycleLength={cycle.cycleLength} 
-               avgPeriodLength={5} // TODO: Fetch real average from profile
+               avgCycleLength={avgCycleLength} 
+               avgPeriodLength={avgPeriodLength} 
             />
 
             {/* Mood/Energy Trends */}

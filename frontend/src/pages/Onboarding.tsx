@@ -23,6 +23,8 @@ interface ImportedCycle {
 export default function Onboarding() {
   const [step, setStep] = useState(1);
   const [goal, setGoal] = useState<'TRACKING' | 'CONCEIVE'>('TRACKING');
+  const [periodLength, setPeriodLength] = useState(5);
+  const [avgCycleLength, setAvgCycleLength] = useState(28);
   const [error, setError] = useState<string | null>(null);
   const [submittedCycles, setSubmittedCycles] = useState<ImportedCycle[]>([]);
   const { updateUser } = useAuth();
@@ -150,7 +152,7 @@ export default function Onboarding() {
         phase: cycle.context?.phase,
       })) ?? [];
       setSubmittedCycles(imported);
-      setStep(3);
+      setStep(4);
       toast({
         title: 'Cycles imported 💫',
         description: 'Review your history below before finishing setup.',
@@ -174,7 +176,8 @@ export default function Onboarding() {
       const updates = { 
         onboardingCompleted: true,
         lastPeriodDate: cycles[0]?.startDate, // Use the most recent cycle's start date
-        cycleLength: cycles[0]?.cycleLength || 28, // Default to 28 if not set
+        cycleLength: avgCycleLength, // Use user-defined average
+        periodLength: periodLength, // From user input
         goal: goal
       };
       
@@ -359,6 +362,44 @@ export default function Onboarding() {
                 </div>
               </CardHeader>
               <CardContent className="space-y-5">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-sm font-medium text-foreground">
+                      Avg Period Length (Days)
+                    </label>
+                    <p className="text-xs text-muted-foreground">
+                      How many days do you bleed?
+                    </p>
+                    <Input
+                      type="number"
+                      min={2}
+                      max={15}
+                      value={periodLength}
+                      onChange={(e) => setPeriodLength(parseInt(e.target.value) || 5)}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-sm font-medium text-foreground">
+                      Avg Cycle Length (Days)
+                    </label>
+                    <p className="text-xs text-muted-foreground">
+                      Typical days between periods?
+                    </p>
+                    <Input
+                      type="number"
+                      min={15}
+                      max={60}
+                      value={avgCycleLength}
+                      onChange={(e) => {
+                        const newVal = parseInt(e.target.value) || 28;
+                        setAvgCycleLength(newVal);
+                        // Update all cycles to match the new average
+                        setCycles(prev => prev.map(c => ({ ...c, cycleLength: newVal })));
+                      }}
+                    />
+                  </div>
+                </div>
+
                 <div className="space-y-3">
                   {cycles.map((cycle, index) => {
                     const label = index === 0 ? "Current / Most Recent Cycle" : `Previous Cycle ${index}`;
@@ -516,6 +557,8 @@ export default function Onboarding() {
                     ))}
                   </div>
                 )}
+
+
 
                 <div className="flex gap-3">
                   <Button variant="calm" className="flex-1" onClick={() => setStep(3)}>
