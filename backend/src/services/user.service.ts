@@ -19,6 +19,7 @@ interface UserRow {
     onboarding_completed: boolean;
     last_period_date?: string | null;
     cycle_length?: number | null;
+    period_length?: number | null;
     goal?: 'TRACKING' | 'CONCEIVE' | 'PREGNANCY' | null;
   } | {
     name?: string | null;
@@ -30,6 +31,7 @@ interface UserRow {
     onboarding_completed: boolean;
     last_period_date?: string | null;
     cycle_length?: number | null;
+    period_length?: number | null;
     goal?: 'TRACKING' | 'CONCEIVE' | 'PREGNANCY' | null;
   }[] | null;
 }
@@ -54,6 +56,7 @@ const mapUserRowToAuthUser = (
     timezone: profileData?.timezone ?? undefined,
     lastPeriodDate: profileData?.last_period_date ?? null,
     cycleLength: profileData?.cycle_length ?? null,
+    periodLength: profileData?.period_length ?? null,
     goal: profileData?.goal ?? 'TRACKING',
     lastLogin: row.last_login ?? null,
     lastActivity: row.last_activity ?? null,
@@ -68,7 +71,7 @@ export const getUserWithProfile = async (
   const { data, error }: PostgrestSingleResponse<UserRow> = await supabase
     .from('users')
     .select(
-      'id, role, status, last_login, last_activity, profiles(name, age, date_of_birth, phone, city, timezone, onboarding_completed, last_period_date, cycle_length, goal)',
+      'id, role, status, last_login, last_activity, profiles(name, age, date_of_birth, phone, city, timezone, onboarding_completed, last_period_date, cycle_length, period_length, goal)',
     )
     .eq('id', userId)
     .single();
@@ -90,6 +93,7 @@ interface CreateUserRecordArgs {
   phone: string;
   city: string;
   timezone?: string;
+  periodLength?: number;
 }
 
 export const createUserRecord = async ({
@@ -100,6 +104,7 @@ export const createUserRecord = async ({
   phone,
   city,
   timezone,
+  periodLength
 }: CreateUserRecordArgs) => {
   const supabase = getSupabaseClient();
 
@@ -110,21 +115,27 @@ export const createUserRecord = async ({
   });
 
   if (userError) {
+    console.error('Error creating user record:', userError);
     throw new HttpError(400, 'Failed to persist user role', userError);
   }
 
-  const { error: profileError } = await supabase.from('profiles').insert({
+  // Use upsert to handle cases where a trigger might have already created a profile
+  const { error: profileError } = await supabase.from('profiles').upsert({
     user_id: id,
     name,
     date_of_birth: dateOfBirth,
     phone,
     city,
     timezone,
+    period_length: periodLength ?? 5,
     onboarding_completed: false,
     goal: 'TRACKING',
+  }, {
+    onConflict: 'user_id'
   });
 
   if (profileError) {
+    console.error('Error creating user profile:', profileError);
     throw new HttpError(400, 'Failed to create user profile', profileError);
   }
 };
@@ -138,6 +149,7 @@ interface UpdateProfileArgs {
   onboarding_completed?: boolean;
   last_period_date?: string | null;
   cycle_length?: number | null;
+  period_length?: number | null;
   goal?: 'TRACKING' | 'CONCEIVE' | 'PREGNANCY' | null;
 }
 

@@ -1,10 +1,10 @@
 import { Router } from 'express';
-import { authenticate, requireRoles } from '../middleware/auth';
-import { asyncHandler } from '../utils/async-handler';
-import { getPartnerSummary } from '../services/partner.service';
-import { aiPartnerGuidanceSchema } from '../validators/ai';
-import { validateBody } from '../middleware/validate';
-import { generatePartnerGuidance } from '../services/ai.service';
+import { authenticate, requireRoles } from '../middleware/auth.js';
+import { asyncHandler } from '../utils/async-handler.js';
+import { getPartnerSummary } from '../services/partner.service.js';
+import { aiPartnerGuidanceSchema } from '../validators/ai.js';
+import { validateBody } from '../middleware/validate.js';
+import { generatePartnerGuidance } from '../services/ai.service.js';
 
 export const partnerRouter = Router();
 

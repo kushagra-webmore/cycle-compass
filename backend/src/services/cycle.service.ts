@@ -47,7 +47,7 @@ export interface SymptomEntry {
   other_symptoms: string[] | null;
 }
 
-const mapCycleRow = (row: any): CycleSummary => {
+const mapCycleRow = (row: any, periodLength: number = 5): CycleSummary => {
   const cycleLength = row.cycle_length ?? 28;
   return {
     id: row.id,
@@ -55,7 +55,7 @@ const mapCycleRow = (row: any): CycleSummary => {
     endDate: row.end_date,
     cycleLength,
     isPredicted: row.is_predicted,
-    context: getCycleContext(row.start_date, cycleLength),
+    context: getCycleContext(row.start_date, cycleLength, periodLength),
   };
 };
 
@@ -88,7 +88,13 @@ export const createCycle = async (userId: string, input: CreateCycleInput) => {
     })
     .eq('user_id', userId);
 
-  return mapCycleRow(data);
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('period_length')
+    .eq('user_id', userId)
+    .single();
+
+  return mapCycleRow(data, profile?.period_length);
 };
 
 export const createCyclesBulk = async (userId: string, cycles: CreateCycleInput[]) => {
@@ -135,7 +141,14 @@ export const createCyclesBulk = async (userId: string, cycles: CreateCycleInput[
     })
     .eq('user_id', userId);
 
-  return (data ?? []).map(mapCycleRow);
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('period_length')
+    .eq('user_id', userId)
+    .single();
+
+  const periodLength = profile?.period_length ?? 5;
+  return (data ?? []).map(row => mapCycleRow(row, periodLength));
 };
 
 export const getCurrentCycle = async (userId: string): Promise<CycleSummary | null> => {
@@ -156,7 +169,13 @@ export const getCurrentCycle = async (userId: string): Promise<CycleSummary | nu
     return null;
   }
 
-  return mapCycleRow(data);
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('period_length')
+    .eq('user_id', userId)
+    .single();
+
+  return mapCycleRow(data, profile?.period_length);
 };
 
 export const getCycleById = async (userId: string, cycleId: string): Promise<CycleSummary | null> => {
@@ -176,7 +195,13 @@ export const getCycleById = async (userId: string, cycleId: string): Promise<Cyc
     return null;
   }
 
-  return mapCycleRow(data);
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('period_length')
+    .eq('user_id', userId)
+    .single();
+
+  return mapCycleRow(data, profile?.period_length);
 };
 
 export const logSymptom = async (userId: string, cycleId: string, input: SymptomLogInput) => {
@@ -253,7 +278,14 @@ export const getCyclesHistory = async (userId: string): Promise<CycleSummary[]> 
     throw new HttpError(400, 'Failed to fetch cycles history', error);
   }
 
-  return (data ?? []).map(mapCycleRow);
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('period_length')
+    .eq('user_id', userId)
+    .single();
+
+  const periodLength = profile?.period_length ?? 5;
+  return (data ?? []).map(row => mapCycleRow(row, periodLength));
 };
 
 export const updateCycle = async (
@@ -280,7 +312,13 @@ export const updateCycle = async (
     throw new HttpError(400, 'Failed to update cycle', error);
   }
 
-  return mapCycleRow(data);
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('period_length')
+    .eq('user_id', userId)
+    .single();
+
+  return mapCycleRow(data, profile?.period_length);
 };
 
 export const deleteCycle = async (userId: string, cycleId: string): Promise<void> => {

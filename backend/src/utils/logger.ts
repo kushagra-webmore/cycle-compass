@@ -1,6 +1,6 @@
 import winston from 'winston';
 import DailyRotateFile from 'winston-daily-rotate-file';
-import { isDevelopment } from '../config/env';
+import { isDevelopment } from '../config/env.js';
 
 const { combine, timestamp, printf, colorize, align } = winston.format;
 

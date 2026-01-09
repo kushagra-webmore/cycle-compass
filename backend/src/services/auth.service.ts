@@ -45,15 +45,22 @@ export const signupWithEmail = async ({
     throw new HttpError(400, error?.message ?? 'Failed to create auth user', error);
   }
 
-  await createUserRecord({
-    id: data.user.id,
-    role,
-    name,
-    dateOfBirth,
-    phone,
-    city,
-    timezone,
-  });
+  try {
+    await createUserRecord({
+      id: data.user.id,
+      role,
+      name,
+      dateOfBirth,
+      phone,
+      city,
+      timezone,
+    });
+  } catch (profileError) {
+    // Rollback: Delete the auth user if profile creation fails
+    console.error(`Profile creation failed for user ${data.user.id}. Rolling back auth user.`);
+    await supabaseService.auth.admin.deleteUser(data.user.id);
+    throw profileError; // Re-throw the original error to be handled by the caller
+  }
 
   const signInResult = await supabaseAnon.auth.signInWithPassword({ email, password });
 

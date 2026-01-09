@@ -18,6 +18,7 @@ export const signupSchema = z.object({
     .string({ required_error: 'City is required.' })
     .min(2, { message: 'City name must be at least 2 characters.' })
     .max(120, { message: 'City name must be 120 characters or less.' }),
+  periodLength: z.number().min(2).max(15).optional(),
   timezone: z.string().optional(),
 });
 

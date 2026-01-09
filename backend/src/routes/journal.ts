@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import { authenticate, requireRoles } from '../middleware/auth';
-import { validateBody } from '../middleware/validate';
-import { createJournalSchema } from '../validators/journal';
-import { asyncHandler } from '../utils/async-handler';
-import { createJournalEntry, listJournalEntries } from '../services/journal.service';
+import { authenticate, requireRoles } from '../middleware/auth.js';
+import { validateBody } from '../middleware/validate.js';
+import { createJournalSchema } from '../validators/journal.js';
+import { asyncHandler } from '../utils/async-handler.js';
+import { createJournalEntry, listJournalEntries } from '../services/journal.service.js';
 
 export const journalRouter = Router();
 
