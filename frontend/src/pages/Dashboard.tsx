@@ -100,6 +100,11 @@ export default function Dashboard() {
     return null;
   }, [cycle, avgCycleLength]);
 
+  // Calculate intercourse dates for calendar
+  const intercourseDates = useMemo(() => 
+    symptomHistory?.filter(log => log.intercourse).map(log => log.date) || [], 
+  [symptomHistory]);
+
   // Helper date formatting
   const formatDate = (dateString: string) => {
     const d = new Date(dateString);
@@ -279,18 +284,21 @@ export default function Dashboard() {
             </div>
 
             {/* History & Calendar Section */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+            <div className="mt-8">
                <HistoryChart data={cyclesHistory?.map(c => ({
                   startDate: c.startDate,
                   cycleLength: c.cycleLength,
-                  periodLength: avgPeriodLength // Ideally this should be per-cycle actual period length if we had it stored on the cycle record
+                  periodLength: avgPeriodLength 
                })) || []} />
-               
+            </div>
+
+            <div className="mt-8 mx-auto max-w-xl">
                <CycleCalendar 
                   currentCycleStart={new Date(cycle.startDate)}
                   avgCycleLength={avgCycleLength}
                   avgPeriodLength={avgPeriodLength}
                   cyclesHistory={cyclesHistory || []}
+                  intercourseDates={intercourseDates}
                />
             </div>
 

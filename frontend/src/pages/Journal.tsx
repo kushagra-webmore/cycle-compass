@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Save, Sparkles, BookOpen, Calendar, Loader2, RefreshCcw } from 'lucide-react';
+import { Save, Sparkles, BookOpen, Calendar, Loader2, RefreshCcw, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
@@ -7,7 +7,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { useToast } from '@/hooks/use-toast';
-import { useJournalEntries, useCreateJournal } from '@/hooks/api/journals';
+import { useJournalEntries, useCreateJournal, useDeleteJournal } from '@/hooks/api/journals';
 import { useJournalSummary } from '@/hooks/api/ai';
 
 const prompts = [
@@ -20,6 +20,7 @@ const prompts = [
 export default function Journal() {
   const { data, isLoading, isError, refetch } = useJournalEntries();
   const createJournal = useCreateJournal();
+  const deleteJournal = useDeleteJournal();
   const journalSummary = useJournalSummary();
   const [entry, setEntry] = useState('');
   const [aiReflection, setAiReflection] = useState(true);
@@ -64,6 +65,24 @@ export default function Journal() {
       toast({
         title: 'Unable to save entry',
         description: error instanceof Error ? error.message : 'Please try again later.',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this journal entry?')) return;
+    
+    try {
+      await deleteJournal.mutateAsync(id);
+      toast({
+        title: 'Journal deleted',
+        description: 'Your entry has been removed.',
+      });
+    } catch (error) {
+      toast({
+        title: 'Unable to delete entry',
+        description: 'Please try again later.',
         variant: 'destructive',
       });
     }
@@ -208,7 +227,7 @@ export default function Journal() {
           ) : (
             <div className="space-y-3">
               {entries.map((item) => (
-                <Card key={item.id} variant="default" className="transition-shadow">
+                <Card key={item.id} variant="default" className="transition-shadow group relative">
                   <CardContent className="py-4 space-y-2">
                     <div className="flex items-center justify-between text-xs text-muted-foreground">
                       <span>{new Date(item.date ?? item.created_at).toLocaleString('en-US', {
@@ -229,6 +248,17 @@ export default function Journal() {
                         {item.ai_summary}
                       </div>
                     )}
+                    <div className="absolute top-4 right-4">
+                      <Button
+                        variant="ghost" 
+                        size="icon"
+                        className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                        onClick={() => handleDelete(item.id)}
+                        disabled={deleteJournal.isPending}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </CardContent>
                 </Card>
               ))}

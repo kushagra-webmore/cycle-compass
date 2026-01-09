@@ -14,7 +14,7 @@ import {
   isWithinInterval,
   parseISO
 } from 'date-fns';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils'; // Ensure utils are imported
@@ -43,9 +43,10 @@ interface CycleCalendarProps {
       endDate?: string | null;
       cycleLength: number;
   }[];
+  intercourseDates?: string[];
 }
 
-export function CycleCalendar({ currentCycleStart, avgCycleLength, avgPeriodLength, cyclesHistory = [] }: CycleCalendarProps) {
+export function CycleCalendar({ currentCycleStart, avgCycleLength, avgPeriodLength, cyclesHistory = [], intercourseDates = [] }: CycleCalendarProps) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
   // Generate calendar days
@@ -57,95 +58,126 @@ export function CycleCalendar({ currentCycleStart, avgCycleLength, avgPeriodLeng
 
   const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
+  // Optimize history sorting
+  const sortedCycles = useMemo(() => {
+    return [...cyclesHistory].sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime());
+  }, [cyclesHistory]);
+
   const getDayPhase = (date: Date): string | null => {
-    // 1. Check Historical Data First
-    // Sort cycles by date descending to find the most relevant one
-    // We need to see if 'date' falls into any known cycle
-    
-    // Find a cycle where: cycle.startDate <= date < nextCycle.startDate (or today/future if last)
-    // To do this reliably, let's just reverse sort history
-    const sortedCycles = [...cyclesHistory].sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime());
-    
+    const checkDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const checkTime = checkDate.getTime();
+
+    // 1. Check Historical Data
     const relevantCycle = sortedCycles.find(c => {
-         // Fix timezone issue: Treat YYYY-MM-DD string as local midnight
-         // We can do this by splitting the string explicitly
-         const [y, m, d] = c.startDate.split('-').map(Number);
-         // Note: Month is 0-indexed in JS Date
-         const start = new Date(y, m - 1, d);
-         
-         // Normalize 'date' to strictly midnight local for comparison just in case
-         const current = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-         
-         return current.getTime() >= start.getTime();
+      const [y, m, d] = c.startDate.split('-').map(Number);
+      const start = new Date(y, m - 1, d);
+      return checkTime >= start.getTime();
     });
 
     if (relevantCycle) {
-        // Re-construct start date properly
-        const [y, m, d] = relevantCycle.startDate.split('-').map(Number);
-        const cycleStart = new Date(y, m - 1, d);
+      const [y, m, d] = relevantCycle.startDate.split('-').map(Number);
+      const cycleStart = new Date(y, m - 1, d);
+      
+      // If we have a concrete end date for this cycle, respect it strictly
+      if (relevantCycle.endDate) {
+        const [ey, em, ed] = relevantCycle.endDate.split('-').map(Number);
+        const cycleEnd = new Date(ey, em - 1, ed);
         
-        const diff = differenceInDays(date, cycleStart);
-        const dayInCycle = diff + 1; // 1-based
-
-        // Check against ACTUAL period data if available
-        if (relevantCycle.endDate) {
-            const [ey, em, ed] = relevantCycle.endDate.split('-').map(Number);
-            const cycleEnd = new Date(ey, em - 1, ed);
-            
-            // Ensure comparison is day-based
-            const current = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-            
-            if (current.getTime() <= cycleEnd.getTime()) {
-                return 'MENSTRUAL';
-            }
-        } else {
-            // No end date (e.g., current cycle or just missing), use avgPeriodLength for projection relative to this cycle start
-            if (dayInCycle <= avgPeriodLength) return 'MENSTRUAL';
+        // If the date is within the actual period flow of this historic cycle
+        if (checkTime <= cycleEnd.getTime()) {
+           return 'MENSTRUAL';
         }
-
-        // Now calculate other phases relative to THIS cycle's start
-        // We use the AVERAGE cycle length or THIS cycle's length to project phases?
-        // If it's a past cycle, use its actual length if known, otherwise avg.
-        // Actually, phases are biologically relative to ovulation which is relative to NEXT period.
-        // But for visualization, we usually project from start.
         
-        const effectiveCycleLength = relevantCycle.cycleLength || avgCycleLength;
-        const ovulationDay = effectiveCycleLength - 14;
+        // If the date is AFTER the period flow but BEFORE the next cycle started...
+        // We need to ensure we don't bleed into the *next* cycle.
+        // Since `relevantCycle` is the first one where `date >= startDate` (sorted desc),
+        // the "next" cycle would be the one *before* it in the array (index - 1), 
+        // OR the `currentCycleStart` if this was the latest history item.
+        // However, the logic below naturally handles "phase calculation" relative to THIS start.
+        // We just need to check if we've gone too far. 
+        // But practically, `relevantCycle` being found means checkTime < previous_in_array.startDate
+        // So we are bounded correctly by the `find` logic.
+      }
+
+      const diff = differenceInDays(checkDate, cycleStart);
+      const dayInCycle = diff + 1; // 1-based
+
+      // Use recorded cycle length if available, otherwise average
+      const effectiveCycleLength = relevantCycle.cycleLength || avgCycleLength;
+      
+      // If no end date recorded, use average period length for menstruation projection
+      if (!relevantCycle.endDate && dayInCycle <= avgPeriodLength) {
+        return 'MENSTRUAL';
+      }
+
+      // Calculate phases relative to this cycle's start
+      const ovulationDay = effectiveCycleLength - 14;
+      const fertileStart = ovulationDay - 5;
+      const fertileEnd = ovulationDay;
+
+      // Note: If dayInCycle exceeds effectiveCycleLength, it usually means it's 
+      // in the "Luteal" phase leading up to the NEXT period. 
+      // Unless it's WAY past, which matches "Current Cycle" logic below.
+      // But here we are matching "Historic" data. 
+      
+      // If we are within the expected length of this cycle
+      if (dayInCycle <= effectiveCycleLength) {
+          if (dayInCycle < fertileStart) return 'FOLLICULAR';
+          if (dayInCycle >= fertileStart && dayInCycle <= fertileEnd + 1) return 'FERTILE';
+          return 'LUTEAL';
+      }
+      
+      // If we are PAST the expected length, project future cycles
+      const projectedDayInCycle = ((dayInCycle - 1) % avgCycleLength) + 1;
+      
+      if (projectedDayInCycle <= avgPeriodLength) return 'MENSTRUAL';
+      
+      const pOvulationDay = avgCycleLength - 14;
+      const pFertileStart = pOvulationDay - 5;
+      const pFertileEnd = pOvulationDay;
+      
+      if (projectedDayInCycle < pFertileStart) return 'FOLLICULAR';
+      if (projectedDayInCycle >= pFertileStart && projectedDayInCycle <= pFertileEnd + 1) return 'FERTILE';
+      return 'LUTEAL';
+      
+      return null;
+    }
+
+    // 2. Future Projections (Beyond History)
+    // We base projections on the LATEST known start date.
+    // This is usually `currentCycleStart`.
+    // History is resolved above. If we are here, date is likely > all history starts?
+    // Wait, the find logic `checkTime >= start.getTime()` covers EVERYTHING in the past.
+    // If `relevantCycle` is null, it means `checkTime` is BEFORE the earliest recorded cycle?
+    // OR it means there is NO history.
+    
+    // Let's rely on `currentCycleStart` as the anchor for "current and future".
+    // We assume `currentCycleStart` is the start of the *active* cycle.
+    
+    const currentStartNormalized = new Date(currentCycleStart.getFullYear(), currentCycleStart.getMonth(), currentCycleStart.getDate());
+    
+    if (checkTime >= currentStartNormalized.getTime()) {
+        const diff = differenceInDays(checkDate, currentStartNormalized);
+        // This date is in the current cycle or future cycles
+        // We can treat it as a continuous projection
+        
+        // simple math: which "virtual cycle" index is this?
+        // Index 0 = current cycle
+        // Index 1 = next cycle, etc.
+        const cycleIndex = Math.floor(diff / avgCycleLength);
+        const dayInMockCycle = (diff % avgCycleLength) + 1;
+        
+        if (dayInMockCycle <= avgPeriodLength) return 'MENSTRUAL';
+        
+        const ovulationDay = avgCycleLength - 14;
         const fertileStart = ovulationDay - 5;
         const fertileEnd = ovulationDay;
 
-        // If 'relevantCycle' has an endDate known (meaning period finished), we know Menstrual logic above handled it.
-        // If date > endDate, it is Follicular/Fertile/Luteal
-        
-        // We need to ensure we don't bleed into the *next* cycle if it exists.
-        // In our search logic `sortedCycles.find`, we picked the *latest* cycle starting before-or-on date.
-        // So we are safe from overlapping the next newer cycle.
-        
-        if (dayInCycle < fertileStart) return 'FOLLICULAR';
-        if (dayInCycle >= fertileStart && dayInCycle <= fertileEnd + 1) return 'FERTILE';
-        if (dayInCycle > fertileEnd + 1) return 'LUTEAL';
-        
-        return null; // Fallback
+        if (dayInMockCycle < fertileStart) return 'FOLLICULAR';
+        if (dayInMockCycle >= fertileStart && dayInMockCycle <= fertileEnd + 1) return 'FERTILE';
+        if (dayInMockCycle > fertileEnd + 1) return 'LUTEAL';
     }
-
-    // 2. Fallback for Future Projections (No history found) regarding the Current Cycle Start
-    // If date is > currentCycleStart and no history found strictly (maybe cyclesHistory is empty?), use prop
-    const diff = differenceInDays(date, currentCycleStart);
-    if (diff < 0) return null; // Date is before known cycles
     
-    const cycleIndex = Math.floor(diff / avgCycleLength);
-    const dayInCycle = diff - (cycleIndex * avgCycleLength) + 1; 
-
-    if (dayInCycle <= avgPeriodLength) return 'MENSTRUAL';
-    
-    const ovulationDay = avgCycleLength - 14;
-    const fertileStart = ovulationDay - 5;
-    const fertileEnd = ovulationDay;
-
-    if (dayInCycle < fertileStart) return 'FOLLICULAR';
-    if (dayInCycle >= fertileStart && dayInCycle <= fertileEnd + 1) return 'FERTILE';
-    if (dayInCycle > fertileEnd + 1) return 'LUTEAL';
-
     return null;
   };
 
@@ -200,16 +232,20 @@ export function CycleCalendar({ currentCycleStart, avgCycleLength, avgPeriodLeng
                 const isCurrent = isToday(date);
                 
                 return (
-                    <div key={date.toString()} className="h-10 w-full flex items-center justify-center relative">
+                    <div key={date.toString()} className="h-16 w-full flex items-center justify-center relative">
                         <div 
                             className={cn(
-                                "h-8 w-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors cursor-default",
+                                "h-12 w-12 rounded-full flex items-center justify-center text-lg font-medium transition-colors cursor-default relative",
                                 isCurrent && !phase && "bg-slate-900 text-white",
                                 phase ? getPhaseColor(phase) : "text-slate-700 hover:bg-slate-100",
                                 isCurrent && phase && "ring-2 ring-slate-900 ring-offset-2" 
                             )}
                         >
                             {date.getDate()}
+                            {/* Intercourse Indicator */}
+                            {intercourseDates.some(bgDate => isSameDay(parseISO(bgDate), date)) && (
+                                <Heart className="w-2 h-2 text-rose-500 fill-rose-500 absolute bottom-1 left-1/2 -translate-x-1/2" />
+                            )}
                         </div>
                     </div>
                 );

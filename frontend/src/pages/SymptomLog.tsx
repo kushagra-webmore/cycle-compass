@@ -268,20 +268,21 @@ export default function SymptomLog() {
                <CardTitle className="text-sm">Mood</CardTitle>
              </CardHeader>
              <CardContent className="p-4 pt-0 select-none">
-               <div className="flex justify-between gap-1">
-                 {moodOptions.map(m => (
-                   <button 
-                     key={m.value} 
-                     onClick={() => setMood(m.value)} 
-                     className={cn(
-                       "text-2xl p-1 rounded-full transition-all hover:bg-muted", 
-                       mood === m.value ? "bg-primary/20 scale-110 shadow-sm" : "opacity-70 hover:opacity-100"
-                     )}
-                   >
-                     {m.emoji}
-                   </button>
-                 ))}
-               </div>
+                <div className="flex justify-between gap-1">
+                  {moodOptions.map(m => (
+                    <button 
+                      key={m.value} 
+                      onClick={() => setMood(m.value)} 
+                      className={cn(
+                        "flex flex-col items-center p-2 rounded-lg transition-all hover:bg-muted w-full", 
+                        mood === m.value ? "bg-primary/20 scale-105 shadow-sm" : "opacity-70 hover:opacity-100"
+                      )}
+                    >
+                      <span className="text-2xl">{m.emoji}</span>
+                      <span className="text-[10px] font-medium mt-1">{m.label}</span>
+                    </button>
+                  ))}
+                </div>
              </CardContent>
            </Card>
            
@@ -290,20 +291,21 @@ export default function SymptomLog() {
                <CardTitle className="text-sm">Energy</CardTitle>
              </CardHeader>
              <CardContent className="p-4 pt-0 select-none">
-               <div className="flex justify-between gap-1">
-                 {energyOptions.map(e => (
-                   <button 
-                     key={e.value} 
-                     onClick={() => setEnergy(e.value)} 
-                     className={cn(
-                       "text-2xl p-1 rounded-full transition-all hover:bg-muted", 
-                       energy === e.value ? "bg-yellow-100 scale-110 shadow-sm" : "opacity-70 hover:opacity-100"
-                     )}
-                   >
-                     {e.emoji}
-                   </button>
-                 ))}
-               </div>
+                <div className="flex justify-between gap-1">
+                  {energyOptions.map(e => (
+                    <button 
+                      key={e.value} 
+                      onClick={() => setEnergy(e.value)} 
+                      className={cn(
+                        "flex flex-col items-center p-2 rounded-lg transition-all hover:bg-muted w-full", 
+                        energy === e.value ? "bg-yellow-100 scale-105 shadow-sm" : "opacity-70 hover:opacity-100"
+                      )}
+                    >
+                      <span className="text-2xl">{e.emoji}</span>
+                      <span className="text-[10px] font-medium mt-1">{e.label}</span>
+                    </button>
+                  ))}
+                </div>
              </CardContent>
            </Card>
         </div>

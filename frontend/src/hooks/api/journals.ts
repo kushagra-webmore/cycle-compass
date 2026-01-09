@@ -40,3 +40,17 @@ export const useCreateJournal = () => {
     },
   });
 };
+
+export const useDeleteJournal = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) =>
+      apiFetch<void>(`/journals/${id}`, {
+        method: 'DELETE',
+        auth: true,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: journalKeys.list });
+    },
+  });
+};

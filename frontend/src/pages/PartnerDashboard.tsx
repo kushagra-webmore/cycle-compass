@@ -279,7 +279,7 @@ export default function PartnerDashboard() {
                   <div>
                     <span className="text-xs text-muted-foreground block">Mood</span>
                     <span className="font-semibold text-foreground capitalize">
-                      {data.consent?.share_mood_summary ? sharedMood ?? 'Not shared' : 'Private'}
+                      {data.consent?.share_mood_summary ? sharedMood ?? 'No recent data' : 'Private'}
                     </span>
                   </div>
                 </div>
@@ -292,7 +292,7 @@ export default function PartnerDashboard() {
                   <div>
                     <span className="text-xs text-muted-foreground block">Energy</span>
                     <span className="font-semibold text-foreground capitalize">
-                      {data.consent?.share_energy_summary ? sharedEnergy ?? 'Not shared' : 'Private'}
+                      {data.consent?.share_energy_summary ? sharedEnergy ?? 'No recent data' : 'Private'}
                     </span>
                   </div>
                 </div>

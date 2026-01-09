@@ -58,6 +58,8 @@ export interface SymptomEntry {
   sleep_hours: number | null;
   cravings: string | null;
   bloating: boolean | null;
+  intercourse: boolean | null;
+  protection_used: boolean | null;
   flow: string | null;
   other_symptoms: string[] | null;
 }

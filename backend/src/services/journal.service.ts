@@ -42,6 +42,7 @@ export const listJournalEntries = async (userId: string, limit = 30) => {
     .from('journals')
     .select('*')
     .eq('user_id', userId)
+    .eq('is_deleted', false)
     .order('date', { ascending: false })
     .limit(limit);
 
@@ -50,4 +51,22 @@ export const listJournalEntries = async (userId: string, limit = 30) => {
   }
 
   return data ?? [];
+};
+
+export const softDeleteJournalEntry = async (userId: string, journalId: string) => {
+  const supabase = getSupabaseClient();
+  const istNow = DateTime.now().setZone('Asia/Kolkata');
+
+  const { error } = await supabase
+    .from('journals')
+    .update({
+      is_deleted: true,
+      deleted_at: istNow.toISO(),
+    })
+    .eq('id', journalId)
+    .eq('user_id', userId);
+
+  if (error) {
+    throw new HttpError(400, 'Failed to delete journal entry', error);
+  }
 };
