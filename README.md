@@ -7,12 +7,12 @@
 
 ## ✨ Features
 
-- **Smart Cycle Tracking** - Log symptoms, moods, and flow with an intuitive interface
-- **AI-Powered Insights** - Get personalized explanations about your cycle patterns
-- **Partner Sharing** - Securely share relevant cycle information with trusted partners
-- **Privacy-First** - End-to-end encryption and granular consent controls
-- **Myth-Busting** - Evidence-based information about menstrual health
-- **Admin Dashboard** - Comprehensive admin interface for user management and analytics
+- **Smart Cycle Tracking** - Log symptoms, moods, and flow with an intuitive interface.
+- **AI-Powered Insights** - Get personalized explanations about your cycle patterns using Gemini AI.
+- **Partner Support & Chatbot** - Securely share cycle status with trusted partners. Partners get access to a dedicated **Context-Aware AI Chatbot** to ask sensitive questions and get supportive advice based on their partner's current cycle phase.
+- **Admin Analytics Dashboard** - Comprehensive admin interface with real-time analytics and visualizations on user growth and activity.
+- **Privacy-First Data Control** - End-to-end encryption with granular consent controls. Includes "Soft Delete" functionality for journals, ensuring data privacy while maintaining integrity.
+- **Cycle History Management** - full control to edit and manage past cycle data for accurate predictions.
 
 ## 🚀 Quick Start
 
@@ -91,8 +91,9 @@
 
 ### Frontend
 - **Framework**: React 18 with TypeScript
+- **Build Tool**: Vite
 - **UI Components**: shadcn/ui + Tailwind CSS
-- **State Management**: React Query + Zustand
+- **State Management**: React Query (TanStack Query)
 - **Form Handling**: React Hook Form + Zod
 - **Routing**: React Router
 - **Authentication**: Supabase Auth
@@ -104,11 +105,10 @@
 - **AI**: Google Gemini
 - **Validation**: Zod
 - **Logging**: Winston
-- **Testing**: Jest + Supertest
 
 ## 📱 Screenshots
 
-*(gonna add screenshots)*
+_(Screenshots coming soon)_
 
 ## 🤝 Contributing
 

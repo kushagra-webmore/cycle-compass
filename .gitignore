@@ -1,3 +1,10 @@
 backend/node_modules
 .env
 supabase
+admin_access_chatbot_migration.sql
+check-schema.js
+check-schema.sql
+migration_chat_sessions.sql
+migration_goal.sql
+migration_intercourse.sql
+session_security_migration.sql
