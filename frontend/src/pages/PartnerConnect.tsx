@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { AppLayout } from '@/components/layout/AppLayout';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
+import { useConfirm } from '@/components/ui/confirm-dialog';
 
 interface PairingData {
   id: string;
@@ -18,6 +19,7 @@ export default function PartnerConnect() {
   const [copied, setCopied] = useState<string | null>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { confirm } = useConfirm();
 
   const [activePairing, setActivePairing] = useState<PairingData | null>(null);
   const [inviteLink, setInviteLink] = useState('');
@@ -76,7 +78,7 @@ export default function PartnerConnect() {
 
   const handleUnlink = async () => {
     if (!activePairing) return;
-    if (!confirm('Are you sure you want to disconnect? Your partner will lose access to your shared data.')) return;
+    if (!await confirm({ title: "Disconnect Partner", description: "Are you sure you want to disconnect? Your partner will lose access to your shared data.", variant: "destructive" })) return;
 
     setIsRevoking(true);
     try {

@@ -6144,3 +6144,86 @@
   "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
 }
 2026-01-09 19:49:15 [info]: Received SIGINT. Shutting down gracefully... 
+2026-01-09 20:33:32 [info]: 🚀 Server listening on port 3001 
+2026-01-09 20:33:32 [info]: Environment: development 
+2026-01-09 20:33:38 [http]: Request {
+  "method": "POST",
+  "url": "/auth/refresh",
+  "status": 200,
+  "responseTime": "282ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-09 20:33:39 [http]: Request {
+  "method": "GET",
+  "url": "/partner/summary",
+  "status": 200,
+  "responseTime": "1030ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-09 20:40:01 [http]: Request {
+  "method": "POST",
+  "url": "/auth/refresh",
+  "status": 200,
+  "responseTime": "715ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-09 20:40:02 [http]: Request {
+  "method": "GET",
+  "url": "/partner/summary",
+  "status": 304,
+  "responseTime": "1080ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-09 20:40:28 [http]: Request {
+  "method": "GET",
+  "url": "/partner/summary",
+  "status": 304,
+  "responseTime": "1075ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-09 20:40:33 [http]: Request {
+  "method": "GET",
+  "url": "/partner/summary",
+  "status": 304,
+  "responseTime": "1123ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-09 20:40:47 [http]: Request {
+  "method": "GET",
+  "url": "/partner/summary",
+  "status": 304,
+  "responseTime": "1669ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-09 20:40:49 [http]: Request {
+  "method": "GET",
+  "url": "/partner/summary",
+  "status": 304,
+  "responseTime": "689ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-09 20:41:01 [http]: Request {
+  "method": "POST",
+  "url": "/ai/partner-guidance",
+  "status": 200,
+  "responseTime": "9104ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-09 20:41:11 [http]: Request {
+  "method": "GET",
+  "url": "/partner/summary",
+  "status": 304,
+  "responseTime": "804ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
+}
+2026-01-09 20:41:18 [info]: Received SIGINT. Shutting down gracefully... 

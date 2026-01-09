@@ -22,6 +22,7 @@ import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
 import { CycleHistoryChart } from '@/components/dashboard/CycleHistoryChart';
+import { useConfirm } from '@/components/ui/confirm-dialog';
 
 export default function CycleHistory() {
   const { user, updateUser } = useAuth(); // Destructure updateUser
@@ -30,6 +31,7 @@ export default function CycleHistory() {
   const updateCycle = useUpdateCycle();
   const deleteCycle = useDeleteCycle();
   const { toast } = useToast();
+  const { confirm } = useConfirm();
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isStatsEditOpen, setIsStatsEditOpen] = useState(false);
@@ -182,7 +184,7 @@ export default function CycleHistory() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this cycle?')) return;
+    if (!await confirm({ title: "Delete Cycle", description: "Are you sure you want to delete this cycle? This will remove all associated data and cannot be undone.", variant: "destructive" })) return;
     
     try {
       await deleteCycle.mutateAsync(id);

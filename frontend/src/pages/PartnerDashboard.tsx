@@ -11,6 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { apiClient } from '@/lib/api-client';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
+import { useConfirm } from '@/components/ui/confirm-dialog';
 
 const phaseInfo = {
   MENSTRUAL: {
@@ -53,6 +54,7 @@ export default function PartnerDashboard() {
   const { data, isLoading, isError, refetch } = usePartnerSummary();
   const partnerGuidance = usePartnerGuidance();
   const { toast } = useToast();
+  const { confirm } = useConfirm();
   const [guidance, setGuidance] = useState<GuidanceData | null>(null);
 
   const phaseKey = data?.cycle?.context.phase ?? 'MENSTRUAL';
@@ -157,7 +159,7 @@ export default function PartnerDashboard() {
                     size="sm" 
                     className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 px-2"
                     onClick={async () => {
-                      if(!confirm("Are you sure you want to unlink?")) return;
+                      if(!await confirm({ title: "Unlink Partner", description: "Are you sure you want to unlink? This will stop data sharing." })) return;
                       try {
                         await apiClient.post('/pairings/revoke', { pairingId: data.pairingId });
                         toast({ title: "Unlinked successfully" });

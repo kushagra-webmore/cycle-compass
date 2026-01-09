@@ -9,6 +9,7 @@ import { AppLayout } from '@/components/layout/AppLayout';
 import { useToast } from '@/hooks/use-toast';
 import { useJournalEntries, useCreateJournal, useDeleteJournal } from '@/hooks/api/journals';
 import { useJournalSummary } from '@/hooks/api/ai';
+import { useConfirm } from '@/components/ui/confirm-dialog';
 
 const prompts = [
   'How is my body feeling today?',
@@ -26,6 +27,7 @@ export default function Journal() {
   const [aiReflection, setAiReflection] = useState(true);
   const [latestReflection, setLatestReflection] = useState<string | null>(null);
   const { toast } = useToast();
+  const { confirm } = useConfirm();
 
   const entries = useMemo(() => data ?? [], [data]);
 
@@ -71,7 +73,7 @@ export default function Journal() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this journal entry?')) return;
+    if (!await confirm({ title: "Delete Journal Entry", description: "Are you sure you want to delete this journal entry?", variant: "destructive" })) return;
     
     try {
       await deleteJournal.mutateAsync(id);
