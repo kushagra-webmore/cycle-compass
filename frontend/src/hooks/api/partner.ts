@@ -17,6 +17,7 @@ export interface PartnerSummaryResponse {
     share_energy_summary: boolean;
     share_symptoms: boolean;
     share_journals: boolean;
+    share_my_cycle: boolean;
   };
   cycle: {
     id: string;
@@ -34,6 +35,7 @@ export interface PartnerSummaryResponse {
   sharedData?: {
     symptoms: any[];
     journals: any[];
+    cycles: any[];
   };
 }
 

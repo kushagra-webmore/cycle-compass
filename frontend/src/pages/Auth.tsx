@@ -475,14 +475,7 @@ export default function Auth() {
             </button>
           </div>
 
-          {/* Demo hint */}
-          <div className="text-center p-4 rounded-xl bg-muted/50 border border-border/50">
-            <p className="text-xs text-muted-foreground">
-              <strong>Demo accounts:</strong><br />
-              admin@demo.com / partner@demo.com<br />
-              (any password works)
-            </p>
-          </div>
+
         </div>
       </main>
     </div>

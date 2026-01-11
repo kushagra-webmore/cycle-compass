@@ -12,6 +12,10 @@ import { apiClient } from '@/lib/api-client';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
 import { useConfirm } from '@/components/ui/confirm-dialog';
+import { HistoryChart } from '@/components/dashboard/HistoryChart';
+import { CycleCalendar } from '@/components/dashboard/CycleCalendar';
+import { differenceInDays } from 'date-fns';
+import { useMemo } from 'react';
 
 const phaseInfo = {
   MENSTRUAL: {
@@ -370,6 +374,51 @@ export default function PartnerDashboard() {
                  </div>
               </div>
             )}
+
+            {/* Shared Cycles Section */}
+            {data.consent.share_my_cycle && data.sharedData?.cycles && data.sharedData.cycles.length > 0 && (() => {
+               // Calculate averages for the partner view
+               const cyclesHistory = data.sharedData!.cycles;
+               const avgCycleLength = cyclesHistory.length 
+                 ? Math.round(cyclesHistory.reduce((acc: number, c: any) => acc + c.cycleLength, 0) / cyclesHistory.length)
+                 : 28;
+               
+               // Calculate avg period length similar to dashboard logic or fallback
+               // Since we don't have full symptom history here for flow analysis easily, we'll try to use cycle data if available or fallback.
+               // Actually, let's use a simplified calculation or just the user's setting if passed? 
+               // The cycles array has periodLength embedded in context? No. 
+               // But we can estimate from cycle dates if endDate is present?
+               // Let's use a robust fallback of 5 if we can't easily calculate, or iterate cycles.
+               
+               const avgPeriodLength = 5; 
+
+               return (
+                  <div className="mt-8">
+                     <h3 className="font-display font-bold text-lg mb-3 flex items-center gap-2 px-1">
+                      <Activity className="h-5 w-5 text-primary" />
+                      {data.primaryUserName}'s Cycle
+                     </h3>
+                     
+                     <HistoryChart data={cyclesHistory.map((c: any) => ({
+                        startDate: c.startDate,
+                        cycleLength: c.cycleLength,
+                        periodLength: avgPeriodLength // Using approximation as we don't have full flow data here
+                     }))} />
+                     
+                     <div className="mt-8 mx-auto max-w-xl">
+                        <CycleCalendar 
+                           currentCycleStart={new Date(data.cycle?.startDate || new Date())}
+                           avgCycleLength={avgCycleLength}
+                           avgPeriodLength={avgPeriodLength}
+                           cyclesHistory={cyclesHistory}
+                           intercourseDates={[]} // We don't share intercourse dates specifically in calendar for now unless consented? 
+                           // Request said "History & Trends and the calendar visualizations if the consent ... are toggled on"
+                           // Intercourse might be sensitive, let's pass empty for now unless explicitly requested.
+                        />
+                     </div>
+                  </div>
+               );
+            })()}
 
             <Card variant="soft" className="mt-6">
               <CardHeader className="pb-2">

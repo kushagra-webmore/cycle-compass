@@ -7,6 +7,7 @@ export interface ConsentSettings {
   share_energy_summary: boolean;
   share_symptoms: boolean;
   share_journals: boolean;
+  share_my_cycle: boolean;
 }
 
 export interface PairingInfo {
@@ -44,6 +45,7 @@ interface UpdateConsentPayload {
   shareEnergySummary?: boolean;
   shareSymptoms?: boolean;
   shareJournals?: boolean;
+  shareMyCycle?: boolean;
 }
 
 const pairingKeys = {

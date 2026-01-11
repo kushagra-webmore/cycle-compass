@@ -1,4 +1,4 @@
-import { Shield, Eye, Heart, Battery, BookOpen, AlertTriangle, UserX, User, Loader } from 'lucide-react';
+import { Shield, Eye, Heart, Battery, BookOpen, AlertTriangle, UserX, User, Loader, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
@@ -49,6 +49,12 @@ const consentFields = [
     description: 'Allow partner to read your journal entries',
     icon: BookOpen,
   },
+  {
+    id: 'share_my_cycle' as const,
+    label: 'Share My Cycle',
+    description: 'Share your cycle history and calendar',
+    icon: Calendar,
+  },
 ];
 
 export default function ConsentSettings() {
@@ -75,7 +81,9 @@ export default function ConsentSettings() {
         ? 'shareEnergySummary'
         : key === 'share_symptoms'
         ? 'shareSymptoms'
-        : 'shareJournals';
+        : key === 'share_journals'
+        ? 'shareJournals'
+        : 'shareMyCycle';
 
     try {
       await updateConsent.mutateAsync({ pairingId: pairing.id, [payloadKey]: value });
