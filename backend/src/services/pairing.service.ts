@@ -99,6 +99,7 @@ const activatePairing = async (pairingId: string, partnerUserId: string) => {
       share_phase: true,
       share_mood_summary: true,
       share_energy_summary: true,
+      share_my_cycle: false,
     })
     .select()
     .single();
@@ -314,6 +315,7 @@ export const updateConsentSettings = async (
       share_energy_summary: updates.shareEnergySummary ?? pairing.consent_settings?.share_energy_summary ?? true,
       share_symptoms: updates.shareSymptoms ?? pairing.consent_settings?.share_symptoms ?? false,
       share_journals: updates.shareJournals ?? pairing.consent_settings?.share_journals ?? false,
+      share_my_cycle: updates.shareMyCycle ?? pairing.consent_settings?.share_my_cycle ?? false,
     })
     .eq('pairing_id', pairingId)
     .select()

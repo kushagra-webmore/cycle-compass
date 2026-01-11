@@ -8,6 +8,7 @@ interface ConsentSettings {
   share_energy_summary: boolean;
   share_symptoms: boolean;
   share_journals: boolean;
+  share_my_cycle: boolean;
 }
 
 const moodWeights: Record<string, number> = {
@@ -94,6 +95,13 @@ export const getPartnerSummary = async (partnerUserId: string) => {
     sharedJournals = await listJournalEntries(primaryUserId, 5); // Last 5 entries
   }
 
+  // Fetch cycle history if consented
+  let sharedCycles: any[] = [];
+  if (consent.share_my_cycle) {
+    const { getCyclesHistory } = await import('./cycle.service.js');
+    sharedCycles = await getCyclesHistory(primaryUserId);
+  }
+
   // Fetch primary user name
   const { data: primaryProfile } = await supabase
     .from('profiles')
@@ -114,6 +122,7 @@ export const getPartnerSummary = async (partnerUserId: string) => {
     sharedData: {
       symptoms: sharedSymptoms,
       journals: sharedJournals,
+      cycles: sharedCycles,
     }
   };
 };
