@@ -14,6 +14,7 @@ import { adminRouter } from './routes/admin.js';
 import { adminDataRouter } from './routes/admin-data.js';
 import { userRouter } from './routes/user.js';
 import { chatbotRouter } from './routes/chatbot.js';
+import { healthRouter } from './routes/health.js';
 
 const app = express();
 
@@ -72,9 +73,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get('/health', (_req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
-});
+app.use('/health', healthRouter);
 
 app.use('/auth', authRouter);
 app.use('/cycles', cycleRouter);

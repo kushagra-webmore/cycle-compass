@@ -8,3 +8,4 @@ migration_chat_sessions.sql
 migration_goal.sql
 migration_intercourse.sql
 session_security_migration.sql
+backend/keepalive_migration.sql

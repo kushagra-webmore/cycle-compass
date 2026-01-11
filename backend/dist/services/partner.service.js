@@ -14,7 +14,7 @@ const energyWeights = {
 const averageMood = (entries) => {
     if (!entries.length)
         return null;
-    const valid = entries.filter((e) => e.mood && moodWeights[e.mood]);
+    const valid = entries.filter((e) => e.mood && moodWeights[e.mood] !== undefined);
     if (!valid.length)
         return null;
     const score = valid.reduce((sum, item) => sum + (moodWeights[item.mood] ?? 1), 0) / valid.length;
@@ -27,7 +27,7 @@ const averageMood = (entries) => {
 const averageEnergy = (entries) => {
     if (!entries.length)
         return null;
-    const valid = entries.filter((e) => e.energy && energyWeights[e.energy]);
+    const valid = entries.filter((e) => e.energy && energyWeights[e.energy] !== undefined);
     if (!valid.length)
         return null;
     const score = valid.reduce((sum, item) => sum + (energyWeights[item.energy] ?? 1), 0) / valid.length;
