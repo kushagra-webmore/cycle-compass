@@ -173,6 +173,14 @@ export default function PartnerConnect() {
           <p className="text-sm text-muted-foreground max-w-sm mx-auto">
             Share selected insights with someone you trust. You control exactly what they see.
           </p>
+          <div className="pt-2">
+            <Button variant="outline" asChild className="gap-2">
+              <a href="/consent">
+                <Shield className="h-4 w-4" />
+                Consent & Privacy
+              </a>
+            </Button>
+          </div>
         </div>
 
         {/* Privacy Notice */}

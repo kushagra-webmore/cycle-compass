@@ -14,7 +14,7 @@ import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useAuth } from '@/contexts/AuthContext';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet';
 import { format, isToday, isYesterday } from 'date-fns';
 
 export default function Chatbot() {
@@ -128,9 +128,9 @@ export default function Chatbot() {
     return acc;
   }, {} as Record<string, typeof sessions>);
 
-  const SidebarContent = () => (
+  const SidebarContent = ({ isMobile }: { isMobile?: boolean } = {}) => (
     <div className="flex flex-col h-full bg-card/50">
-      <div className="p-4 border-b">
+      <div className={cn("p-4 border-b", isMobile && "pr-12 pt-5")}>
         <Button 
           className="w-full justify-start gap-2" 
           variant={!selectedSessionId ? "secondary" : "ghost"}
@@ -216,7 +216,8 @@ export default function Chatbot() {
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="w-[85%] max-w-[300px] p-0">
-              <SidebarContent />
+              <SheetTitle className="sr-only">Chat History</SheetTitle>
+              <SidebarContent isMobile />
             </SheetContent>
           </Sheet>
         </div>

@@ -175,7 +175,7 @@ export default function SymptomLog() {
              </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-4 gap-2">
+            <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
               {symptomOptions.map((opt) => (
                 <button
                   key={opt.id}
@@ -262,7 +262,7 @@ export default function SymptomLog() {
         </Card>
 
         {/* Mood & Energy */}
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
            <Card>
              <CardHeader className="p-4 pb-2">
                <CardTitle className="text-sm">Mood</CardTitle>

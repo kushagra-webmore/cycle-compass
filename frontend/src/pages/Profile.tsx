@@ -123,34 +123,34 @@ export default function Profile() {
     <AppLayout title="Profile">
       <div className="space-y-6 animate-fade-in">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div>
             <h1 className="text-3xl font-display font-bold text-foreground">My Profile</h1>
             <p className="text-muted-foreground">Manage your personal information</p>
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" asChild className="gap-2">
+          <div className="flex flex-wrap gap-2 w-full md:w-auto">
+            <Button variant="outline" asChild className="gap-2 flex-1 md:flex-none">
               <a href="/consent">
                 <Shield className="h-4 w-4" />
                 Consent & Privacy
               </a>
             </Button>
-            <Button variant="outline" onClick={() => setIsPasswordDialogOpen(true)} className="gap-2">
+            <Button variant="outline" onClick={() => setIsPasswordDialogOpen(true)} className="gap-2 flex-1 md:flex-none">
               <Lock className="h-4 w-4" />
               Change Password
             </Button>
             {!isEditing ? (
-              <Button onClick={() => setIsEditing(true)} className="gap-2">
+              <Button onClick={() => setIsEditing(true)} className="gap-2 flex-1 md:flex-none">
                 <Edit2 className="h-4 w-4" />
                 Edit Profile
               </Button>
             ) : (
-              <div className="flex gap-2">
-                <Button onClick={handleSave} className="gap-2">
+              <div className="flex gap-2 w-full md:w-auto">
+                <Button onClick={handleSave} className="gap-2 flex-1 md:flex-none">
                   <Save className="h-4 w-4" />
                   Save
                 </Button>
-                <Button onClick={handleCancel} variant="outline" className="gap-2">
+                <Button onClick={handleCancel} variant="outline" className="gap-2 flex-1 md:flex-none">
                   <X className="h-4 w-4" />
                   Cancel
                 </Button>
