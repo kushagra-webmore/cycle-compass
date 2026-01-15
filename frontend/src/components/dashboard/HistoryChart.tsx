@@ -28,9 +28,9 @@ export function HistoryChart({ data }: HistoryChartProps) {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
-        <div className="bg-white p-3 border border-slate-100 rounded-xl shadow-lg text-sm">
-          <p className="font-semibold text-slate-800 mb-1">{data.fullDate}</p>
-          <p className="text-slate-600 font-medium">
+        <div className="bg-popover p-3 border border-border rounded-xl shadow-lg text-sm">
+          <p className="font-semibold text-popover-foreground mb-1">{data.fullDate}</p>
+          <p className="text-muted-foreground font-medium">
             {data.totalLength} days cycle
           </p>
           <p className="text-rose-500 text-xs mt-0.5">
@@ -47,7 +47,7 @@ export function HistoryChart({ data }: HistoryChartProps) {
       <CardHeader className="px-0 pt-0 pb-4">
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle className="text-xl font-display font-bold text-slate-800">My Cycle</CardTitle>
+            <CardTitle className="text-xl font-display font-bold text-foreground">My Cycle</CardTitle>
             <CardDescription>History & Trends</CardDescription>
           </div>
         </div>
@@ -56,12 +56,12 @@ export function HistoryChart({ data }: HistoryChartProps) {
         <div className="h-[250px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={chartData} barSize={32}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
               <XAxis 
                 dataKey="date" 
                 axisLine={false} 
                 tickLine={false} 
-                tick={{ fill: '#64748b', fontSize: 12 }} 
+                tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} 
                 dy={10}
               />
               <YAxis 

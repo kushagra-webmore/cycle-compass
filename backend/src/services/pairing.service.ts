@@ -236,16 +236,12 @@ export const getActivePairingForUser = async (userId: string) => {
     .from('pairings')
     .select(`
       *,
-      consent_settings(*),
-      primary:users!primary_user_id(
-        profiles(name)
-      ),
-      partner:users!partner_user_id(
-        profiles(name)
-      )
+      consent_settings(*)
     `)
     .or(`primary_user_id.eq.${userId},partner_user_id.eq.${userId}`)
     .eq('status', 'ACTIVE')
+    .order('created_at', { ascending: false })
+    .limit(1)
     .maybeSingle();
 
   if (error) {
@@ -258,7 +254,6 @@ export const getActivePairingForUser = async (userId: string) => {
   const userIds = [data.primary_user_id, data.partner_user_id].filter(Boolean);
   const { data: profiles } = await supabase
     .from('profiles')
-    .select('user_id, name')
     .select('user_id, name')
     .in('user_id', userIds);
 

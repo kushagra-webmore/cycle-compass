@@ -409,7 +409,7 @@ export default function Profile() {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="p-4 rounded-lg bg-primary-soft border border-primary/20">
+                  <div className="p-4 rounded-lg bg-primary/10 border border-primary/20">
                     <p className="text-sm text-muted-foreground mb-1">Last Period Date</p>
                     <p className="text-lg font-semibold">
                       {user.lastPeriodDate
@@ -423,7 +423,7 @@ export default function Profile() {
                     )}
                   </div>
 
-                  <div className="p-4 rounded-lg bg-sage-soft border border-sage/20">
+                  <div className="p-4 rounded-lg bg-sage/20 border border-sage/30">
                     <p className="text-sm text-muted-foreground mb-1">Cycle Length</p>
                     <p className="text-lg font-semibold">
                       {user.cycleLength ? `${user.cycleLength} days` : 'Not set'}
@@ -431,7 +431,7 @@ export default function Profile() {
                     <p className="text-xs text-muted-foreground mt-1">Average cycle duration</p>
                   </div>
 
-                  <div className="p-4 rounded-lg bg-lavender-soft border border-lavender/20">
+                  <div className="p-4 rounded-lg bg-lavender/30 border border-lavender/40">
                     <p className="text-sm text-muted-foreground mb-1">Next Period (Est.)</p>
                     <p className="text-lg font-semibold">
                       {user.lastPeriodDate && user.cycleLength

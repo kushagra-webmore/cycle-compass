@@ -1,6 +1,7 @@
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ReferenceLine } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { differenceInDays, format } from 'date-fns';
+import { useMemo } from 'react';
 
 interface CycleHistoryChartProps {
   cycles: any[];
@@ -8,10 +9,6 @@ interface CycleHistoryChartProps {
 
 export function CycleHistoryChart({ cycles }: CycleHistoryChartProps) {
   // Process cycles to get lengths
-  // Cycle Length = Start Date of Cycle N - Start Date of Cycle N+1 (reverse chronological)
-  // Actually, Cycle Length for Cycle N is (Start of N+1) - (Start of N)
-  // Or if we have endDate, cycle length usually spans until the next period starts.
-  // Standard def: Day 1 to Day 1 of next.
   
   const data = useMemo(() => {
     if (!cycles || cycles.length < 2) return [];
@@ -52,25 +49,33 @@ export function CycleHistoryChart({ cycles }: CycleHistoryChartProps) {
       <CardContent className="h-[300px] w-full">
          <ResponsiveContainer width="100%" height="100%">
             <BarChart data={data} margin={{ top: 20, right: 20, left: -20, bottom: 0 }}>
-               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
                <XAxis 
                  dataKey="date" 
                  fontSize={12} 
                  tickLine={false} 
                  axisLine={false} 
                  tickMargin={10}
+                 tick={{ fill: 'hsl(var(--muted-foreground))' }}
                />
                <YAxis 
                  fontSize={12} 
                  tickLine={false} 
                  axisLine={false} 
+                 tick={{ fill: 'hsl(var(--muted-foreground))' }}
                  domain={['auto', 'auto']}
                />
                <Tooltip 
-                 cursor={{ fill: '#f1f5f9' }}
-                 contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                 cursor={{ fill: 'hsl(var(--muted)/0.2)' }}
+                 contentStyle={{ 
+                    borderRadius: '8px', 
+                    border: '1px solid hsl(var(--border))', 
+                    backgroundColor: 'hsl(var(--popover))',
+                    color: 'hsl(var(--popover-foreground))',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)' 
+                 }}
                />
-               <ReferenceLine y={28} stroke="#94a3b8" strokeDasharray="3 3" label={{ position: 'right', value: '28d', fontSize: 10, fill: '#94a3b8' }} />
+               <ReferenceLine y={28} stroke="hsl(var(--muted-foreground))" strokeDasharray="3 3" label={{ position: 'right', value: '28d', fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} />
                {avgLength !== 28 && (
                    <ReferenceLine y={avgLength} stroke="#ec4899" strokeDasharray="3 3" label={{ position: 'right', value: 'Avg', fontSize: 10, fill: '#ec4899' }} />
                )}
@@ -88,5 +93,3 @@ export function CycleHistoryChart({ cycles }: CycleHistoryChartProps) {
     </Card>
   );
 }
-
-import { useMemo } from 'react';

@@ -133,10 +133,10 @@ export default function Dashboard() {
         {!cycleLoading && !symptomLoading && !symptomError && 
          !symptomHistory?.some(log => log.date.startsWith(new Date().toISOString().split('T')[0])) && (
            <div className="animate-in fade-in slide-in-from-top-4 duration-700">
-             <Card className="bg-gradient-to-r from-pink-50 to-white border-pink-200 shadow-sm">
+             <Card className="bg-gradient-to-r from-pink-50 to-white dark:from-pink-950/30 dark:to-background border-pink-200 dark:border-pink-900 shadow-sm">
                 <CardContent className="p-4 flex items-center justify-between">
                    <div className="flex gap-3 items-center">
-                      <div className="p-2 bg-white rounded-full text-pink-500 shadow-sm ring-1 ring-pink-100">
+                      <div className="p-2 bg-white dark:bg-card rounded-full text-pink-500 shadow-sm ring-1 ring-pink-100 dark:ring-pink-900">
                          <Calendar className="h-5 w-5" />
                       </div>
                       <div>
@@ -144,7 +144,7 @@ export default function Dashboard() {
                            <p className="text-xs text-muted-foreground">Log today's symptoms for better insights.</p>
                       </div>
                    </div>
-                   <Button asChild size="sm" variant="default" className="shadow-md shadow-pink-200">
+                   <Button asChild size="sm" variant="default" className="shadow-md shadow-pink-200 dark:shadow-none">
                       <Link to="/log">Log Now</Link>
                    </Button>
                 </CardContent>
@@ -192,14 +192,14 @@ export default function Dashboard() {
             {/* Discrepancy Alert */}
             {discrepancy && (
               <div className="mb-4 animate-in slide-in-from-top-2">
-                <Card className="bg-amber-50 border-amber-200">
+                <Card className="bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-900">
                   <CardContent className="p-3 flex items-start gap-3">
-                    <AlertTriangle className="h-5 w-5 text-amber-600 mt-0.5" />
+                    <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-500 mt-0.5" />
                     <div>
-                      <p className="font-semibold text-amber-800 text-sm">
+                      <p className="font-semibold text-amber-900 dark:text-amber-100 text-sm">
                         Cycle is {discrepancy.days} days longer than average
                       </p>
-                      <p className="text-xs text-amber-700">
+                      <p className="text-xs text-amber-700 dark:text-amber-400">
                         Based on your history (avg. {avgCycleLength} days).
                       </p>
                     </div>
@@ -209,7 +209,7 @@ export default function Dashboard() {
             )}
 
             {/* Main Wheel & Phase */}
-            <Card variant="gradient" className="py-6 border-none shadow-sm">
+            <Card variant="gradient" className="py-6 border-none shadow-sm dark:bg-card dark:bg-none">
               <CardContent className="flex flex-col items-center justify-center">
                 <CycleWheel
                   currentDay={cycle.context.currentDay}
@@ -223,7 +223,7 @@ export default function Dashboard() {
 
             {/* Daily Insights Cards */}
             <div className="mt-4">
-               <h3 className="text-lg font-display font-semibold mb-3 px-1">Daily Insights</h3>
+               <h3 className="text-lg font-display font-semibold mb-3 px-1 text-foreground">Daily Insights</h3>
                <CycleDailyInsights />
             </div>
 
@@ -234,15 +234,15 @@ export default function Dashboard() {
 
             {/* Conception / Fertilization Chance (Only if Fertile/Ovulation) */}
             {(cycle.context.phase === 'FERTILE' || cycle.context.phase === 'OVULATION') && (
-               <Card className="bg-gradient-to-r from-pink-50 to-rose-50 border-pink-100">
+               <Card className="bg-gradient-to-r from-pink-50 to-rose-50 dark:from-pink-950/50 dark:to-rose-950/50 border-pink-100 dark:border-pink-900">
                   <CardContent className="p-4 flex items-center justify-between">
                      <div className="flex gap-3 items-center">
-                        <div className="p-2 bg-white rounded-full text-pink-500 shadow-sm">
+                        <div className="p-2 bg-white dark:bg-card rounded-full text-pink-500 shadow-sm">
                            <Baby className="h-5 w-5" />
                         </div>
                         <div>
-                           <p className="font-semibold text-pink-900">Pregnancy Chance: High</p>
-                           <p className="text-xs text-pink-700">You are in your fertile window.</p>
+                           <p className="font-semibold text-pink-900 dark:text-pink-100">Pregnancy Chance: High</p>
+                           <p className="text-xs text-pink-700 dark:text-pink-300">You are in your fertile window.</p>
                         </div>
                      </div>
                   </CardContent>
@@ -252,7 +252,7 @@ export default function Dashboard() {
             {/* Last Period & Next Period Split */}
             <div className="grid grid-cols-2 gap-4 mt-6">
                 <div className="flex flex-col items-center">
-                   <span className="text-4xl font-display font-bold text-slate-800">
+                   <span className="text-4xl font-display font-bold text-foreground">
                       {formatDate(cycle.startDate).day}<span className="text-base align-top ml-0.5">th</span>
                    </span>
                    <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide mt-1">
@@ -266,7 +266,7 @@ export default function Dashboard() {
                 </div>
 
                 <div className="flex flex-col items-center">
-                   <span className="text-4xl font-display font-bold text-slate-800">
+                   <span className="text-4xl font-display font-bold text-foreground">
                        {cycle.context.daysUntilNextPhase}
                        <span className="text-sm font-normal text-muted-foreground ml-1">days</span>
                    </span>
@@ -277,7 +277,7 @@ export default function Dashboard() {
                       Expected: {format(nextPeriodDate, 'MMM d')}
                    </span>
                    <div className="flex items-center gap-2 mt-2">
-                       <span className="h-2 w-2 rounded-full bg-slate-800" />
+                       <span className="h-2 w-2 rounded-full bg-foreground" />
                        <span className="text-[10px] text-muted-foreground">Until Bleed</span>
                    </div>
                 </div>

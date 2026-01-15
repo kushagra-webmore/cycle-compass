@@ -195,7 +195,7 @@ export default function ConsentSettings() {
                   className="flex items-center justify-between p-3 rounded-xl bg-muted/30 hover:bg-muted/50 transition-colors"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-primary-soft">
+                    <div className="p-2 rounded-lg bg-primary/10">
                       <Icon className="h-4 w-4 text-primary" />
                     </div>
                     <div>
@@ -221,7 +221,7 @@ export default function ConsentSettings() {
         </Card>
 
         {/* Important Notice */}
-        <Card variant="peach" className="border-2 border-peach/50">
+        <Card variant="peach" className="border-2 border-peach/50 mt-6">
           <CardContent className="flex items-start gap-3 py-4">
             <AlertTriangle className="h-5 w-5 text-peach-foreground shrink-0 mt-0.5" />
             <div>
@@ -238,7 +238,7 @@ export default function ConsentSettings() {
         {hasPartner && user?.role === 'primary' && (
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button variant="destructive" size="lg" className="w-full">
+              <Button variant="destructive" size="lg" className="w-full mt-6">
                 <UserX className="h-4 w-4 mr-2" />
                 Revoke All Access
               </Button>
@@ -262,7 +262,7 @@ export default function ConsentSettings() {
         )}
 
         {/* Reassurance */}
-        <div className="text-center p-4 rounded-xl bg-sage/20 border border-sage/30">
+        <div className="text-center p-4 rounded-xl bg-sage/20 border border-sage/30 mt-6">
           <p className="text-sm font-medium text-sage-foreground">
             🔒 You are always in control. Your data, your decisions.
           </p>

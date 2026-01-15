@@ -26,10 +26,10 @@ type Phase = 'MENSTRUAL' | 'FOLLICULAR' | 'FERTILE' | 'OVULATION' | 'LUTEAL';
 const getPhaseColor = (phase: string) => {
   switch (phase) {
     case 'MENSTRUAL': return 'bg-rose-400 text-white hover:bg-rose-500';
-    case 'FOLLICULAR': return 'bg-purple-200 text-purple-900 hover:bg-purple-300';
+    case 'FOLLICULAR': return 'bg-purple-200 text-purple-900 border border-purple-300 dark:bg-purple-900/40 dark:text-purple-100 dark:border-purple-700 hover:bg-purple-300 dark:hover:bg-purple-800/60';
     case 'FERTILE': 
     case 'OVULATION': return 'bg-emerald-400 text-white hover:bg-emerald-500';
-    case 'LUTEAL': return 'bg-blue-100 text-blue-900 hover:bg-blue-200';
+    case 'LUTEAL': return 'bg-blue-100 text-blue-900 border border-blue-200 dark:bg-blue-900/40 dark:text-blue-100 dark:border-blue-700 hover:bg-blue-200 dark:hover:bg-blue-800/60';
     default: return 'hover:bg-accent hover:text-accent-foreground';
   }
 };
@@ -87,16 +87,6 @@ export function CycleCalendar({ currentCycleStart, avgCycleLength, avgPeriodLeng
         if (checkTime <= cycleEnd.getTime()) {
            return 'MENSTRUAL';
         }
-        
-        // If the date is AFTER the period flow but BEFORE the next cycle started...
-        // We need to ensure we don't bleed into the *next* cycle.
-        // Since `relevantCycle` is the first one where `date >= startDate` (sorted desc),
-        // the "next" cycle would be the one *before* it in the array (index - 1), 
-        // OR the `currentCycleStart` if this was the latest history item.
-        // However, the logic below naturally handles "phase calculation" relative to THIS start.
-        // We just need to check if we've gone too far. 
-        // But practically, `relevantCycle` being found means checkTime < previous_in_array.startDate
-        // So we are bounded correctly by the `find` logic.
       }
 
       const diff = differenceInDays(checkDate, cycleStart);
@@ -114,11 +104,6 @@ export function CycleCalendar({ currentCycleStart, avgCycleLength, avgPeriodLeng
       const ovulationDay = effectiveCycleLength - 14;
       const fertileStart = ovulationDay - 5;
       const fertileEnd = ovulationDay;
-
-      // Note: If dayInCycle exceeds effectiveCycleLength, it usually means it's 
-      // in the "Luteal" phase leading up to the NEXT period. 
-      // Unless it's WAY past, which matches "Current Cycle" logic below.
-      // But here we are matching "Historic" data. 
       
       // If we are within the expected length of this cycle
       if (dayInCycle <= effectiveCycleLength) {
@@ -144,16 +129,6 @@ export function CycleCalendar({ currentCycleStart, avgCycleLength, avgPeriodLeng
     }
 
     // 2. Future Projections (Beyond History)
-    // We base projections on the LATEST known start date.
-    // This is usually `currentCycleStart`.
-    // History is resolved above. If we are here, date is likely > all history starts?
-    // Wait, the find logic `checkTime >= start.getTime()` covers EVERYTHING in the past.
-    // If `relevantCycle` is null, it means `checkTime` is BEFORE the earliest recorded cycle?
-    // OR it means there is NO history.
-    
-    // Let's rely on `currentCycleStart` as the anchor for "current and future".
-    // We assume `currentCycleStart` is the start of the *active* cycle.
-    
     const currentStartNormalized = new Date(currentCycleStart.getFullYear(), currentCycleStart.getMonth(), currentCycleStart.getDate());
     
     if (checkTime >= currentStartNormalized.getTime()) {
@@ -185,7 +160,7 @@ export function CycleCalendar({ currentCycleStart, avgCycleLength, avgPeriodLeng
     <Card className="border-none shadow-none bg-transparent">
         {/* Header */}
         <div className="flex items-center justify-between mb-4 px-2">
-            <h3 className="font-display font-bold text-xl text-slate-800">
+            <h3 className="font-display font-bold text-xl text-foreground">
                 {format(currentMonth, 'MMMM yyyy')}
             </h3>
             <div className="flex gap-1">
@@ -217,7 +192,7 @@ export function CycleCalendar({ currentCycleStart, avgCycleLength, avgPeriodLeng
         {/* Grid */}
         <div className="grid grid-cols-7 gap-1 text-center">
             {weekDays.map(d => (
-                <div key={d} className="text-xs font-medium text-slate-400 py-2">
+                <div key={d} className="text-xs font-medium text-muted-foreground py-2">
                     {d}
                 </div>
             ))}
@@ -236,9 +211,9 @@ export function CycleCalendar({ currentCycleStart, avgCycleLength, avgPeriodLeng
                         <div 
                             className={cn(
                                 "h-12 w-12 rounded-full flex items-center justify-center text-lg font-medium transition-colors cursor-default relative",
-                                isCurrent && !phase && "bg-slate-900 text-white",
-                                phase ? getPhaseColor(phase) : "text-slate-700 hover:bg-slate-100",
-                                isCurrent && phase && "ring-2 ring-slate-900 ring-offset-2" 
+                                isCurrent && !phase && "bg-foreground text-background",
+                                phase ? getPhaseColor(phase) : "text-foreground hover:bg-muted",
+                                isCurrent && phase && "ring-2 ring-foreground ring-offset-2 ring-offset-background" 
                             )}
                         >
                             {date.getDate()}

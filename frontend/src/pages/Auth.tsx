@@ -50,9 +50,6 @@ export default function Auth() {
       } else if (user.role === 'partner') {
         navigate(user.onboardingCompleted ? '/partner-dashboard' : '/partner-accept');
       } else {
-        // For primary users, check onboarding status
-        // We only check if they have completed the onboarding flow.
-        // Missing cycle data will be handled gracefully by the Dashboard.
         navigate(user.onboardingCompleted ? '/dashboard' : '/onboarding');
       }
     }
@@ -139,10 +136,7 @@ export default function Auth() {
           description: "Your account has been created successfully.",
         });
       }
-
-      // Navigation is handled by the useEffect hook based on user state changes
     } catch (err) {
-      // Error is already handled in the AuthContext
       console.error('Authentication error:', err);
     } finally {
       setIsLoading(false);
@@ -169,9 +163,9 @@ export default function Auth() {
   return (
     <div className="min-h-screen gradient-calm flex flex-col">
       {/* Header */}
-      <header className="flex items-center justify-between p-4">
+      <header className="flex items-center justify-between p-4 bg-background/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="flex items-center gap-2">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-peach flex items-center justify-center shadow-soft">
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-peach dark:from-primary/80 dark:to-peach/80 flex items-center justify-center shadow-soft">
             <Sparkles className="h-5 w-5 text-primary-foreground" />
           </div>
           <span className="font-display font-bold text-lg text-foreground">Cycle-Aware</span>
@@ -223,8 +217,8 @@ export default function Auth() {
                             "flex items-start gap-4 p-4 rounded-xl border-2 transition-all duration-300 text-left",
                             selectedRole === role.id
                               ? role.color === 'primary'
-                                ? "border-primary bg-primary-soft"
-                                : "border-lavender bg-lavender/20"
+                                ? "border-primary bg-primary/20"
+                                : "border-lavender bg-lavender/30"
                               : "border-border hover:border-muted-foreground/30 hover:bg-muted/50"
                           )}
                         >
@@ -234,7 +228,7 @@ export default function Auth() {
                           )}>
                             <role.icon className={cn(
                               "h-5 w-5",
-                              role.color === 'primary' ? "text-primary" : "text-lavender-foreground"
+                              role.color === 'primary' ? "text-primary dark:text-primary-foreground" : "text-lavender-foreground"
                             )} />
                           </div>
                           <div className="flex-1">
@@ -474,7 +468,6 @@ export default function Auth() {
                 : 'Already have an account? Sign in'}
             </button>
           </div>
-
 
         </div>
       </main>

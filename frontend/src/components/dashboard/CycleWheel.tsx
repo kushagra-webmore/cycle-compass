@@ -10,11 +10,11 @@ interface CycleWheelProps {
 }
 
 const phaseColors = {
-  MENSTRUAL: 'text-[#ef4444] stroke-[#ef4444]', // Red
-  FOLLICULAR: 'text-[#1e3a8a] stroke-[#1e3a8a]', // Dark Blue
-  FERTILE: 'text-[#86efac] stroke-[#86efac]', // Light Green
-  OVULATION: 'text-[#166534] stroke-[#166534]', // Dark Green
-  LUTEAL: 'text-[#93c5fd] stroke-[#93c5fd]', // Light Blue
+  MENSTRUAL: 'text-red-500 dark:text-red-400 stroke-red-500', 
+  FOLLICULAR: 'text-blue-600 dark:text-blue-400 stroke-blue-600', 
+  FERTILE: 'text-green-500 dark:text-green-400 stroke-green-500', 
+  OVULATION: 'text-emerald-600 dark:text-emerald-400 stroke-emerald-600', 
+  LUTEAL: 'text-blue-400 dark:text-blue-300 stroke-blue-400', 
 };
 
 const phaseLabels = {
@@ -98,46 +98,41 @@ export const CycleWheel = ({ currentDay, cycleLength, phase, ovulationDay, ferti
           viewBox="0 0 200 200"
         >
           {/* Background track */}
-          <circle cx="100" cy="100" r={radius} fill="none" stroke="#e2e8f0" strokeWidth={strokeWidth} />
+          <circle cx="100" cy="100" r={radius} fill="none" className="stroke-muted" strokeWidth={strokeWidth} />
           
           {/* Segments - with hover handlers */}
           
           {/* Menstrual */}
-          <circle cx="100" cy="100" r={radius} fill="none" stroke="#ef4444" strokeWidth={strokeWidth}
+          <circle cx="100" cy="100" r={radius} fill="none" className="stroke-red-500 transition-all hover:stroke-width-[16] cursor-pointer" strokeWidth={strokeWidth}
             strokeDasharray={segments.mens.dash} strokeDashoffset={0} 
-            className="transition-all hover:stroke-width-[16] cursor-pointer"
             onMouseEnter={() => setHoverInfo('Menstrual')}
             onMouseLeave={() => setHoverInfo(null)}
           />
             
           {/* Follicular */}
-          <circle cx="100" cy="100" r={radius} fill="none" stroke="#1e3a8a" strokeWidth={strokeWidth}
+          <circle cx="100" cy="100" r={radius} fill="none" className="stroke-blue-600 transition-all hover:stroke-width-[16] cursor-pointer" strokeWidth={strokeWidth}
             strokeDasharray={segments.foll.dash} strokeDashoffset={segments.foll.off} 
-            className="transition-all hover:stroke-width-[16] cursor-pointer"
             onMouseEnter={() => setHoverInfo('Follicular')}
             onMouseLeave={() => setHoverInfo(null)}
           />
   
           {/* Fertile */}
-          <circle cx="100" cy="100" r={radius} fill="none" stroke="#86efac" strokeWidth={strokeWidth}
+          <circle cx="100" cy="100" r={radius} fill="none" className="stroke-green-500 transition-all hover:stroke-width-[16] cursor-pointer" strokeWidth={strokeWidth}
             strokeDasharray={segments.fert.dash} strokeDashoffset={segments.fert.off}
-            className="transition-all hover:stroke-width-[16] cursor-pointer"
             onMouseEnter={() => setHoverInfo('Fertile Window')}
             onMouseLeave={() => setHoverInfo(null)} 
           />
             
           {/* Ovulation */}
-          <circle cx="100" cy="100" r={radius} fill="none" stroke="#166534" strokeWidth={strokeWidth}
+          <circle cx="100" cy="100" r={radius} fill="none" className="stroke-emerald-600 transition-all hover:stroke-width-[16] cursor-pointer" strokeWidth={strokeWidth}
             strokeDasharray={segments.ov.dash} strokeDashoffset={segments.ov.off}
-            className="transition-all hover:stroke-width-[16] cursor-pointer"
             onMouseEnter={() => setHoverInfo('Ovulation')}
             onMouseLeave={() => setHoverInfo(null)}
           />
             
           {/* Luteal */}
-          <circle cx="100" cy="100" r={radius} fill="none" stroke="#93c5fd" strokeWidth={strokeWidth}
+          <circle cx="100" cy="100" r={radius} fill="none" className="stroke-blue-400 transition-all hover:stroke-width-[16] cursor-pointer" strokeWidth={strokeWidth}
             strokeDasharray={segments.lut.dash} strokeDashoffset={segments.lut.off}
-            className="transition-all hover:stroke-width-[16] cursor-pointer"
             onMouseEnter={() => setHoverInfo('Luteal')}
             onMouseLeave={() => setHoverInfo(null)}
           />
@@ -171,8 +166,8 @@ export const CycleWheel = ({ currentDay, cycleLength, phase, ovulationDay, ferti
                 of {cycleLength}
               </span>
               <span className={cn(
-                "text-[10px] font-semibold mt-2 px-2 py-0.5 rounded-full bg-slate-100",
-                phaseColors[phase].split(' ')[0]
+                "text-[10px] font-semibold mt-2 px-2 py-0.5 rounded-full bg-muted",
+                phaseColors[phase].split(' ')[0] + ' ' + phaseColors[phase].split(' ')[1] // Gets text-color dark:text-color
               )}>
                 {phaseLabels[phase]}
               </span>
@@ -183,11 +178,11 @@ export const CycleWheel = ({ currentDay, cycleLength, phase, ovulationDay, ferti
 
       {/* Legend */}
       <div className="mt-4 flex flex-wrap justify-center gap-3 px-2">
-        <LegendItem color="bg-[#ef4444]" label="Period" />
-        <LegendItem color="bg-[#1e3a8a]" label="Follicular" />
-        <LegendItem color="bg-[#86efac]" label="Fertile" />
-        <LegendItem color="bg-[#166534]" label="Ovulation" />
-        <LegendItem color="bg-[#93c5fd]" label="Luteal" />
+        <LegendItem color="bg-red-500" label="Period" />
+        <LegendItem color="bg-blue-600" label="Follicular" />
+        <LegendItem color="bg-green-500" label="Fertile" />
+        <LegendItem color="bg-emerald-600" label="Ovulation" />
+        <LegendItem color="bg-blue-400" label="Luteal" />
       </div>
     </div>
   );

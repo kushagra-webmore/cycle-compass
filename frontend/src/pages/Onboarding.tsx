@@ -68,12 +68,6 @@ export default function Onboarding() {
 
       // Auto-calculate cycle length if start date changes
       if (field === 'startDate') {
-         // If we have a newer cycle (index - 1), update ITS length based on this cycle's start
-         // Wait, cycle[i] length = days from cycle[i].start to cycle[i-1].start (next period)
-         // Actually, typically Cycle N length is (Start N+1 - Start N).
-         // Here, index 0 is Most Recent. Index 1 is Month Before.
-         // So Length of Index 1 = (Date of Index 0 - Date of Index 1).
-         
          // Update THIS cycle's length if we have a Newer cycle (index - 1)
          if (index > 0 && newCycles[index - 1].startDate && value) {
             const days = getDaysDiff(value, newCycles[index - 1].startDate);
@@ -111,12 +105,6 @@ export default function Onboarding() {
     if (validRows.length < 2) {
       return 'Please provide at least 2 recent cycles.';
     }
-    
-    // Check for consecutiveness?
-    // We can assume if they fill 2 rows, they are the 2 relevant ones.
-    // Ensure chronological order? (We assume index 0 is latest, index 1 is earlier...)
-    // Actually the user might fill index 1 and 2 and leave 0 empty.
-    // We should just check that we have 2 cycles.
     
     const futureDates = validRows.some((cycle) => new Date(cycle.startDate) > new Date());
     if (futureDates) {
@@ -165,14 +153,10 @@ export default function Onboarding() {
 
   const handleFinish = async () => {
     try {
-      console.log('Starting onboarding completion...');
-      
       // Invalidate all queries to ensure fresh data
-      console.log('Invalidating queries...');
       await queryClient.invalidateQueries();
       
       // Update the user's onboarding status
-      console.log('Updating user with onboardingCompleted: true');
       const updates = { 
         onboardingCompleted: true,
         lastPeriodDate: cycles[0]?.startDate, // Use the most recent cycle's start date
@@ -181,17 +165,9 @@ export default function Onboarding() {
         goal: goal
       };
       
-      console.log('Sending user updates:', updates);
-      const updatedUser = await updateUser(updates);
-      console.log('User update response:', updatedUser);
-      
-      if (!updatedUser?.onboardingCompleted) {
-        console.warn('onboardingCompleted flag not set in response');
-        // Continue anyway as the update might have succeeded but response is incomplete
-      }
+      await updateUser(updates);
       
       // Force a refresh of the auth state
-      console.log('Refreshing auth state...');
       await queryClient.invalidateQueries({ queryKey: ['currentUser'] });
       
       // Show success message
@@ -200,11 +176,9 @@ export default function Onboarding() {
         description: 'Your cycle companion is ready to support you.',
       });
       
-      console.log('Navigation to dashboard...');
       // Navigate to dashboard
       navigate('/dashboard', { replace: true });
     } catch (error) {
-      console.error('Failed to complete onboarding:', error);
       toast({
         title: 'Error',
         description: 'Failed to complete onboarding. Please try again.',
@@ -216,9 +190,9 @@ export default function Onboarding() {
   return (
     <div className="min-h-screen gradient-calm flex flex-col">
       {/* Header */}
-      <header className="flex items-center justify-between p-4">
+      <header className="flex items-center justify-between p-4 bg-background/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="flex items-center gap-2">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-peach flex items-center justify-center shadow-soft">
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-peach dark:from-primary/80 dark:to-peach/80 flex items-center justify-center shadow-soft">
             <Sparkles className="h-5 w-5 text-primary-foreground" />
           </div>
           <span className="font-display font-bold text-lg text-foreground">Setup</span>
@@ -256,8 +230,8 @@ export default function Onboarding() {
             <Card variant="elevated" className="animate-slide-up">
               <CardHeader>
                 <div className="flex items-center gap-3">
-                  <div className="p-3 rounded-xl bg-purple-100/50">
-                    <Sparkles className="h-6 w-6 text-purple-600" />
+                  <div className="p-3 rounded-xl bg-purple-100 dark:bg-purple-900/40">
+                    <Sparkles className="h-6 w-6 text-purple-600 dark:text-purple-300" />
                   </div>
                   <div>
                     <CardTitle>What brings you here?</CardTitle>
@@ -273,31 +247,31 @@ export default function Onboarding() {
                       onClick={() => { setGoal('TRACKING'); setStep(2); }}
                       className={cn(
                         "flex items-center gap-4 p-4 rounded-xl border-2 transition-all duration-200 text-left hover:border-primary/50 hover:bg-primary/5",
-                        goal === 'TRACKING' ? "border-primary bg-primary/5 ring-1 ring-primary/20" : "border-gray-100 bg-white"
+                        goal === 'TRACKING' ? "border-primary bg-primary/5 dark:bg-primary/10 ring-1 ring-primary/20" : "border-border bg-card hover:bg-muted/50"
                       )}
                     >
-                       <div className="p-3 bg-blue-100 text-blue-600 rounded-full">
+                       <div className="p-3 bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300 rounded-full">
                           <Calendar className="h-5 w-5" />
                        </div>
                        <div>
-                          <p className="font-semibold text-gray-900">Track my cycle</p>
-                          <p className="text-sm text-gray-500">I want to understand my body and symptoms.</p>
+                          <p className="font-semibold text-foreground">Track my cycle</p>
+                          <p className="text-sm text-muted-foreground">I want to understand my body and symptoms.</p>
                        </div>
                     </button>
 
                     <button
                       onClick={() => { setGoal('CONCEIVE'); setStep(2); }}
                       className={cn(
-                        "flex items-center gap-4 p-4 rounded-xl border-2 transition-all duration-200 text-left hover:border-rose-400/50 hover:bg-rose-50",
-                        goal === 'CONCEIVE' ? "border-rose-400 bg-rose-50 ring-1 ring-rose-400/20" : "border-gray-100 bg-white"
+                        "flex items-center gap-4 p-4 rounded-xl border-2 transition-all duration-200 text-left hover:border-rose-400/50 hover:bg-rose-50 dark:hover:bg-rose-900/10",
+                        goal === 'CONCEIVE' ? "border-rose-400 bg-rose-50 dark:bg-rose-900/20 ring-1 ring-rose-400/20" : "border-border bg-card hover:bg-muted/50"
                       )}
                     >
-                       <div className="p-3 bg-rose-100 text-rose-600 rounded-full">
+                       <div className="p-3 bg-rose-100 dark:bg-rose-900/40 text-rose-600 dark:text-rose-300 rounded-full">
                           <Sparkles className="h-5 w-5" />
                        </div>
                        <div>
-                          <p className="font-semibold text-gray-900">Conceive a baby</p>
-                          <p className="text-sm text-gray-500">I want to identify my most fertile days.</p>
+                          <p className="font-semibold text-foreground">Conceive a baby</p>
+                          <p className="text-sm text-muted-foreground">I want to identify my most fertile days.</p>
                        </div>
                     </button>
                  </div>
@@ -310,7 +284,7 @@ export default function Onboarding() {
             <Card variant="elevated" className="animate-slide-up">
               <CardHeader>
                 <div className="flex items-center gap-3">
-                  <div className="p-3 rounded-xl bg-primary-soft">
+                  <div className="p-3 rounded-xl bg-primary/10">
                     <Calendar className="h-6 w-6 text-primary" />
                   </div>
                   <div>
@@ -393,7 +367,6 @@ export default function Onboarding() {
                       onChange={(e) => {
                         const newVal = parseInt(e.target.value) || 28;
                         setAvgCycleLength(newVal);
-                        // Update all cycles to match the new average
                         setCycles(prev => prev.map(c => ({ ...c, cycleLength: newVal })));
                       }}
                     />
@@ -404,7 +377,7 @@ export default function Onboarding() {
                   {cycles.map((cycle, index) => {
                     const label = index === 0 ? "Current / Most Recent Cycle" : `Previous Cycle ${index}`;
                     return (
-                      <div key={index} className="p-4 rounded-xl border border-border/60 bg-background/80 space-y-4">
+                      <div key={index} className="p-4 rounded-xl border border-border/60 bg-muted/20 space-y-4">
                         <div className="flex items-center justify-between">
                           <div>
                             <p className="text-sm font-medium text-foreground">{label}</p>
@@ -434,6 +407,7 @@ export default function Onboarding() {
                               value={cycle.startDate}
                               max={new Date().toISOString().split('T')[0]}
                               onChange={(e) => handleCycleChange(index, 'startDate', e.target.value)}
+                              className="dark:bg-background/50"
                             />
                           </div>
                           <div className="space-y-1">
@@ -443,6 +417,7 @@ export default function Onboarding() {
                               value={cycle.endDate}
                               max={new Date().toISOString().split('T')[0]}
                               onChange={(e) => handleCycleChange(index, 'endDate', e.target.value)}
+                              className="dark:bg-background/50"
                             />
                           </div>
                           <div className="space-y-1">
@@ -453,6 +428,7 @@ export default function Onboarding() {
                               max={60}
                               value={cycle.cycleLength}
                               onChange={(e) => handleCycleChange(index, 'cycleLength', e.target.value)}
+                              className="dark:bg-background/50"
                             />
                           </div>
                         </div>
@@ -540,7 +516,7 @@ export default function Onboarding() {
                     {submittedCycles.map((cycle, index) => (
                       <div
                         key={cycle.id ?? `${cycle.startDate}-${index}`}
-                        className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 rounded-xl border border-border/60 bg-background/80 px-4 py-3"
+                        className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 rounded-xl border border-border/60 bg-muted/20 px-4 py-3"
                       >
                         <div>
                           <p className="text-sm font-semibold text-foreground">
@@ -557,8 +533,6 @@ export default function Onboarding() {
                     ))}
                   </div>
                 )}
-
-
 
                 <div className="flex gap-3">
                   <Button variant="calm" className="flex-1" onClick={() => setStep(3)}>

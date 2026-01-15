@@ -134,7 +134,7 @@ export default function SymptomLog() {
                value={logDate} 
                max={new Date().toISOString().split('T')[0]}
                onChange={(e) => setLogDate(e.target.value)}
-               className="w-auto font-display font-semibold text-lg bg-transparent border-none shadow-none focus-visible:ring-0 cursor-pointer"
+               className="w-auto font-display font-semibold text-lg bg-transparent border-none shadow-none focus-visible:ring-0 cursor-pointer dark:bg-card/50 dark:px-3"
              />
           </div>
         </Card>
@@ -155,7 +155,7 @@ export default function SymptomLog() {
                   className={cn(
                     "flex flex-col items-center justify-center p-3 rounded-xl border-2 transition-all",
                     flow === opt.value 
-                      ? "bg-blue-50 border-blue-500 text-blue-700 shadow-sm" 
+                      ? "bg-blue-50 dark:bg-blue-950/40 border-blue-500 dark:border-blue-400 text-blue-700 dark:text-blue-100 shadow-sm" 
                       : "border-transparent bg-muted/30 text-muted-foreground hover:bg-muted/50"
                   )}
                 >
@@ -183,7 +183,7 @@ export default function SymptomLog() {
                   className={cn(
                     "flex flex-col items-center p-2 rounded-xl transition-all h-24 justify-center border-2",
                     selectedSymptoms.includes(opt.id) 
-                      ? "bg-pink-50 border-pink-400 text-pink-700 shadow-sm" 
+                      ? "bg-pink-50 dark:bg-pink-950/40 border-pink-400 dark:border-pink-500 text-pink-700 dark:text-pink-100 shadow-sm" 
                       : "border-transparent bg-muted/30 text-muted-foreground hover:bg-muted/50"
                   )}
                 >
@@ -217,7 +217,7 @@ export default function SymptomLog() {
                 <CardTitle className="text-base flex items-center gap-2">
                     <AlertCircle className="h-4 w-4 text-rose-500" /> Pain Level
                 </CardTitle>
-                <span className="text-sm font-bold text-rose-500 bg-rose-50 px-2 py-1 rounded-md">
+                <span className="text-sm font-bold text-rose-500 bg-rose-50 dark:bg-rose-950/40 px-2 py-1 rounded-md">
                    {pain[0] === 0 ? 'None' : pain[0]}
                 </span>
               </div>
@@ -239,7 +239,7 @@ export default function SymptomLog() {
         </Card>
 
         {/* Intercourse & Protection */}
-        <Card className="border-l-4 border-l-rose-300">
+        <Card className="border-l-4 border-l-rose-300 dark:border-l-rose-700">
            <CardContent className="pt-6">
               <div className="flex items-center justify-between mb-4">
                  <div className="flex items-center gap-2">
@@ -298,7 +298,7 @@ export default function SymptomLog() {
                       onClick={() => setEnergy(e.value)} 
                       className={cn(
                         "flex flex-col items-center p-2 rounded-lg transition-all hover:bg-muted w-full", 
-                        energy === e.value ? "bg-yellow-100 scale-105 shadow-sm" : "opacity-70 hover:opacity-100"
+                        energy === e.value ? "bg-yellow-100 dark:bg-yellow-900/40 scale-105 shadow-sm" : "opacity-70 hover:opacity-100"
                       )}
                     >
                       <span className="text-2xl">{e.emoji}</span>

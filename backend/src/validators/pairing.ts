@@ -23,6 +23,7 @@ export const updateConsentSchema = z.object({
   shareEnergySummary: z.boolean().optional(),
   shareSymptoms: z.boolean().optional(),
   shareJournals: z.boolean().optional(),
+  shareMyCycle: z.boolean().optional(),
 });
 
 export type CreatePairingInput = z.infer<typeof createPairingSchema>;

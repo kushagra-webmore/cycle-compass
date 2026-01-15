@@ -70,16 +70,6 @@ export default function PartnerDashboard() {
   const handleGuidance = async () => {
     try {
       const response = await partnerGuidance.mutateAsync();
-      // Response is now expected to be the JSON object directly or { guidance: JSON } depending on backend return.
-      // ai.service returns JSON. api router might wrap it?
-      // Usually apiFetch returns the body. If service returns JSON, api returns JSON.
-      // Let's assume response IS the guidance object or has a property.
-      
-      // Check structure based on backend router. backend router usually sends { guidance: result }.
-      // If result is object, then response.guidance is the object.
-      // If result was text, response.guidance was text.
-      // We need to verify backend router. Assuming `res.json({ guidance: result })`.
-      
       setGuidance(response.guidance);
     } catch (error) {
       toast({
@@ -154,7 +144,7 @@ export default function PartnerDashboard() {
                      {data.primaryUserName ? data.primaryUserName[0].toUpperCase() : 'P'}
                    </div>
                    <div>
-                     <p className="font-semibold text-sm">Connected to {data.primaryUserName || 'Partner'}</p>
+                     <p className="font-semibold text-sm text-foreground">Connected to {data.primaryUserName || 'Partner'}</p>
                      <p className="text-xs text-muted-foreground">Sharing is active</p>
                    </div>
                  </div>
@@ -191,7 +181,7 @@ export default function PartnerDashboard() {
                   <p className="text-sm text-muted-foreground">{phase.description}</p>
                   {/* Show AI explanation if loaded */}
                   {guidance && (
-                    <div className="mt-3 p-3 bg-white/50 rounded-lg text-sm italic text-slate-700 animate-fade-in">
+                    <div className="mt-3 p-3 bg-muted/50 rounded-lg text-sm italic text-muted-foreground animate-fade-in">
                        "{guidance.explanation}"
                     </div>
                   )}
@@ -232,12 +222,12 @@ export default function PartnerDashboard() {
                     {/* Actions */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                       {guidance.actions.map((action, i) => (
-                        <Card key={i} className="bg-gradient-to-br from-emerald-50 to-white border-emerald-100">
+                        <Card key={i} className="bg-gradient-to-br from-emerald-50 to-white dark:from-emerald-950/30 dark:to-background border-emerald-100 dark:border-emerald-900">
                           <CardContent className="p-4 flex items-start gap-3">
-                             <div className="p-2 bg-emerald-100 rounded-full text-emerald-600 shrink-0">
+                             <div className="p-2 bg-emerald-100 dark:bg-emerald-900/50 rounded-full text-emerald-600 dark:text-emerald-400 shrink-0">
                                 <Smile className="h-4 w-4" />
                              </div>
-                             <p className="text-sm font-medium text-emerald-900">{action}</p>
+                             <p className="text-sm font-medium text-emerald-900 dark:text-emerald-100">{action}</p>
                           </CardContent>
                         </Card>
                       ))}
@@ -245,27 +235,27 @@ export default function PartnerDashboard() {
 
                     {/* Food & Activity Split */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                       <Card className="bg-gradient-to-br from-orange-50 to-white border-orange-100">
+                       <Card className="bg-gradient-to-br from-orange-50 to-white dark:from-orange-950/30 dark:to-background border-orange-100 dark:border-orange-900">
                           <CardHeader className="pb-2">
-                             <CardTitle className="flex items-center gap-2 text-base text-orange-800">
+                             <CardTitle className="flex items-center gap-2 text-base text-orange-800 dark:text-orange-300">
                                 <Utensils className="h-4 w-4" /> Suggested Food
                              </CardTitle>
                           </CardHeader>
                           <CardContent>
-                             <p className="text-sm text-orange-900/80 font-medium">
+                             <p className="text-sm text-orange-900/80 dark:text-orange-100/80 font-medium">
                                {guidance.foodRecommendation}
                              </p>
                           </CardContent>
                        </Card>
 
-                       <Card className="bg-gradient-to-br from-blue-50 to-white border-blue-100">
+                       <Card className="bg-gradient-to-br from-blue-50 to-white dark:from-blue-950/30 dark:to-background border-blue-100 dark:border-blue-900">
                           <CardHeader className="pb-2">
-                             <CardTitle className="flex items-center gap-2 text-base text-blue-800">
+                             <CardTitle className="flex items-center gap-2 text-base text-blue-800 dark:text-blue-300">
                                 <Activity className="h-4 w-4" /> Suggested Activity
                              </CardTitle>
                           </CardHeader>
                           <CardContent>
-                             <p className="text-sm text-blue-900/80 font-medium">
+                             <p className="text-sm text-blue-900/80 dark:text-blue-100/80 font-medium">
                                {guidance.activityRecommendation}
                              </p>
                           </CardContent>
@@ -308,7 +298,7 @@ export default function PartnerDashboard() {
             {/* Shared Symptoms Section */}
             {data.sharedData?.symptoms && data.sharedData.symptoms.length > 0 && (
               <div className="mt-6">
-                <h3 className="font-display font-bold text-lg mb-3 flex items-center gap-2">
+                <h3 className="font-display font-bold text-lg text-foreground mb-3 flex items-center gap-2">
                  <Activity className="h-5 w-5 text-primary" />
                  Recent Symptoms
                 </h3>
@@ -321,17 +311,17 @@ export default function PartnerDashboard() {
                           <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
                             {symptom.mood && <Badge variant="outline" className="bg-lavender/20 border-lavender/50 text-foreground capitalize">Mood: {symptom.mood.toLowerCase()}</Badge>}
                             {symptom.energy && <Badge variant="outline" className="bg-peach/20 border-peach/50 text-foreground capitalize">Energy: {symptom.energy.toLowerCase()}</Badge>}
-                            {symptom.pain !== null && <Badge variant="outline" className="bg-red-50 border-red-200 text-foreground">Pain: {symptom.pain}/10</Badge>}
-                            {symptom.sleep_hours !== null && <Badge variant="outline" className="bg-blue-50 border-blue-200 text-foreground">Sleep: {symptom.sleep_hours}h</Badge>}
-                            {symptom.cravings && <Badge variant="outline" className="bg-orange-50 border-orange-200 text-foreground">Craving: {symptom.cravings}</Badge>}
-                            {symptom.flow && <Badge variant="outline" className="bg-blue-100 border-blue-300 text-blue-800">Flow: {symptom.flow}</Badge>}
+                            {symptom.pain !== null && <Badge variant="outline" className="bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-foreground">Pain: {symptom.pain}/10</Badge>}
+                            {symptom.sleep_hours !== null && <Badge variant="outline" className="bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 text-foreground">Sleep: {symptom.sleep_hours}h</Badge>}
+                            {symptom.cravings && <Badge variant="outline" className="bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800 text-foreground">Craving: {symptom.cravings}</Badge>}
+                            {symptom.flow && <Badge variant="outline" className="bg-blue-100 dark:bg-blue-900/50 border-blue-300 dark:border-blue-700 text-blue-800 dark:text-blue-200">Flow: {symptom.flow}</Badge>}
                             {symptom.intercourse && (
-                                <Badge variant="outline" className="bg-pink-50 border-pink-200 text-foreground">
+                                <Badge variant="outline" className="bg-pink-50 dark:bg-pink-900/20 border-pink-200 dark:border-pink-800 text-foreground">
                                     Intercourse {symptom.protection_used !== null ? (symptom.protection_used ? '(Protected)' : '(Unprotected)') : ''}
                                 </Badge>
                             )}
                             {symptom.other_symptoms && symptom.other_symptoms.map((s: string) => (
-                              <Badge key={s} variant="outline" className="bg-rose-50 border-rose-200 text-rose-800 capitalize">
+                              <Badge key={s} variant="outline" className="bg-rose-50 dark:bg-rose-900/20 border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-200 capitalize">
                                 {s.replace('_', ' ')}
                               </Badge>
                             ))}
@@ -347,7 +337,7 @@ export default function PartnerDashboard() {
             {/* Shared Journals Section */}
             {data.sharedData?.journals && data.sharedData.journals.length > 0 && (
               <div className="mt-6">
-                 <h3 className="font-display font-bold text-lg mb-3 flex items-center gap-2">
+                 <h3 className="font-display font-bold text-lg text-foreground mb-3 flex items-center gap-2">
                   <BookOpen className="h-5 w-5 text-primary" />
                   Recent Journal Entries
                  </h3>
@@ -377,24 +367,16 @@ export default function PartnerDashboard() {
 
             {/* Shared Cycles Section */}
             {data.consent.share_my_cycle && data.sharedData?.cycles && data.sharedData.cycles.length > 0 && (() => {
-               // Calculate averages for the partner view
                const cyclesHistory = data.sharedData!.cycles;
                const avgCycleLength = cyclesHistory.length 
                  ? Math.round(cyclesHistory.reduce((acc: number, c: any) => acc + c.cycleLength, 0) / cyclesHistory.length)
                  : 28;
                
-               // Calculate avg period length similar to dashboard logic or fallback
-               // Since we don't have full symptom history here for flow analysis easily, we'll try to use cycle data if available or fallback.
-               // Actually, let's use a simplified calculation or just the user's setting if passed? 
-               // The cycles array has periodLength embedded in context? No. 
-               // But we can estimate from cycle dates if endDate is present?
-               // Let's use a robust fallback of 5 if we can't easily calculate, or iterate cycles.
-               
                const avgPeriodLength = 5; 
 
                return (
                   <div className="mt-8">
-                     <h3 className="font-display font-bold text-lg mb-3 flex items-center gap-2 px-1">
+                     <h3 className="font-display font-bold text-lg text-foreground mb-3 flex items-center gap-2 px-1">
                       <Activity className="h-5 w-5 text-primary" />
                       {data.primaryUserName}'s Cycle
                      </h3>
@@ -402,7 +384,7 @@ export default function PartnerDashboard() {
                      <HistoryChart data={cyclesHistory.map((c: any) => ({
                         startDate: c.startDate,
                         cycleLength: c.cycleLength,
-                        periodLength: avgPeriodLength // Using approximation as we don't have full flow data here
+                        periodLength: avgPeriodLength 
                      }))} />
                      
                      <div className="mt-8 mx-auto max-w-xl">
@@ -411,9 +393,7 @@ export default function PartnerDashboard() {
                            avgCycleLength={avgCycleLength}
                            avgPeriodLength={avgPeriodLength}
                            cyclesHistory={cyclesHistory}
-                           intercourseDates={[]} // We don't share intercourse dates specifically in calendar for now unless consented? 
-                           // Request said "History & Trends and the calendar visualizations if the consent ... are toggled on"
-                           // Intercourse might be sensitive, let's pass empty for now unless explicitly requested.
+                           intercourseDates={[]} 
                         />
                      </div>
                   </div>
@@ -422,7 +402,7 @@ export default function PartnerDashboard() {
 
             <Card variant="soft" className="mt-6">
               <CardHeader className="pb-2">
-                <CardTitle className="text-base">Have questions?</CardTitle>
+                <CardTitle className="text-base text-foreground">Have questions?</CardTitle>
                 <CardDescription>Chat safely with Luna to understand better.</CardDescription>
               </CardHeader>
               <CardContent>
