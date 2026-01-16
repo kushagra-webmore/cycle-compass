@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { 
   Users, MessageSquare, Activity, Calendar, Heart, 
   Clock, MapPin, Mail, Phone, Shield, Trash2,
-  ChevronDown, ChevronRight, Search, Filter
+  ChevronDown, ChevronRight, Search, Filter, LogIn
 } from 'lucide-react';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -16,7 +16,8 @@ import {
   useUserActivity, 
   useUserChatbot, 
   useUserCycles,
-  useDeleteUser
+  useDeleteUser,
+  useImpersonateUser
 } from '@/hooks/api/admin';
 import { 
   AlertDialog, 
@@ -31,6 +32,8 @@ import {
 import { formatDistanceToNow, format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { AnalyticsDashboard } from '@/components/admin/AnalyticsDashboard';
+import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 export default function ComprehensiveAdminDashboard() {
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
@@ -51,6 +54,9 @@ export default function ComprehensiveAdminDashboard() {
   const { data: chatbotHistory } = useUserChatbot(selectedUserId);
   const { data: cycleData } = useUserCycles(selectedUserId);
   const deleteUserMutation = useDeleteUser();
+  const impersonateMutation = useImpersonateUser();
+  const { impersonate } = useAuth();
+  const navigate = useNavigate();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const handleDeleteUser = async () => {
@@ -61,6 +67,26 @@ export default function ComprehensiveAdminDashboard() {
       setSelectedUserId(null);
     } catch (error) {
       console.error('Failed to delete user:', error);
+    }
+  };
+
+  const handleImpersonateUser = async () => {
+    if (!selectedUserId || !selectedUser) return;
+    try {
+      const result = await impersonateMutation.mutateAsync(selectedUserId);
+      await impersonate(result.session, result.user);
+      
+      // Redirect to appropriate dashboard based on user role
+      const role = result.user.role.toLowerCase();
+      if (role === 'primary') {
+        navigate('/dashboard');
+      } else if (role === 'partner') {
+        navigate('/partner-dashboard');
+      } else {
+        navigate('/admin');
+      }
+    } catch (error) {
+      console.error('Failed to impersonate user:', error);
     }
   };
 
@@ -354,7 +380,18 @@ export default function ComprehensiveAdminDashboard() {
                           </div>
                         </div>
                         
-                         <div className="flex justify-end pt-4">
+                         <div className="flex justify-end gap-2 pt-4">
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={handleImpersonateUser}
+                            disabled={impersonateMutation.isPending}
+                            className="gap-2"
+                          >
+                            <LogIn className="h-4 w-4" />
+                            {impersonateMutation.isPending ? 'Logging in...' : 'Login as User'}
+                          </Button>
+                          
                           <Button 
                             variant="destructive" 
                             size="sm"

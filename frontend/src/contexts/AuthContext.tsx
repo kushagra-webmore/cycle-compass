@@ -56,6 +56,8 @@ export interface AuthError extends Error {
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
+  isImpersonating: boolean;
+  impersonatedUser: User | null;
   login: (email: string, password: string) => Promise<AuthResponse['user']>;
   signup: (email: string, password: string, role: UserRole, details: {
     name: string;
@@ -66,6 +68,8 @@ interface AuthContextType {
   logout: () => Promise<void>;
   updateUser: (updates: Partial<User>) => Promise<User>;
   refreshSession: () => Promise<void>;
+  impersonate: (session: { access_token: string; refresh_token: string }, targetUser: AuthResponse['user']) => Promise<void>;
+  exitImpersonation: () => Promise<void>;
   error: string | null;
   clearError: () => void;
 }
@@ -73,6 +77,8 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const USER_STORAGE_KEY = 'cycle-companion.user';
+const ADMIN_SESSION_KEY = 'cycle-companion.admin-session';
+const IMPERSONATION_KEY = 'cycle-companion.impersonating';
 
 const mapUserFromResponse = (payload: AuthResponse['user']): User => ({
   id: payload.id,
@@ -97,6 +103,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isImpersonating, setIsImpersonating] = useState(false);
+  const [impersonatedUser, setImpersonatedUser] = useState<User | null>(null);
 
   const persistUser = useCallback((next: User | null) => {
     console.log('Persisting user:', next ? { 
@@ -155,6 +163,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     console.log('Bootstrapping auth...');
     const storedUser = localStorage.getItem(USER_STORAGE_KEY);
     
+    // Check if we're in impersonation mode
+    const isImpersonatingFlag = localStorage.getItem(IMPERSONATION_KEY) === 'true';
+    if (isImpersonatingFlag) {
+      setIsImpersonating(true);
+    }
+    
     // If we have a stored user, use it for initial render to prevent flash of auth state
     if (storedUser) {
       try {
@@ -165,6 +179,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           onboardingCompleted: parsedUser.onboardingCompleted 
         });
         persistUser(parsedUser);
+        
+        // If impersonating, set the impersonated user
+        if (isImpersonatingFlag) {
+          setImpersonatedUser(parsedUser);
+        }
       } catch (error) {
         console.error('Error parsing stored user:', error);
         localStorage.removeItem(USER_STORAGE_KEY);
@@ -319,6 +338,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } finally {
       clearSession();
       persistUser(null);
+      
+      // Clear impersonation data if exists
+      localStorage.removeItem(ADMIN_SESSION_KEY);
+      localStorage.removeItem(IMPERSONATION_KEY);
+      setIsImpersonating(false);
+      setImpersonatedUser(null);
     }
   }, [persistUser]);
 
@@ -364,17 +389,86 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [persistUser, user]);
 
+  const impersonate = useCallback(async (
+    session: { access_token: string; refresh_token: string },
+    targetUser: AuthResponse['user']
+  ) => {
+    // Store current admin session
+    const currentAccessToken = localStorage.getItem('cycle-companion.accessToken');
+    const currentRefreshToken = localStorage.getItem('cycle-companion.refreshToken');
+    const currentUser = localStorage.getItem(USER_STORAGE_KEY);
+    
+    if (currentAccessToken && currentRefreshToken && currentUser) {
+      localStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify({
+        accessToken: currentAccessToken,
+        refreshToken: currentRefreshToken,
+        user: currentUser,
+      }));
+    }
+
+    // Set impersonation flag
+    localStorage.setItem(IMPERSONATION_KEY, 'true');
+    setIsImpersonating(true);
+
+    // Replace session with target user's session
+    saveSession(session.access_token, session.refresh_token);
+    const mapped = mapUserFromResponse(targetUser);
+    setUser(mapped);
+    setImpersonatedUser(mapped);
+    localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(mapped));
+  }, []);
+
+  const exitImpersonation = useCallback(async () => {
+    const adminSessionData = localStorage.getItem(ADMIN_SESSION_KEY);
+    
+    if (!adminSessionData) {
+      console.error('No admin session found to restore');
+      // Still clear impersonation flags even if no admin session
+      localStorage.removeItem(IMPERSONATION_KEY);
+      setIsImpersonating(false);
+      setImpersonatedUser(null);
+      return;
+    }
+
+    try {
+      const adminSession = JSON.parse(adminSessionData);
+      
+      // Restore admin session
+      saveSession(adminSession.accessToken, adminSession.refreshToken);
+      const adminUser = JSON.parse(adminSession.user);
+      setUser(adminUser);
+      setImpersonatedUser(null);
+      setIsImpersonating(false);
+      localStorage.setItem(USER_STORAGE_KEY, adminSession.user);
+      
+      // Clean up impersonation data
+      localStorage.removeItem(ADMIN_SESSION_KEY);
+      localStorage.removeItem(IMPERSONATION_KEY);
+    } catch (error) {
+      console.error('Failed to restore admin session:', error);
+      // Clean up impersonation data even on error
+      localStorage.removeItem(ADMIN_SESSION_KEY);
+      localStorage.removeItem(IMPERSONATION_KEY);
+      setIsImpersonating(false);
+      setImpersonatedUser(null);
+    }
+  }, []);
+
   const clearError = useCallback(() => setError(null), []);
 
   const value: AuthContextType = {
     user,
     isLoading,
+    isImpersonating,
+    impersonatedUser,
     error,
     login,
     signup,
     logout,
     updateUser,
     refreshSession: refreshSessionHandler,
+    impersonate,
+    exitImpersonation,
     clearError,
   };
 

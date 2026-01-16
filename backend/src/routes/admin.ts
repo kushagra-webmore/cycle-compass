@@ -20,12 +20,6 @@ import {
   deleteUserAccount,
   upsertMythArticle,
 } from '../services/admin.service.js';
-import {
-  getAllUserDetails,
-  getUserActivityLog,
-  getChatbotHistoryForUser,
-  getUserCycleData,
-} from '../services/admin-data.service.js';
 import { getDashboardAnalytics } from '../services/analytics.service.js';
 
 export const adminRouter = Router();
@@ -56,43 +50,6 @@ adminRouter.delete(
     const { userId } = req.params;
     await deleteUserAccount(req.authUser!.id, userId);
     res.json({ success: true });
-  }),
-);
-
-// Comprehensive user data endpoints
-adminRouter.get(
-  '/users/:userId/details',
-  asyncHandler(async (req, res) => {
-    const { userId } = req.params;
-    const details = await getAllUserDetails(userId);
-    res.json(details);
-  }),
-);
-
-adminRouter.get(
-  '/users/:userId/activity',
-  asyncHandler(async (req, res) => {
-    const { userId } = req.params;
-    const activity = await getUserActivityLog(userId);
-    res.json(activity);
-  }),
-);
-
-adminRouter.get(
-  '/users/:userId/chatbot',
-  asyncHandler(async (req, res) => {
-    const { userId } = req.params;
-    const history = await getChatbotHistoryForUser(userId);
-    res.json({ history });
-  }),
-);
-
-adminRouter.get(
-  '/users/:userId/cycles',
-  asyncHandler(async (req, res) => {
-    const { userId } = req.params;
-    const cycles = await getUserCycleData(userId);
-    res.json({ cycles });
   }),
 );
 

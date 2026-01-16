@@ -10,6 +10,7 @@ export type AuditAction =
   | 'admin.user-update'
   | 'admin.user-delete'
   | 'admin.force-unpair'
+  | 'admin.impersonate-user'
   | 'ai.explain'
   | 'ai.partner-guidance'
   | 'ai.journal-summary'

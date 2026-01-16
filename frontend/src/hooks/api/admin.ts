@@ -282,3 +282,38 @@ export const useUserCycles = (userId: string | null) => {
     enabled: !!userId,
   });
 };
+
+interface ImpersonationResponse {
+  session: {
+    access_token: string;
+    refresh_token: string;
+  };
+  user: {
+    id: string;
+    email: string;
+    role: string;
+    name?: string | null;
+    age?: number | null;
+    dateOfBirth?: string | null;
+    phone?: string | null;
+    city?: string | null;
+    onboardingCompleted?: boolean;
+    lastPeriodDate?: string | null;
+    cycleLength?: number | null;
+    periodLength?: number | null;
+    timezone?: string | null;
+    lastLogin?: string | null;
+    lastActivity?: string | null;
+    goal?: 'TRACKING' | 'CONCEIVE' | 'PREGNANCY' | null;
+  };
+}
+
+export const useImpersonateUser = () => {
+  return useMutation({
+    mutationFn: (userId: string) =>
+      apiFetch<ImpersonationResponse>(`/admin/users/${userId}/impersonate`, {
+        method: 'POST',
+        auth: true,
+      }),
+  });
+};

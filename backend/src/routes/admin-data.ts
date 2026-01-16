@@ -7,6 +7,7 @@ import {
   getChatbotHistoryForUser,
   getUserCycleData,
 } from '../services/admin-data.service.js';
+import { impersonateUser } from '../services/admin.service.js';
 
 export const adminDataRouter = Router();
 
@@ -50,5 +51,15 @@ adminDataRouter.get(
     const { userId } = req.params;
     const cycles = await getUserCycleData(userId);
     res.json({ cycles });
+  }),
+);
+
+// Impersonate user
+adminDataRouter.post(
+  '/users/:userId/impersonate',
+  asyncHandler(async (req, res) => {
+    const { userId } = req.params;
+    const result = await impersonateUser(req.authUser!.id, userId);
+    res.json(result);
   }),
 );

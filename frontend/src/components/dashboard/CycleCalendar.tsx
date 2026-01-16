@@ -28,7 +28,7 @@ const getPhaseColor = (phase: string) => {
   switch (phase) {
     case 'MENSTRUAL': return 'bg-rose-400 text-white hover:bg-rose-500';
     case 'MENSTRUAL': return 'bg-rose-400 text-white hover:bg-rose-500';
-    case 'FOLLICULAR': return 'bg-purple-200 text-purple-900 border border-purple-300 dark:bg-purple-700 dark:text-white dark:border-purple-600 hover:bg-purple-300 dark:hover:bg-purple-600';
+    case 'FOLLICULAR': return 'bg-purple-300 text-purple-900 border border-purple-400 dark:bg-purple-700 dark:text-white dark:border-purple-600 hover:bg-purple-400 dark:hover:bg-purple-600';
     case 'FERTILE': return 'bg-green-400 text-white hover:bg-green-500';
     case 'OVULATION': return 'bg-emerald-600 text-white hover:bg-emerald-700';
     case 'LUTEAL': return 'bg-blue-100 text-blue-900 border border-blue-200 dark:bg-blue-900/40 dark:text-blue-100 dark:border-blue-700 hover:bg-blue-200 dark:hover:bg-blue-800/60';
