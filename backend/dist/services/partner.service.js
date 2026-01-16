@@ -78,6 +78,12 @@ export const getPartnerSummary = async (partnerUserId) => {
         const { listJournalEntries } = await import('./journal.service.js');
         sharedJournals = await listJournalEntries(primaryUserId, 5); // Last 5 entries
     }
+    // Fetch cycle history if consented
+    let sharedCycles = [];
+    if (consent.share_my_cycle) {
+        const { getCyclesHistory } = await import('./cycle.service.js');
+        sharedCycles = await getCyclesHistory(primaryUserId);
+    }
     // Fetch primary user name
     const { data: primaryProfile } = await supabase
         .from('profiles')
@@ -97,6 +103,7 @@ export const getPartnerSummary = async (partnerUserId) => {
         sharedData: {
             symptoms: sharedSymptoms,
             journals: sharedJournals,
+            cycles: sharedCycles,
         }
     };
 };

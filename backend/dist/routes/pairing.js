@@ -3,23 +3,22 @@ import { authenticate, requireRoles } from '../middleware/auth.js';
 import { validateBody } from '../middleware/validate.js';
 import { createPairingSchema, acceptPairingSchema, revokePairingSchema, updateConsentSchema, } from '../validators/pairing.js';
 import { asyncHandler } from '../utils/async-handler.js';
-import { createPairingInvite, acceptPairingInvite, revokePairing, updateConsentSettings, getActivePairingForUser, getInviteDetails, } from '../services/pairing.service.js';
+import { createPairingInvite, acceptPairingInvite, revokePairing, updateConsentSettings, getActivePairingsForUser, getInviteDetails, } from '../services/pairing.service.js';
 export const pairingRouter = Router();
 pairingRouter.get('/me', authenticate, asyncHandler(async (req, res) => {
-    const pairing = await getActivePairingForUser(req.authUser.id);
-    if (!pairing) {
-        return res.json(null);
-    }
-    const isPrimary = pairing.primary_user_id === req.authUser.id;
-    res.json({
-        ...pairing,
-        consent: pairing.consent_settings,
-        role: req.authUser.role,
-        isPrimary,
-        // Keep backward compatibility for fields if needed, but spreading pairing handles new fields
-        partnerUserId: isPrimary ? pairing.partner_user_id : pairing.primary_user_id,
-        partnerName: isPrimary ? pairing.partnerUserName : pairing.primaryUserName,
+    const pairings = await getActivePairingsForUser(req.authUser.id);
+    const result = pairings.map(pairing => {
+        const isPrimary = pairing.primary_user_id === req.authUser.id;
+        return {
+            ...pairing,
+            consent: pairing.consent_settings,
+            role: req.authUser.role,
+            isPrimary,
+            partnerUserId: isPrimary ? pairing.partner_user_id : pairing.primary_user_id,
+            partnerName: isPrimary ? pairing.partnerUserName : pairing.primaryUserName,
+        };
     });
+    res.json(result);
 }));
 pairingRouter.post('/create', authenticate, requireRoles('PRIMARY'), validateBody(createPairingSchema), asyncHandler(async (req, res) => {
     const result = await createPairingInvite(req.authUser.id, req.body.method);

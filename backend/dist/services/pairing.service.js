@@ -71,6 +71,7 @@ const activatePairing = async (pairingId, partnerUserId) => {
         share_phase: true,
         share_mood_summary: true,
         share_energy_summary: true,
+        share_my_cycle: false,
     })
         .select()
         .single();
@@ -176,53 +177,50 @@ export const revokePairing = async (userId, pairingId) => {
         pairingId,
     });
 };
-export const getActivePairingForUser = async (userId) => {
+export const getActivePairingsForUser = async (userId) => {
     const supabase = getSupabaseClient();
     const { data, error } = await supabase
         .from('pairings')
         .select(`
       *,
-      consent_settings(*),
-      primary:users!primary_user_id(
-        profiles(name)
-      ),
-      partner:users!partner_user_id(
-        profiles(name)
-      )
+      consent_settings(*)
     `)
         .or(`primary_user_id.eq.${userId},partner_user_id.eq.${userId}`)
         .eq('status', 'ACTIVE')
-        .maybeSingle();
+        .order('created_at', { ascending: false });
     if (error) {
-        throw new HttpError(400, 'Failed to fetch pairing', error);
+        throw new HttpError(400, 'Failed to fetch pairings', error);
     }
-    if (!data)
-        return null;
+    if (!data || data.length === 0)
+        return [];
     // Manually fetch names to ensure reliability
-    const userIds = [data.primary_user_id, data.partner_user_id].filter(Boolean);
+    const userIds = [
+        ...new Set(data.flatMap(p => [p.primary_user_id, p.partner_user_id]))
+    ].filter(Boolean);
     const { data: profiles } = await supabase
         .from('profiles')
         .select('user_id, name')
-        .select('user_id, name')
         .in('user_id', userIds);
-    console.log('getActivePairingForUser userIds:', userIds);
-    console.log('getActivePairingForUser profiles found:', profiles);
-    const primaryProfile = profiles?.find(p => p.user_id === data.primary_user_id);
-    const partnerProfile = profiles?.find(p => p.user_id === data.partner_user_id);
-    // Transform to flat structure and rename properties for clarity
-    const { data: primaryAuth } = await supabase.auth.admin.getUserById(data.primary_user_id);
-    let partnerEmail;
-    if (data.partner_user_id) {
-        const { data: pData } = await supabase.auth.admin.getUserById(data.partner_user_id);
-        partnerEmail = pData.user?.email;
-    }
-    return {
-        ...data,
-        primaryUserName: primaryProfile?.name,
-        primaryUserEmail: primaryAuth.user?.email,
-        partnerUserName: partnerProfile?.name,
-        partnerUserEmail: partnerEmail,
-    };
+    // Fetch emails (requires admin)
+    // We can do this in parallel
+    const emailMap = new Map();
+    await Promise.all(userIds.map(async (uid) => {
+        const { data: uData } = await supabase.auth.admin.getUserById(uid);
+        if (uData.user?.email) {
+            emailMap.set(uid, uData.user.email);
+        }
+    }));
+    return data.map(pairing => {
+        const primaryProfile = profiles?.find(p => p.user_id === pairing.primary_user_id);
+        const partnerProfile = profiles?.find(p => p.user_id === pairing.partner_user_id);
+        return {
+            ...pairing,
+            primaryUserName: primaryProfile?.name,
+            primaryUserEmail: emailMap.get(pairing.primary_user_id),
+            partnerUserName: partnerProfile?.name,
+            partnerUserEmail: pairing.partner_user_id ? emailMap.get(pairing.partner_user_id) : undefined,
+        };
+    });
 };
 export const updateConsentSettings = async (primaryUserId, pairingId, updates) => {
     const supabase = getSupabaseClient();
@@ -245,6 +243,7 @@ export const updateConsentSettings = async (primaryUserId, pairingId, updates) =
         share_energy_summary: updates.shareEnergySummary ?? pairing.consent_settings?.share_energy_summary ?? true,
         share_symptoms: updates.shareSymptoms ?? pairing.consent_settings?.share_symptoms ?? false,
         share_journals: updates.shareJournals ?? pairing.consent_settings?.share_journals ?? false,
+        share_my_cycle: updates.shareMyCycle ?? pairing.consent_settings?.share_my_cycle ?? false,
     })
         .eq('pairing_id', pairingId)
         .select()

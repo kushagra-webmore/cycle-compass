@@ -61,7 +61,7 @@ export const getAllUserDetails = async (userId: string) => {
       ? pairing.partner_user_id 
       : pairing.primary_user_id;
 
-    let connectedEmail = null;
+    let connectedEmail: string | null = null;
     if (connectedUserId) {
       const { data: connectedAuthData } = await supabase.auth.admin.getUserById(connectedUserId);
       connectedEmail = connectedAuthData.user?.email || null;

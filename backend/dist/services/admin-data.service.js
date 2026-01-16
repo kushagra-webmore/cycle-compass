@@ -45,12 +45,28 @@ export const getAllUserDetails = async (userId) => {
     // Fetch email from auth
     const { data: authData } = await supabase.auth.admin.getUserById(userId);
     const email = authData.user?.email || null;
+    // If pairing exists, fetch connected user's email
+    let pairingWithEmail = null;
+    if (pairing) {
+        const connectedUserId = pairing.primary_user_id === userId
+            ? pairing.partner_user_id
+            : pairing.primary_user_id;
+        let connectedEmail = null;
+        if (connectedUserId) {
+            const { data: connectedAuthData } = await supabase.auth.admin.getUserById(connectedUserId);
+            connectedEmail = connectedAuthData.user?.email || null;
+        }
+        pairingWithEmail = {
+            ...pairing,
+            connected_email: connectedEmail
+        };
+    }
     return {
         user: { ...user, email },
         cycles: cycles ?? [],
         symptoms: symptoms ?? [],
         journals: journals ?? [],
-        pairing: pairing ?? null,
+        pairing: pairingWithEmail ?? null,
     };
 };
 /**
