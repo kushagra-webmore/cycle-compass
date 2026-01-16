@@ -19,8 +19,8 @@ export const Header = ({ title = 'Cycle-Aware Companion', showBack }: HeaderProp
     if (await confirm({ 
       title: "Log Out", 
       description: "Are you sure you want to log out?",
-      confirmText: "Log Out",
-      cancelText: "Cancel",
+      confirmLabel: "Log Out",
+      cancelLabel: "Cancel",
       variant: "destructive"
     })) {
       logout();
