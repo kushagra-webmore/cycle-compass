@@ -89,15 +89,14 @@ export function FertilityChart() {
                />
 
 
-               {/* Phase Backgrounds */}
                {/* Menstrual: Red-ish */}
                <ReferenceArea 
                   x1="Day 1" 
                   x2={`Day 5`} 
                   fill="#ef4444" 
-                  fillOpacity={isDark ? 0.1 : 0.8} 
+                  fillOpacity={isDark ? 0.15 : 0.15} 
                   strokeOpacity={0} 
-                  label={{ value: "Period", position: 'top', fill: isDark ? '#fca5a5' : '#ef4444', fontSize: 10 }} 
+                  label={{ value: "Period", position: 'insideTop', fill: isDark ? '#fca5a5' : '#ef4444', fontSize: 10 }} 
                 />
                
                {/* Follicular: Blue-ish */}
