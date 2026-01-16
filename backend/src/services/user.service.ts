@@ -85,6 +85,18 @@ export const getUserWithProfile = async (
   return mapUserRowToAuthUser(data, email);
 };
 
+// Helper function to calculate age
+const calculateAge = (dateOfBirth: string | Date): number => {
+  const dob = typeof dateOfBirth === 'string' ? new Date(dateOfBirth) : dateOfBirth;
+  const today = new Date();
+  let age = today.getFullYear() - dob.getFullYear();
+  const m = today.getMonth() - dob.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+    age--;
+  }
+  return age;
+};
+
 interface CreateUserRecordArgs {
   id: string;
   role: UserRole;
@@ -119,11 +131,18 @@ export const createUserRecord = async ({
     throw new HttpError(400, 'Failed to persist user role', userError);
   }
 
+  // Calculate age if dateOfBirth is provided
+  let age: number | undefined;
+  if (dateOfBirth) {
+    age = calculateAge(dateOfBirth);
+  }
+
   // Use upsert to handle cases where a trigger might have already created a profile
   const { error: profileError } = await supabase.from('profiles').upsert({
     user_id: id,
     name,
     date_of_birth: dateOfBirth,
+    age, // Include calculated age
     phone,
     city,
     timezone,
@@ -162,22 +181,29 @@ export const updateUserProfile = async (
   console.log('Updating user profile for user ID:', userId);
   console.log('Raw updates received:', updates);
   
+  // Get user role to validate updates
+  const { data: userRoleData } = await supabase
+    .from('users')
+    .select('role')
+    .eq('id', userId)
+    .single();
+  
   // Filter out undefined values
   const cleanUpdates = Object.fromEntries(
     Object.entries(updates).filter(([_, value]) => value !== undefined)
   );
   
+  // Remove goal field if user is not primary
+  if (userRoleData?.role !== 'primary' && 'goal' in cleanUpdates) {
+    console.log('Removing goal update for non-primary user');
+    delete cleanUpdates.goal;
+  }
+  
   console.log('Clean updates to apply:', cleanUpdates);
 
   // Calculate age if date_of_birth is present
   if (cleanUpdates.date_of_birth) {
-    const dob = new Date(cleanUpdates.date_of_birth as string);
-    const today = new Date();
-    let age = today.getFullYear() - dob.getFullYear();
-    const m = today.getMonth() - dob.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
-      age--;
-    }
+    const age = calculateAge(cleanUpdates.date_of_birth as string);
     // @ts-ignore - age is not in UpdateProfileArgs but valid for DB
     cleanUpdates.age = age;
   }
