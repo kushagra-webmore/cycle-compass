@@ -304,50 +304,37 @@ export default function Profile() {
                   )}
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="timezone">Timezone</Label>
-                  {isEditing ? (
-                    <Input
-                      id="timezone"
-                      value={formData.timezone}
-                      onChange={(e) => setFormData({ ...formData, timezone: e.target.value })}
-                    />
-                  ) : (
-                    <div className="flex items-center gap-2 p-2 rounded-lg bg-muted">
-                      <Clock className="h-4 w-4 text-muted-foreground" />
-                      <span>{user.timezone || 'Asia/Kolkata'}</span>
-                    </div>
-                  )}
-                </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="goal">Primary Goal</Label>
-                  {isEditing ? (
-                    <div className="flex gap-2">
-                      <Button
-                        type="button"
-                        variant={formData.goal === 'TRACKING' ? 'default' : 'outline'}
-                        className="flex-1"
-                        onClick={() => setFormData({ ...formData, goal: 'TRACKING' as any })}
-                      >
-                        Track Cycle
-                      </Button>
-                      <Button
-                        type="button"
-                        variant={formData.goal === 'CONCEIVE' ? 'default' : 'outline'}
-                        className="flex-1"
-                        onClick={() => setFormData({ ...formData, goal: 'CONCEIVE' as any })}
-                      >
-                        Conceive
-                      </Button>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-2 p-2 rounded-lg bg-muted">
-                      <Sparkles className="h-4 w-4 text-muted-foreground" />
-                      <span>{user.goal === 'CONCEIVE' ? 'Conceive a baby' : 'Track my cycle'}</span>
-                    </div>
-                  )}
-                </div>
+                {user.role === 'primary' && (
+                  <div className="space-y-2">
+                    <Label htmlFor="goal">Primary Goal</Label>
+                    {isEditing ? (
+                      <div className="flex gap-2">
+                        <Button
+                          type="button"
+                          variant={formData.goal === 'TRACKING' ? 'default' : 'outline'}
+                          className="flex-1"
+                          onClick={() => setFormData({ ...formData, goal: 'TRACKING' as any })}
+                        >
+                          Track Cycle
+                        </Button>
+                        <Button
+                          type="button"
+                          variant={formData.goal === 'CONCEIVE' ? 'default' : 'outline'}
+                          className="flex-1"
+                          onClick={() => setFormData({ ...formData, goal: 'CONCEIVE' as any })}
+                        >
+                          Conceive
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2 p-2 rounded-lg bg-muted">
+                        <Sparkles className="h-4 w-4 text-muted-foreground" />
+                        <span>{user.goal === 'CONCEIVE' ? 'Conceive a baby' : 'Track my cycle'}</span>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>

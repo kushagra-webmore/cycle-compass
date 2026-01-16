@@ -23,8 +23,8 @@ interface ImportedCycle {
 export default function Onboarding() {
   const [step, setStep] = useState(1);
   const [goal, setGoal] = useState<'TRACKING' | 'CONCEIVE'>('TRACKING');
-  const [periodLength, setPeriodLength] = useState(5);
-  const [avgCycleLength, setAvgCycleLength] = useState(28);
+  const [periodLength, setPeriodLength] = useState<number | string>(5);
+  const [avgCycleLength, setAvgCycleLength] = useState<number | string>(28);
   const [error, setError] = useState<string | null>(null);
   const [submittedCycles, setSubmittedCycles] = useState<ImportedCycle[]>([]);
   const { updateUser } = useAuth();
@@ -160,8 +160,8 @@ export default function Onboarding() {
       const updates = { 
         onboardingCompleted: true,
         lastPeriodDate: cycles[0]?.startDate, // Use the most recent cycle's start date
-        cycleLength: avgCycleLength, // Use user-defined average
-        periodLength: periodLength, // From user input
+        cycleLength: typeof avgCycleLength === 'string' ? parseInt(avgCycleLength) || 28 : avgCycleLength, // Use user-defined average
+        periodLength: typeof periodLength === 'string' ? parseInt(periodLength) || 5 : periodLength, // From user input
         goal: goal
       };
       
@@ -349,7 +349,11 @@ export default function Onboarding() {
                       min={2}
                       max={15}
                       value={periodLength}
-                      onChange={(e) => setPeriodLength(parseInt(e.target.value) || 5)}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        if (val === '') setPeriodLength('');
+                        else setPeriodLength(parseInt(val));
+                      }}
                     />
                   </div>
                   <div className="space-y-1">
@@ -365,9 +369,14 @@ export default function Onboarding() {
                       max={60}
                       value={avgCycleLength}
                       onChange={(e) => {
-                        const newVal = parseInt(e.target.value) || 28;
-                        setAvgCycleLength(newVal);
-                        setCycles(prev => prev.map(c => ({ ...c, cycleLength: newVal })));
+                        const val = e.target.value;
+                        if (val === '') {
+                          setAvgCycleLength('');
+                        } else {
+                          const num = parseInt(val);
+                          setAvgCycleLength(num);
+                          setCycles(prev => prev.map(c => ({ ...c, cycleLength: num })));
+                        }
                       }}
                     />
                   </div>
@@ -397,7 +406,7 @@ export default function Onboarding() {
                           </Button>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div className="grid grid-cols-2 gap-3">
                           <div className="space-y-1">
                             <label className="text-xs uppercase tracking-wide text-muted-foreground">
                               Start Date
@@ -420,7 +429,7 @@ export default function Onboarding() {
                               className="dark:bg-background/50"
                             />
                           </div>
-                          <div className="space-y-1">
+                          <div className="space-y-1 col-span-2">
                             <label className="text-xs uppercase tracking-wide text-muted-foreground">Cycle Length (days)</label>
                             <Input
                               type="number"
@@ -526,9 +535,7 @@ export default function Onboarding() {
                             Cycle length: {cycle.cycleLength} day{cycle.cycleLength === 1 ? '' : 's'}
                           </p>
                         </div>
-                        <div className="text-xs text-muted-foreground uppercase tracking-wide">
-                          {cycle.phase ? `${cycle.phase.toLowerCase()} phase` : 'Phase pending'}
-                        </div>
+
                       </div>
                     ))}
                   </div>

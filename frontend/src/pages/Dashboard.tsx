@@ -267,7 +267,7 @@ export default function Dashboard() {
 
                 <Card variant="default" className="flex flex-col items-center justify-center py-6 shadow-sm border-none bg-white/60 dark:bg-card/50 backdrop-blur-sm">
                    <span className="text-4xl font-display font-bold text-foreground">
-                       {cycle.context.daysUntilNextPhase}
+                       {differenceInDays(nextPeriodDate, new Date())}
                        <span className="text-sm font-normal text-muted-foreground ml-1">days</span>
                    </span>
                    <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide mt-1">
@@ -302,6 +302,7 @@ export default function Dashboard() {
                       avgPeriodLength={avgPeriodLength}
                       cyclesHistory={cyclesHistory || []}
                       intercourseDates={intercourseDates}
+                      currentCycleLength={cycle.context.cycleLength}
                    />
                </Card>
             </div>

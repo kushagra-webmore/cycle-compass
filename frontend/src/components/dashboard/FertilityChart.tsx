@@ -1,9 +1,11 @@
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, ReferenceArea } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useCurrentCycle } from '@/hooks/api/cycles';
+import { useTheme } from '@/contexts/ThemeContext';
 
 export function FertilityChart() {
   const { data: cycle } = useCurrentCycle();
+  const { theme } = useTheme();
 
   if (!cycle) return null;
 
@@ -42,6 +44,16 @@ export function FertilityChart() {
 
   const fertileStart = ovulationDay - 5;
   const fertileEnd = ovulationDay + 1;
+  const isDark = theme === 'dark';
+
+  // Dynamic Styles
+  const phaseOpacity = isDark ? 0.1 : 0.5;
+  const phaseLabelColor = {
+      menstrual: isDark ? '#fca5a5' : '#ef4444', // lighter red in dark
+      follicular: isDark ? '#93c5fd' : '#1e3a8a', // lighter blue in dark
+      fertile: isDark ? '#86efac' : '#166534', // lighter green in dark
+      luteal: isDark ? '#d8b4fe' : '#9333ea', // lighter purple in dark
+  };
 
   return (
     <Card className="mt-6 border-pink-100 bg-gradient-to-br from-pink-50/50 to-white dark:from-pink-950/20 dark:to-background dark:border-pink-900">
@@ -76,18 +88,47 @@ export function FertilityChart() {
                  labelStyle={{ color: '#831843', fontWeight: 'bold' }}
                />
 
+
                {/* Phase Backgrounds */}
                {/* Menstrual: Red-ish */}
-               <ReferenceArea x1="Day 1" x2={`Day 5`} fill="#fee2e2" fillOpacity={0.5} strokeOpacity={0} label={{ value: "Period", position: 'insideTopLeft', fill: '#ef4444', fontSize: 10 }} />
+               <ReferenceArea 
+                  x1="Day 1" 
+                  x2={`Day 5`} 
+                  fill="#ef4444" 
+                  fillOpacity={isDark ? 0.1 : 0.8} 
+                  strokeOpacity={0} 
+                  label={{ value: "Period", position: 'top', fill: isDark ? '#fca5a5' : '#ef4444', fontSize: 10 }} 
+                />
                
                {/* Follicular: Blue-ish */}
-               <ReferenceArea x1={`Day 5`} x2={`Day ${fertileStart}`} fill="#dbeafe" fillOpacity={0.5} strokeOpacity={0} label={{ value: "Follicular", position: 'insideTop', fill: '#1e3a8a', fontSize: 10 }} />
+               <ReferenceArea 
+                  x1={`Day 5`} 
+                  x2={`Day ${fertileStart}`} 
+                  fill="#dbeafe" 
+                  fillOpacity={phaseOpacity} 
+                  strokeOpacity={0} 
+                  label={{ value: "Follicular", position: 'insideTop', fill: phaseLabelColor.follicular, fontSize: 10 }} 
+                />
                
                {/* Fertile: Green-ish */}
-               <ReferenceArea x1={`Day ${fertileStart}`} x2={`Day ${fertileEnd}`} fill="#dcfce7" fillOpacity={0.6} strokeOpacity={0} label={{ value: "Fertile", position: 'insideTop', fill: '#166534', fontSize: 10 }} />
+               <ReferenceArea 
+                  x1={`Day ${fertileStart}`} 
+                  x2={`Day ${fertileEnd}`} 
+                  fill="#dcfce7" 
+                  fillOpacity={phaseOpacity + 0.1} // Slightly more opaque for emphasis
+                  strokeOpacity={0} 
+                  label={{ value: "Fertile", position: 'insideTop', fill: phaseLabelColor.fertile, fontSize: 10 }} 
+                />
                
                {/* Luteal: Purple-ish */}
-               <ReferenceArea x1={`Day ${fertileEnd}`} x2={`Day ${cycleLength}`} fill="#f3e8ff" fillOpacity={0.5} strokeOpacity={0} label={{ value: "Luteal", position: 'insideTopRight', fill: '#9333ea', fontSize: 10 }} />
+               <ReferenceArea 
+                  x1={`Day ${fertileEnd}`} 
+                  x2={`Day ${cycleLength}`} 
+                  fill="#f3e8ff" 
+                  fillOpacity={phaseOpacity} 
+                  strokeOpacity={0} 
+                  label={{ value: "Luteal", position: 'insideTopRight', fill: phaseLabelColor.luteal, fontSize: 10 }} 
+                />
 
                <Area 
                  type="monotone" 

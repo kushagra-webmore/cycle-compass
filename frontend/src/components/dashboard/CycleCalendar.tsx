@@ -29,8 +29,8 @@ const getPhaseColor = (phase: string) => {
     case 'MENSTRUAL': return 'bg-rose-400 text-white hover:bg-rose-500';
     case 'MENSTRUAL': return 'bg-rose-400 text-white hover:bg-rose-500';
     case 'FOLLICULAR': return 'bg-purple-200 text-purple-900 border border-purple-300 dark:bg-purple-700 dark:text-white dark:border-purple-600 hover:bg-purple-300 dark:hover:bg-purple-600';
-    case 'FERTILE': 
-    case 'OVULATION': return 'bg-emerald-400 text-white hover:bg-emerald-500';
+    case 'FERTILE': return 'bg-green-400 text-white hover:bg-green-500';
+    case 'OVULATION': return 'bg-emerald-600 text-white hover:bg-emerald-700';
     case 'LUTEAL': return 'bg-blue-100 text-blue-900 border border-blue-200 dark:bg-blue-900/40 dark:text-blue-100 dark:border-blue-700 hover:bg-blue-200 dark:hover:bg-blue-800/60';
     default: return 'hover:bg-accent hover:text-accent-foreground';
   }
@@ -46,9 +46,10 @@ interface CycleCalendarProps {
       cycleLength: number;
   }[];
   intercourseDates?: string[];
+  currentCycleLength?: number;
 }
 
-export function CycleCalendar({ currentCycleStart, avgCycleLength, avgPeriodLength, cyclesHistory = [], intercourseDates = [] }: CycleCalendarProps) {
+export function CycleCalendar({ currentCycleStart, avgCycleLength, avgPeriodLength, cyclesHistory = [], intercourseDates = [], currentCycleLength }: CycleCalendarProps) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
   // Generate calendar days
@@ -95,7 +96,12 @@ export function CycleCalendar({ currentCycleStart, avgCycleLength, avgPeriodLeng
       const dayInCycle = diff + 1; // 1-based
 
       // Use recorded cycle length if available, otherwise average
-      const effectiveCycleLength = relevantCycle.cycleLength || avgCycleLength;
+      // If this is the current cycle, prefer the passed currentCycleLength
+      let effectiveCycleLength = relevantCycle.cycleLength || avgCycleLength;
+      
+      if (isSameDay(cycleStart, currentCycleStart) && currentCycleLength) {
+          effectiveCycleLength = currentCycleLength;
+      }
       
       // If no end date recorded, use average period length for menstruation projection
       if (!relevantCycle.endDate && dayInCycle <= avgPeriodLength) {
@@ -104,27 +110,29 @@ export function CycleCalendar({ currentCycleStart, avgCycleLength, avgPeriodLeng
 
       // Calculate phases relative to this cycle's start
       const ovulationDay = effectiveCycleLength - 14;
-      const fertileStart = ovulationDay - 5;
-      const fertileEnd = ovulationDay;
+      const fertileStart = ovulationDay - 3;
+      const fertileEnd = ovulationDay + 3;
       
       // If we are within the expected length of this cycle
       if (dayInCycle <= effectiveCycleLength) {
           if (dayInCycle < fertileStart) return 'FOLLICULAR';
-          if (dayInCycle >= fertileStart && dayInCycle <= fertileEnd + 1) return 'FERTILE';
+          if (dayInCycle === ovulationDay) return 'OVULATION';
+          if (dayInCycle >= fertileStart && dayInCycle <= fertileEnd) return 'FERTILE';
           return 'LUTEAL';
       }
       
       // If we are PAST the expected length, project future cycles
-      const projectedDayInCycle = ((dayInCycle - 1) % avgCycleLength) + 1;
+      const projectedDayInCycle = ((dayInCycle - effectiveCycleLength - 1) % avgCycleLength) + 1;
       
       if (projectedDayInCycle <= avgPeriodLength) return 'MENSTRUAL';
       
       const pOvulationDay = avgCycleLength - 14;
-      const pFertileStart = pOvulationDay - 5;
-      const pFertileEnd = pOvulationDay;
+      const pFertileStart = pOvulationDay - 3;
+      const pFertileEnd = pOvulationDay + 3;
       
       if (projectedDayInCycle < pFertileStart) return 'FOLLICULAR';
-      if (projectedDayInCycle >= pFertileStart && projectedDayInCycle <= pFertileEnd + 1) return 'FERTILE';
+      if (projectedDayInCycle === pOvulationDay) return 'OVULATION';
+      if (projectedDayInCycle >= pFertileStart && projectedDayInCycle <= pFertileEnd) return 'FERTILE';
       return 'LUTEAL';
       
       return null;
@@ -147,12 +155,13 @@ export function CycleCalendar({ currentCycleStart, avgCycleLength, avgPeriodLeng
         if (dayInMockCycle <= avgPeriodLength) return 'MENSTRUAL';
         
         const ovulationDay = avgCycleLength - 14;
-        const fertileStart = ovulationDay - 5;
-        const fertileEnd = ovulationDay;
+        const fertileStart = ovulationDay - 3;
+        const fertileEnd = ovulationDay + 3;
 
         if (dayInMockCycle < fertileStart) return 'FOLLICULAR';
-        if (dayInMockCycle >= fertileStart && dayInMockCycle <= fertileEnd + 1) return 'FERTILE';
-        if (dayInMockCycle > fertileEnd + 1) return 'LUTEAL';
+        if (dayInMockCycle === ovulationDay) return 'OVULATION';
+        if (dayInMockCycle >= fertileStart && dayInMockCycle <= fertileEnd) return 'FERTILE';
+        if (dayInMockCycle > fertileEnd) return 'LUTEAL';
     }
     
     return null;
@@ -224,7 +233,10 @@ export function CycleCalendar({ currentCycleStart, avgCycleLength, avgPeriodLeng
                 <span className="w-2 h-2 rounded-full bg-purple-400"></span> Follicular
             </div>
             <div className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-500"></span> Fertile
+                <span className="w-2 h-2 rounded-full bg-green-400"></span> Fertile
+            </div>
+            <div className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-600"></span> Ovulation
             </div>
             <div className="flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-blue-300"></span> Luteal

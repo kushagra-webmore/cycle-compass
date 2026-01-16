@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { 
   Users, MessageSquare, Activity, Calendar, Heart, 
-  Clock, MapPin, Mail, Phone, Shield, Trash2, Eye,
+  Clock, MapPin, Mail, Phone, Shield, Trash2,
   ChevronDown, ChevronRight, Search, Filter
 } from 'lucide-react';
 import { AppLayout } from '@/components/layout/AppLayout';
@@ -274,6 +274,33 @@ export default function ComprehensiveAdminDashboard() {
                             <p className="text-sm font-medium">{userDetails.user.email || 'N/A'}</p>
                           </div>
                           <div>
+                            <p className="text-xs text-muted-foreground">Password</p>
+                            <p className="text-sm">
+                              {userDetails.user.password_metadata?.updated_at 
+                                ? `Last updated: ${formatIST(userDetails.user.password_metadata.updated_at)}`
+                                : 'No update info available'}
+                            </p>
+                            {userDetails.user.password_metadata && (
+                              <div className="mt-2 space-y-1 text-xs">
+                                {userDetails.user.password_metadata.email_confirmed_at && (
+                                  <p className="text-muted-foreground">
+                                    Email confirmed: {formatIST(userDetails.user.password_metadata.email_confirmed_at)}
+                                  </p>
+                                )}
+                                {userDetails.user.password_metadata.last_sign_in_at && (
+                                  <p className="text-muted-foreground">
+                                    Last sign-in: {formatIST(userDetails.user.password_metadata.last_sign_in_at)}
+                                  </p>
+                                )}
+                                {userDetails.user.password_metadata.confirmed_at && (
+                                  <p className="text-muted-foreground">
+                                    Account confirmed: {formatIST(userDetails.user.password_metadata.confirmed_at)}
+                                  </p>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                          <div>
                             <p className="text-xs text-muted-foreground">Role</p>
                             <Badge>{userDetails.user.role}</Badge>
                           </div>
@@ -473,25 +500,76 @@ export default function ComprehensiveAdminDashboard() {
                         >
                           <div className="flex items-center gap-2">
                             {expandedSections.symptoms ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-                            <h3 className="font-semibold">Recent Symptoms ({userDetails.symptoms?.length || 0})</h3>
+                            <h3 className="font-semibold">All Symptoms ({userDetails.symptoms?.length || 0})</h3>
                           </div>
                         </button>
                         
                         {expandedSections.symptoms && (
-                          <div className="space-y-2">
+                          <div className="space-y-2 max-h-[400px] overflow-y-auto">
                             {userDetails.symptoms?.length === 0 ? (
                               <p className="text-sm text-muted-foreground p-4 text-center">No symptoms logged</p>
                             ) : (
-                              userDetails.symptoms?.slice(0, 10).map((symptom: any) => (
+                              userDetails.symptoms?.map((symptom: any) => (
                                 <div key={symptom.id} className="p-3 border rounded-lg">
                                   <div className="flex items-center justify-between mb-2">
-                                    <Badge>{symptom.type}</Badge>
-                                    <span className="text-xs text-muted-foreground">
-                                      {formatDistanceToNow(new Date(symptom.logged_at))} ago
+                                    <span className="text-sm font-medium">
+                                      {format(new Date(symptom.date), 'dd MMM yyyy')}
                                     </span>
                                   </div>
-                                  <p className="text-sm">Severity: {symptom.severity}/10</p>
-                                  {symptom.notes && <p className="text-xs text-muted-foreground mt-1">{symptom.notes}</p>}
+                                  <div className="grid grid-cols-2 gap-2 text-sm">
+                                    {symptom.pain !== null && (
+                                      <div>
+                                        <p className="text-xs text-muted-foreground">Pain</p>
+                                        <p>{symptom.pain}/10</p>
+                                      </div>
+                                    )}
+                                    {symptom.mood && (
+                                      <div>
+                                        <p className="text-xs text-muted-foreground">Mood</p>
+                                        <Badge variant="outline">{symptom.mood}</Badge>
+                                      </div>
+                                    )}
+                                    {symptom.energy && (
+                                      <div>
+                                        <p className="text-xs text-muted-foreground">Energy</p>
+                                        <Badge variant="outline">{symptom.energy}</Badge>
+                                      </div>
+                                    )}
+                                    {symptom.sleep_hours && (
+                                      <div>
+                                        <p className="text-xs text-muted-foreground">Sleep</p>
+                                        <p>{symptom.sleep_hours}h</p>
+                                      </div>
+                                    )}
+                                    {symptom.flow && (
+                                      <div>
+                                        <p className="text-xs text-muted-foreground">Flow</p>
+                                        <p>{symptom.flow}</p>
+                                      </div>
+                                    )}
+                                    {symptom.bloating && (
+                                      <div>
+                                        <p className="text-xs text-muted-foreground">Bloating</p>
+                                        <p>Yes</p>
+                                      </div>
+                                    )}
+                                    {symptom.intercourse && (
+                                      <div>
+                                        <p className="text-xs text-muted-foreground">Intercourse</p>
+                                        <p>{symptom.protection_used ? 'Protected' : 'Unprotected'}</p>
+                                      </div>
+                                    )}
+                                  </div>
+                                  {symptom.cravings && (
+                                    <p className="text-xs text-muted-foreground mt-2">Cravings: {symptom.cravings}</p>
+                                  )}
+                                  {symptom.other_symptoms && symptom.other_symptoms.length > 0 && (
+                                    <div className="flex flex-wrap gap-1 mt-2">
+                                      {symptom.other_symptoms.map((s: string, i: number) => (
+                                        <Badge key={i} variant="secondary" className="text-xs">{s}</Badge>
+                                      ))}
+                                    </div>
+                                  )}
                                 </div>
                               ))
                             )}
@@ -509,29 +587,55 @@ export default function ComprehensiveAdminDashboard() {
                         >
                           <div className="flex items-center gap-2">
                             {expandedSections.journals ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-                            <h3 className="font-semibold">Journal Entries ({userDetails.journals?.length || 0})</h3>
+                            <h3 className="font-semibold">All Journal Entries ({userDetails.journals?.length || 0})</h3>
                           </div>
                         </button>
                         
                         {expandedSections.journals && (
-                          <div className="space-y-2">
+                          <div className="space-y-2 max-h-[400px] overflow-y-auto">
                             {userDetails.journals?.length === 0 ? (
                               <p className="text-sm text-muted-foreground p-4 text-center">No journal entries</p>
                             ) : (
-                              userDetails.journals?.slice(0, 5).map((journal: any) => (
-                                <div key={journal.id} className="p-3 border rounded-lg">
+                              userDetails.journals?.map((journal: any) => (
+                                <div 
+                                  key={journal.id} 
+                                  className={cn(
+                                    "p-3 border rounded-lg",
+                                    journal.is_deleted && "opacity-50 border-dashed border-destructive"
+                                  )}
+                                >
                                   <div className="flex items-center justify-between mb-2">
-                                    <Badge>{journal.mood}</Badge>
+                                    <div className="flex items-center gap-2">
+                                      <span className="text-sm font-medium">
+                                        {format(new Date(journal.date), 'dd MMM yyyy')}
+                                      </span>
+                                      {journal.is_deleted && (
+                                        <Badge variant="destructive" className="text-xs">
+                                          <Trash2 className="h-3 w-3 mr-1" />
+                                          Soft Deleted
+                                        </Badge>
+                                      )}
+                                    </div>
                                     <span className="text-xs text-muted-foreground">
-                                      {format(new Date(journal.created_at), 'dd MMM yyyy')}
+                                      Created: {format(new Date(journal.created_at), 'dd MMM yyyy')}
                                     </span>
                                   </div>
-                                  {journal.tags && journal.tags.length > 0 && (
-                                    <div className="flex flex-wrap gap-1 mt-2">
-                                      {journal.tags.map((tag: string, i: number) => (
-                                        <Badge key={i} variant="outline" className="text-xs">{tag}</Badge>
-                                      ))}
+                                  {journal.ai_summary && (
+                                    <div className="mt-2">
+                                      <p className="text-xs text-muted-foreground mb-1">AI Summary:</p>
+                                      <p className="text-sm">{journal.ai_summary}</p>
                                     </div>
+                                  )}
+                                  <div className="mt-2">
+                                    <p className="text-xs text-muted-foreground mb-1">Entry (encrypted):</p>
+                                    <p className="text-xs font-mono bg-muted p-2 rounded truncate">
+                                      {journal.encrypted_text?.substring(0, 100)}...
+                                    </p>
+                                  </div>
+                                  {journal.deleted_at && (
+                                    <p className="text-xs text-destructive mt-2">
+                                      Deleted: {formatDistanceToNow(new Date(journal.deleted_at))} ago
+                                    </p>
                                   )}
                                 </div>
                               ))

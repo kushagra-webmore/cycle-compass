@@ -9,6 +9,12 @@ export interface AdminUser {
   created_at: string;
   last_login?: string | null;
   last_activity?: string | null;
+  password_metadata?: {
+    email_confirmed_at?: string | null;
+    last_sign_in_at?: string | null;
+    confirmed_at?: string | null;
+    updated_at?: string | null;
+  } | null;
   profiles?: {
     name?: string | null;
     age?: number | null;

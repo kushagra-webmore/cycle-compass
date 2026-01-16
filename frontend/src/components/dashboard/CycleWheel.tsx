@@ -76,7 +76,7 @@ export const CycleWheel = ({ currentDay, cycleLength, phase, ovulationDay, ferti
   
   // Default values if not provided (fallback)
   const ovDay = ovulationDay ?? (cycleLength - 14);
-  const fertile = fertileWindow ?? { start: ovDay - 5, end: ovDay + 1 };
+  const fertile = fertileWindow ?? { start: ovDay - 3, end: ovDay + 3 };
   
   const segments = getSegments(cycleLength, ovDay, fertile);
 
