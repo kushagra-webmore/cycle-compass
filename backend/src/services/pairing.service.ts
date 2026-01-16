@@ -230,7 +230,7 @@ export const revokePairing = async (userId: string, pairingId: string) => {
   });
 };
 
-export const getActivePairingForUser = async (userId: string) => {
+export const getActivePairingsForUser = async (userId: string) => {
   const supabase = getSupabaseClient();
   const { data, error } = await supabase
     .from('pairings')
@@ -240,45 +240,48 @@ export const getActivePairingForUser = async (userId: string) => {
     `)
     .or(`primary_user_id.eq.${userId},partner_user_id.eq.${userId}`)
     .eq('status', 'ACTIVE')
-    .order('created_at', { ascending: false })
-    .limit(1)
-    .maybeSingle();
+    .order('created_at', { ascending: false });
 
   if (error) {
-    throw new HttpError(400, 'Failed to fetch pairing', error);
+    throw new HttpError(400, 'Failed to fetch pairings', error);
   }
 
-  if (!data) return null;
+  if (!data || data.length === 0) return [];
 
   // Manually fetch names to ensure reliability
-  const userIds = [data.primary_user_id, data.partner_user_id].filter(Boolean);
+  const userIds = [
+    ...new Set(
+      data.flatMap(p => [p.primary_user_id, p.partner_user_id])
+    )
+  ].filter(Boolean);
+
   const { data: profiles } = await supabase
     .from('profiles')
     .select('user_id, name')
     .in('user_id', userIds);
 
-  console.log('getActivePairingForUser userIds:', userIds);
-  console.log('getActivePairingForUser profiles found:', profiles);
+  // Fetch emails (requires admin)
+  // We can do this in parallel
+  const emailMap = new Map<string, string>();
+  await Promise.all(userIds.map(async (uid) => {
+    const { data: uData } = await supabase.auth.admin.getUserById(uid);
+    if (uData.user?.email) {
+      emailMap.set(uid, uData.user.email);
+    }
+  }));
 
-  const primaryProfile = profiles?.find(p => p.user_id === data.primary_user_id);
-  const partnerProfile = profiles?.find(p => p.user_id === data.partner_user_id);
+  return data.map(pairing => {
+    const primaryProfile = profiles?.find(p => p.user_id === pairing.primary_user_id);
+    const partnerProfile = profiles?.find(p => p.user_id === pairing.partner_user_id);
 
-  // Transform to flat structure and rename properties for clarity
-  const { data: primaryAuth } = await supabase.auth.admin.getUserById(data.primary_user_id);
-  
-  let partnerEmail: string | undefined;
-  if (data.partner_user_id) {
-    const { data: pData } = await supabase.auth.admin.getUserById(data.partner_user_id);
-    partnerEmail = pData.user?.email;
-  }
-
-  return {
-    ...data,
-    primaryUserName: primaryProfile?.name,
-    primaryUserEmail: primaryAuth.user?.email,
-    partnerUserName: partnerProfile?.name,
-    partnerUserEmail: partnerEmail,
-  };
+    return {
+      ...pairing,
+      primaryUserName: primaryProfile?.name,
+      primaryUserEmail: emailMap.get(pairing.primary_user_id),
+      partnerUserName: partnerProfile?.name,
+      partnerUserEmail: pairing.partner_user_id ? emailMap.get(pairing.partner_user_id) : undefined,
+    };
+  });
 };
 
 export const updateConsentSettings = async (

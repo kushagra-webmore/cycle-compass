@@ -3,9 +3,9 @@ import { env } from '../config/env.js';
 import { getSupabaseClient } from '../lib/supabase.js';
 import { HttpError } from '../utils/http-error.js';
 import { getUserWithProfile } from './user.service.js';
-import { getCurrentCycle, getLatestSymptomEntry } from './cycle.service.js';
+import { getCurrentCycle, getLatestSymptomEntry, getSymptomHistory } from './cycle.service.js';
 import { logAuditEvent } from './audit.service.js';
-import { getActivePairingForUser } from './pairing.service.js';
+import { getActivePairingsForUser } from './pairing.service.js';
 
 const client = new GoogleGenerativeAI(env.GEMINI_API_KEY);
 
@@ -32,6 +32,7 @@ YOUR ROLE:
 3. Offer practical, actionable advice for managing symptoms
 4. Validate emotions - periods can be HARD and that's okay!
 5. Celebrate the good days and support through the tough ones
+6. **ANSWER QUESTIONS ABOUT HISTORY**: If the user asks "When did I last...", use the context provided to give a specific answer (e.g. "You logged log intimacy on Jan 14th").
 
 FORMATTING YOUR RESPONSES:
 - Use **bold** for emphasis on important points
@@ -97,9 +98,10 @@ const buildUserContext = async (userId: string) => {
   // Get current cycle
   const currentCycle = await getCurrentCycle(userId);
   
-  // Get latest symptoms
+  // Get latest symptoms AND history for lookback
   const latestSymptom = await getLatestSymptomEntry(userId);
-  
+  const historyFull = await getSymptomHistory(userId, 3650); // Look back ~10 years (effectively whole history)
+
   // Build context string
   let context = `User Context:\n`;
   
@@ -152,6 +154,16 @@ const buildUserContext = async (userId: string) => {
     if (latestSymptom.cravings) {
       context += `- Recent Cravings: ${latestSymptom.cravings}\n`;
     }
+    
+    // Look back for last intercourse
+    const lastIntercourse = historyFull.find(log => log.intercourse);
+    if (lastIntercourse) {
+       const d = new Date(lastIntercourse.date);
+       const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+       context += `- Last Logged Intercourse: ${dateStr} ${lastIntercourse.protection_used ? '(Protected)' : '(Unprotected)'}\n`;
+    } else {
+       context += `- Last Logged Intercourse: None found in history.\n`;
+    }
   }
   
   return context;
@@ -166,8 +178,17 @@ const buildPartnerContext = async (partnerUserId: string) => {
   // Find the connected Primary User
   let pairing;
   try {
-    pairing = await getActivePairingForUser(partnerUserId);
+    const pairings = await getActivePairingsForUser(partnerUserId);
+    // If multiple, maybe we should pick one? For now, pick the first one.
+    // In a multi-partner scenario, the chatbot context is tricky if a partner has multiple primary users.
+    // Ideally, the partner should specify WHICH primary user they are asking about.
+    // For now, defaulting to the first one is the safest migration step.
+    pairing = pairings[0];
   } catch (err) {
+    return `User Context: User is a partner but has no active pairing.`;
+  }
+
+  if (!pairing) {
     return `User Context: User is a partner but has no active pairing.`;
   }
 
@@ -184,11 +205,12 @@ const buildPartnerContext = async (partnerUserId: string) => {
     return `User Context: No connected partner found.`;
   }
 
-  // Get Primary User Profile & Cycle
+  // Get Primary User Profile & Cycle & History
   const { data: primaryAuth } = await supabase.auth.admin.getUserById(primaryUserId);
   const primaryProfile = await getUserWithProfile(primaryUserId, primaryAuth.user?.email ?? '');
   const currentCycle = await getCurrentCycle(primaryUserId);
   const latestSymptom = await getLatestSymptomEntry(primaryUserId);
+  const historyFull = await getSymptomHistory(primaryUserId, 3650); 
 
   // Get Partner Profile (Caller) - to address them by name
   const { data: partnerAuth } = await supabase.auth.admin.getUserById(partnerUserId);
@@ -214,6 +236,14 @@ const buildPartnerContext = async (partnerUserId: string) => {
     context += `- ${primaryName}'s Recent Pain Level: ${latestSymptom.pain !== null ? `${latestSymptom.pain}/10` : 'Not reported'}\n`;
     if (latestSymptom.cravings) {
       context += `- ${primaryName}'s Recent Cravings: ${latestSymptom.cravings}\n`;
+    }
+    
+    // Look back for last intercourse (Partner View)
+    const lastIntercourse = historyFull.find(log => log.intercourse);
+    if (lastIntercourse) {
+       const d = new Date(lastIntercourse.date);
+       const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+       context += `- Last Logged Intercourse: ${dateStr} ${lastIntercourse.protection_used ? '(Protected)' : '(Unprotected)'}\n`;
     }
   }
 

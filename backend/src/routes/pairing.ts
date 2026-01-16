@@ -13,7 +13,7 @@ import {
   acceptPairingInvite,
   revokePairing,
   updateConsentSettings,
-  getActivePairingForUser,
+  getActivePairingsForUser,
   getInviteDetails,
 } from '../services/pairing.service.js';
 
@@ -23,23 +23,21 @@ pairingRouter.get(
   '/me',
   authenticate,
   asyncHandler(async (req, res) => {
-    const pairing = await getActivePairingForUser(req.authUser!.id);
+    const pairings = await getActivePairingsForUser(req.authUser!.id);
 
-    if (!pairing) {
-      return res.json(null);
-    }
-
-    const isPrimary = pairing.primary_user_id === req.authUser!.id;
-
-    res.json({
-      ...pairing,
-      consent: pairing.consent_settings,
-      role: req.authUser!.role,
-      isPrimary,
-      // Keep backward compatibility for fields if needed, but spreading pairing handles new fields
-      partnerUserId: isPrimary ? pairing.partner_user_id : pairing.primary_user_id,
-      partnerName: isPrimary ? pairing.partnerUserName : pairing.primaryUserName,
+    const result = pairings.map(pairing => {
+      const isPrimary = pairing.primary_user_id === req.authUser!.id;
+      return {
+        ...pairing,
+        consent: pairing.consent_settings,
+        role: req.authUser!.role,
+        isPrimary,
+        partnerUserId: isPrimary ? pairing.partner_user_id : pairing.primary_user_id,
+        partnerName: isPrimary ? pairing.partnerUserName : pairing.primaryUserName,
+      };
     });
+
+    res.json(result);
   }),
 );
 
