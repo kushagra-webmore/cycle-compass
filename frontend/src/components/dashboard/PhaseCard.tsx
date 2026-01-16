@@ -44,14 +44,14 @@ export const PhaseCard = ({ phase }: PhaseCardProps) => {
 
   return (
     <Card className={`border ${content.color} transition-all duration-300 hover:shadow-md animate-fade-in`}>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-base flex items-center gap-2">
+      <CardHeader className="pb-1.5 xs:pb-2 px-3 xs:px-6 pt-3 xs:pt-6">
+        <CardTitle className="text-sm xs:text-base flex items-center gap-1.5 xs:gap-2">
           {content.icon}
           {content.title}
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        <p className="text-sm opacity-90">{content.description}</p>
+      <CardContent className="px-3 xs:px-6 pb-3 xs:pb-6">
+        <p className="text-xs xs:text-sm opacity-90">{content.description}</p>
       </CardContent>
     </Card>
   );

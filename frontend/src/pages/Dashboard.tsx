@@ -118,13 +118,13 @@ export default function Dashboard() {
 
   return (
     <AppLayout title="Dashboard">
-      <div className="space-y-6 animate-fade-in pb-20">
+      <div className="space-y-4 xs:space-y-6 animate-fade-in pb-16 xs:pb-20">
         {/* Greeting */}
-        <div className="text-center pt-2">
-          <h2 className="font-display text-2xl font-bold text-foreground">
+        <div className="text-center pt-1 xs:pt-2">
+          <h2 className="font-display text-xl xs:text-2xl font-bold text-foreground">
             Hello, beautiful 💕
           </h2>
-          <p className="text-muted-foreground mt-1">
+          <p className="text-sm xs:text-base text-muted-foreground mt-0.5 xs:mt-1">
             {format(new Date(), 'EEEE, MMMM d')}
           </p>
         </div>
@@ -134,17 +134,17 @@ export default function Dashboard() {
          !symptomHistory?.some(log => log.date.startsWith(new Date().toISOString().split('T')[0])) && (
            <div className="animate-in fade-in slide-in-from-top-4 duration-700">
              <Card className="bg-gradient-to-r from-pink-50 to-white dark:from-pink-950/30 dark:to-background border-pink-200 dark:border-pink-900 shadow-sm">
-                <CardContent className="p-4 flex items-center justify-between">
-                   <div className="flex gap-3 items-center">
-                      <div className="p-2 bg-white dark:bg-card rounded-full text-pink-500 shadow-sm ring-1 ring-pink-100 dark:ring-pink-900">
-                         <Calendar className="h-5 w-5" />
+                <CardContent className="p-3 xs:p-4 flex flex-col xs:flex-row items-start xs:items-center justify-between gap-2 xs:gap-0">
+                   <div className="flex gap-2 xs:gap-3 items-center">
+                      <div className="p-1.5 xs:p-2 bg-white dark:bg-card rounded-full text-pink-500 shadow-sm ring-1 ring-pink-100 dark:ring-pink-900">
+                         <Calendar className="h-4 w-4 xs:h-5 xs:w-5" />
                       </div>
                       <div>
-                           <p className="font-semibold text-sm text-foreground">How are you feeling?</p>
-                           <p className="text-xs text-muted-foreground">Log today's symptoms for better insights.</p>
+                           <p className="font-semibold text-xs xs:text-sm text-foreground">How are you feeling?</p>
+                           <p className="text-[10px] xs:text-xs text-muted-foreground">Log today's symptoms for better insights.</p>
                       </div>
                    </div>
-                   <Button asChild size="sm" variant="default" className="shadow-md shadow-pink-200 dark:shadow-none">
+                   <Button asChild size="sm" variant="default" className="shadow-md shadow-pink-200 dark:shadow-none text-xs h-8 w-full xs:w-auto">
                       <Link to="/log">Log Symptoms Now</Link>
                    </Button>
                 </CardContent>
@@ -209,8 +209,8 @@ export default function Dashboard() {
             )}
 
             {/* Main Wheel & Phase */}
-            <Card variant="gradient" className="py-6 border-none shadow-sm dark:bg-card dark:bg-none">
-              <CardContent className="flex flex-col items-center justify-center">
+            <Card variant="gradient" className="py-4 xs:py-6 border-none shadow-sm dark:bg-card dark:bg-none">
+              <CardContent className="flex flex-col items-center justify-center px-2 xs:px-6">
                 <CycleWheel
                   currentDay={cycle.context.currentDay}
                   cycleLength={cycle.context.cycleLength}
@@ -222,8 +222,8 @@ export default function Dashboard() {
             <PhaseCard phase={cycle.context.phase as any} />
 
             {/* Daily Insights Cards */}
-            <div className="mt-4">
-               <h3 className="text-lg font-display font-semibold mb-3 px-1 text-foreground">Daily Insights</h3>
+            <div className="mt-3 xs:mt-4">
+               <h3 className="text-base xs:text-lg font-display font-semibold mb-2 xs:mb-3 px-1 text-foreground">Daily Insights</h3>
                <CycleDailyInsights />
             </div>
 
@@ -250,35 +250,35 @@ export default function Dashboard() {
             )}
 
             {/* Last Period & Next Period Split */}
-            <div className="grid grid-cols-2 gap-4 mt-6">
-                <Card variant="default" className="flex flex-col items-center justify-center py-6 shadow-sm border-none bg-white/60 dark:bg-card/50 backdrop-blur-sm">
-                   <span className="text-4xl font-display font-bold text-foreground">
-                      {formatDate(cycle.startDate).day}<span className="text-base align-top ml-0.5">th</span>
+            <div className="grid grid-cols-2 gap-3 xs:gap-4 mt-4 xs:mt-6">
+                <Card variant="default" className="flex flex-col items-center justify-center py-4 xs:py-6 shadow-sm border-none bg-white/60 dark:bg-card/50 backdrop-blur-sm">
+                   <span className="text-3xl xs:text-4xl font-display font-bold text-foreground">
+                      {formatDate(cycle.startDate).day}<span className="text-sm xs:text-base align-top ml-0.5">th</span>
                    </span>
-                   <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide mt-1">
+                   <span className="text-xs xs:text-sm font-medium text-muted-foreground uppercase tracking-wide mt-0.5 xs:mt-1">
                       {formatDate(cycle.startDate).month}
                    </span>
-                   <span className="text-xs text-muted-foreground mt-1">Last Period</span>
-                   <div className="flex items-center gap-2 mt-2">
-                      <span className="h-2 w-2 rounded-full bg-rose-400" />
-                      <span className="text-[10px] text-muted-foreground">Period</span>
+                   <span className="text-[10px] xs:text-xs text-muted-foreground mt-0.5 xs:mt-1">Last Period</span>
+                   <div className="flex items-center gap-1.5 xs:gap-2 mt-1.5 xs:mt-2">
+                      <span className="h-1.5 w-1.5 xs:h-2 xs:w-2 rounded-full bg-rose-400" />
+                      <span className="text-[9px] xs:text-[10px] text-muted-foreground">Period</span>
                    </div>
                 </Card>
 
-                <Card variant="default" className="flex flex-col items-center justify-center py-6 shadow-sm border-none bg-white/60 dark:bg-card/50 backdrop-blur-sm">
-                   <span className="text-4xl font-display font-bold text-foreground">
+                <Card variant="default" className="flex flex-col items-center justify-center py-4 xs:py-6 shadow-sm border-none bg-white/60 dark:bg-card/50 backdrop-blur-sm">
+                   <span className="text-3xl xs:text-4xl font-display font-bold text-foreground">
                        {differenceInDays(nextPeriodDate, new Date())}
-                       <span className="text-sm font-normal text-muted-foreground ml-1">days</span>
+                       <span className="text-xs xs:text-sm font-normal text-muted-foreground ml-0.5 xs:ml-1">days</span>
                    </span>
-                   <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide mt-1">
+                   <span className="text-xs xs:text-sm font-medium text-muted-foreground uppercase tracking-wide mt-0.5 xs:mt-1">
                       Remaining
                    </span>
-                   <span className="text-xs text-muted-foreground mt-1">
+                   <span className="text-[10px] xs:text-xs text-muted-foreground mt-0.5 xs:mt-1">
                       Expected: {format(nextPeriodDate, 'MMM d')}
                    </span>
-                   <div className="flex items-center gap-2 mt-2">
-                       <span className="h-2 w-2 rounded-full bg-foreground" />
-                       <span className="text-[10px] text-muted-foreground">Until Bleed</span>
+                   <div className="flex items-center gap-1.5 xs:gap-2 mt-1.5 xs:mt-2">
+                       <span className="h-1.5 w-1.5 xs:h-2 xs:w-2 rounded-full bg-foreground" />
+                       <span className="text-[9px] xs:text-[10px] text-muted-foreground">Until Bleed</span>
                    </div>
                 </Card>
             </div>
@@ -329,17 +329,17 @@ export default function Dashboard() {
             </div>
 
             {/* Actions */}
-            <div className="grid grid-cols-2 gap-3 pb-8">
-              <Button asChild variant="default" size="lg" className="h-auto py-4 flex-col gap-2 shadow-lg shadow-primary/20">
+            <div className="grid grid-cols-2 gap-2 xs:gap-3 pb-6 xs:pb-8">
+              <Button asChild variant="default" size="lg" className="h-auto py-3 xs:py-4 flex-col gap-1.5 xs:gap-2 shadow-lg shadow-primary/20">
                 <Link to="/log">
-                  <Calendar className="h-6 w-6" />
-                  <span>Log Symptoms</span>
+                  <Calendar className="h-5 w-5 xs:h-6 xs:w-6" />
+                  <span className="text-xs xs:text-sm">Log Symptoms</span>
                 </Link>
               </Button>
-              <Button asChild variant="secondary" size="lg" className="h-auto py-4 flex-col gap-2 shadow-lg shadow-primary/10 border border-primary/20 hover:border-primary/50 transition-all">
+              <Button asChild variant="secondary" size="lg" className="h-auto py-3 xs:py-4 flex-col gap-1.5 xs:gap-2 shadow-lg shadow-primary/10 border border-primary/20 hover:border-primary/50 transition-all">
                 <Link to="/chatbot">
-                  <Sparkles className="h-6 w-6 text-primary" />
-                  <span className="font-semibold text-primary">Ask AI</span>
+                  <Sparkles className="h-5 w-5 xs:h-6 xs:w-6 text-primary" />
+                  <span className="font-semibold text-primary text-xs xs:text-sm">Ask AI</span>
                 </Link>
               </Button>
             </div>

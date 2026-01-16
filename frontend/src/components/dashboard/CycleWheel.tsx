@@ -90,11 +90,9 @@ export const CycleWheel = ({ currentDay, cycleLength, phase, ovulationDay, ferti
 
   return (
     <div className="flex flex-col items-center">
-      <div className="relative flex items-center justify-center">
+      <div className="relative flex items-center justify-center w-[180px] h-[180px] xs:w-[200px] xs:h-[200px]">
         <svg
-          className="transform -rotate-90"
-          width="200"
-          height="200"
+          className="transform -rotate-90 w-full h-full"
           viewBox="0 0 200 200"
         >
           {/* Background track */}
@@ -154,19 +152,19 @@ export const CycleWheel = ({ currentDay, cycleLength, phase, ovulationDay, ferti
         {/* Center content */}
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
           {hoverInfo ? (
-            <span className="text-lg font-bold text-foreground animate-fade-in">
+            <span className="text-base xs:text-lg font-bold text-foreground animate-fade-in">
               {hoverInfo}
             </span>
           ) : (
             <>
-              <span className="text-4xl font-display font-bold text-foreground">
+              <span className="text-3xl xs:text-4xl font-display font-bold text-foreground">
                 Day {currentDay}
               </span>
-              <span className="text-xs text-muted-foreground mt-1">
+              <span className="text-[10px] xs:text-xs text-muted-foreground mt-0.5 xs:mt-1">
                 of {cycleLength}
               </span>
               <span className={cn(
-                "text-[10px] font-semibold mt-2 px-2 py-0.5 rounded-full bg-muted",
+                "text-[9px] xs:text-[10px] font-semibold mt-1.5 xs:mt-2 px-1.5 xs:px-2 py-0.5 rounded-full bg-muted",
                 phaseColors[phase].split(' ')[0] + ' ' + phaseColors[phase].split(' ')[1] // Gets text-color dark:text-color
               )}>
                 {phaseLabels[phase]}
@@ -177,7 +175,7 @@ export const CycleWheel = ({ currentDay, cycleLength, phase, ovulationDay, ferti
       </div>
 
       {/* Legend */}
-      <div className="mt-4 flex flex-wrap justify-center gap-3 px-2">
+      <div className="mt-3 xs:mt-4 flex flex-wrap justify-center gap-2 xs:gap-3 px-2">
         <LegendItem color="bg-red-500" label="Period" />
         <LegendItem color="bg-blue-600" label="Follicular" />
         <LegendItem color="bg-green-500" label="Fertile" />

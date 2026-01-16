@@ -170,12 +170,12 @@ export function CycleCalendar({ currentCycleStart, avgCycleLength, avgPeriodLeng
   return (
     <Card className="border-none shadow-none bg-transparent">
         {/* Header */}
-        <div className="flex items-center justify-between mb-4 px-2">
+        <div className="flex items-center justify-between mb-3 xs:mb-4 px-1 xs:px-2">
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="ghost" className="font-display font-bold text-xl text-foreground hover:bg-muted/50 px-2 h-auto">
+                <Button variant="ghost" className="font-display font-bold text-base xs:text-lg sm:text-xl text-foreground hover:bg-muted/50 px-1.5 xs:px-2 h-auto">
                   {format(currentMonth, 'MMMM yyyy')}
-                  <CalendarIcon className="ml-2 h-4 w-4 opacity-50" />
+                  <CalendarIcon className="ml-1.5 xs:ml-2 h-3.5 w-3.5 xs:h-4 xs:w-4 opacity-50" />
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-80 bg-card p-4">
@@ -214,39 +214,39 @@ export function CycleCalendar({ currentCycleStart, avgCycleLength, avgPeriodLeng
               </PopoverContent>
             </Popover>
 
-            <div className="flex gap-1">
-                <Button variant="ghost" size="icon" onClick={() => setCurrentMonth(prev => subMonths(prev, 1))}>
-                    <ChevronLeft className="h-4 w-4" />
+            <div className="flex gap-0.5 xs:gap-1">
+                <Button variant="ghost" size="icon" className="h-7 w-7 xs:h-8 xs:w-8" onClick={() => setCurrentMonth(prev => subMonths(prev, 1))}>
+                    <ChevronLeft className="h-3.5 w-3.5 xs:h-4 xs:w-4" />
                 </Button>
-                <Button variant="ghost" size="icon" onClick={() => setCurrentMonth(prev => addMonths(prev, 1))}>
-                    <ChevronRight className="h-4 w-4" />
+                <Button variant="ghost" size="icon" className="h-7 w-7 xs:h-8 xs:w-8" onClick={() => setCurrentMonth(prev => addMonths(prev, 1))}>
+                    <ChevronRight className="h-3.5 w-3.5 xs:h-4 xs:w-4" />
                 </Button>
             </div>
         </div>
 
         {/* Legend */}
-        <div className="flex flex-wrap gap-3 mb-6 px-2 text-xs text-muted-foreground">
-            <div className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-rose-500"></span> Period
+        <div className="flex flex-wrap gap-2 xs:gap-3 mb-4 xs:mb-6 px-1 xs:px-2 text-[10px] xs:text-xs text-muted-foreground">
+            <div className="flex items-center gap-1 xs:gap-1.5">
+                <span className="w-1.5 h-1.5 xs:w-2 xs:h-2 rounded-full bg-rose-500"></span> Period
             </div>
-            <div className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-purple-400"></span> Follicular
+            <div className="flex items-center gap-1 xs:gap-1.5">
+                <span className="w-1.5 h-1.5 xs:w-2 xs:h-2 rounded-full bg-purple-400"></span> Follicular
             </div>
-            <div className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-green-400"></span> Fertile
+            <div className="flex items-center gap-1 xs:gap-1.5">
+                <span className="w-1.5 h-1.5 xs:w-2 xs:h-2 rounded-full bg-green-400"></span> Fertile
             </div>
-            <div className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-600"></span> Ovulation
+            <div className="flex items-center gap-1 xs:gap-1.5">
+                <span className="w-1.5 h-1.5 xs:w-2 xs:h-2 rounded-full bg-emerald-600"></span> Ovulation
             </div>
-            <div className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-blue-300"></span> Luteal
+            <div className="flex items-center gap-1 xs:gap-1.5">
+                <span className="w-1.5 h-1.5 xs:w-2 xs:h-2 rounded-full bg-blue-300"></span> Luteal
             </div>
         </div>
 
         {/* Grid */}
-        <div className="grid grid-cols-7 gap-1 text-center">
+        <div className="grid grid-cols-7 gap-0.5 xs:gap-1 text-center">
             {weekDays.map(d => (
-                <div key={d} className="text-xs font-medium text-muted-foreground py-2">
+                <div key={d} className="text-[10px] xs:text-xs font-medium text-muted-foreground py-1 xs:py-2">
                     {d}
                 </div>
             ))}
@@ -261,19 +261,19 @@ export function CycleCalendar({ currentCycleStart, avgCycleLength, avgPeriodLeng
                 const isCurrent = isToday(date);
                 
                 return (
-                    <div key={date.toString()} className="h-16 w-full flex items-center justify-center relative">
+                    <div key={date.toString()} className="h-11 xs:h-12 sm:h-16 w-full flex items-center justify-center relative">
                         <div 
                             className={cn(
-                                "h-12 w-12 rounded-full flex items-center justify-center text-lg font-medium transition-colors cursor-default relative",
+                                "h-9 w-9 xs:h-10 xs:w-10 sm:h-12 sm:w-12 rounded-full flex items-center justify-center text-sm xs:text-base sm:text-lg font-medium transition-colors cursor-default relative",
                                 isCurrent && !phase && "bg-foreground text-background",
                                 phase ? getPhaseColor(phase) : "text-foreground hover:bg-muted",
-                                isCurrent && phase && "ring-2 ring-foreground ring-offset-2 ring-offset-background" 
+                                isCurrent && phase && "ring-1 xs:ring-2 ring-foreground ring-offset-1 xs:ring-offset-2 ring-offset-background" 
                             )}
                         >
                             {date.getDate()}
                             {/* Intercourse Indicator */}
                             {intercourseDates.some(bgDate => isSameDay(parseISO(bgDate), date)) && (
-                                <Heart className="w-2 h-2 text-rose-500 fill-rose-500 absolute bottom-1 left-1/2 -translate-x-1/2" />
+                                <Heart className="w-1.5 h-1.5 xs:w-2 xs:h-2 text-rose-500 fill-rose-500 absolute bottom-0.5 xs:bottom-1 left-1/2 -translate-x-1/2" />
                             )}
                         </div>
                     </div>

@@ -42,7 +42,7 @@ export const MobileNav = () => {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-lg border-t border-border shadow-soft">
-      <div className="flex items-center justify-around h-16 px-2 max-w-lg mx-auto">
+      <div className="flex items-center justify-around h-14 xs:h-16 px-1 xs:px-2 max-w-lg mx-auto">
         {navItems.map((item) => {
           const isActive = location.pathname === item.href || 
             (item.href !== '/dashboard' && item.href !== '/partner-dashboard' && item.href !== '/admin' && location.pathname.startsWith(item.href));
@@ -52,14 +52,14 @@ export const MobileNav = () => {
               key={item.href}
               to={item.href}
               className={cn(
-                "flex flex-col items-center justify-center gap-1 px-3 py-2 rounded-xl transition-all duration-300",
+                "flex flex-col items-center justify-center gap-0.5 xs:gap-1 px-2 xs:px-3 py-1.5 xs:py-2 rounded-xl transition-all duration-300",
                 isActive 
                   ? "text-primary bg-primary-soft" 
                   : "text-muted-foreground hover:text-foreground hover:bg-muted"
               )}
             >
-              <item.icon className={cn("h-5 w-5", isActive && "animate-scale-in")} />
-              <span className="text-xs font-medium">{item.label}</span>
+              <item.icon className={cn("h-4 w-4 xs:h-5 xs:w-5", isActive && "animate-scale-in")} />
+              <span className="text-[10px] xs:text-xs font-medium">{item.label}</span>
             </Link>
           );
         })}
