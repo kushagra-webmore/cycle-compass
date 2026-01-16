@@ -44,9 +44,9 @@ export function FertilityChart() {
   const fertileEnd = ovulationDay + 1;
 
   return (
-    <Card className="mt-6 border-pink-100 bg-gradient-to-br from-pink-50/50 to-white">
+    <Card className="mt-6 border-pink-100 bg-gradient-to-br from-pink-50/50 to-white dark:from-pink-950/20 dark:to-background dark:border-pink-900">
       <CardHeader>
-        <CardTitle className="text-base text-pink-700 flex items-center gap-2">
+        <CardTitle className="text-base text-pink-700 dark:text-pink-300 flex items-center gap-2">
             Fertility & Cycle Phases
         </CardTitle>
         <CardDescription>
@@ -55,7 +55,7 @@ export function FertilityChart() {
       </CardHeader>
       <CardContent className="h-[300px] w-full">
          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={chartData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
+            <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 13, bottom: 0 }}>
                <defs>
                   <linearGradient id="colorFertility" x1="0" y1="0" x2="0" y2="1">
                      <stop offset="5%" stopColor="#ec4899" stopOpacity={0.8}/>

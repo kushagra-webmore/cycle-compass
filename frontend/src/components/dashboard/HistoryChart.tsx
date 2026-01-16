@@ -43,19 +43,16 @@ export function HistoryChart({ data }: HistoryChartProps) {
   };
 
   return (
-    <Card className="border-none shadow-none bg-transparent">
-      <CardHeader className="px-0 pt-0 pb-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="text-xl font-display font-bold text-foreground">My Cycle</CardTitle>
-            <CardDescription>History & Trends</CardDescription>
-          </div>
+    <div className="w-full">
+      <div className="flex items-center justify-between mb-6 px-2">
+        <div>
+          <h3 className="text-xl font-display font-bold text-foreground">My Cycle</h3>
+          <p className="text-sm text-muted-foreground">History & Trends</p>
         </div>
-      </CardHeader>
-      <CardContent className="px-0 pb-0">
-        <div className="h-[250px] w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chartData} barSize={32}>
+      </div>
+      <div className="h-[250px] w-full">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={chartData} barSize={32} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
               <XAxis 
                 dataKey="date" 
@@ -74,10 +71,9 @@ export function HistoryChart({ data }: HistoryChartProps) {
               {/* Stacked Bars */}
               <Bar dataKey="period" stackId="a" fill="#f43f5e" radius={[0, 0, 4, 4]} />
               <Bar dataKey="cycleRemainder" stackId="a" fill="#bfdbfe" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </CardContent>
-    </Card>
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
   );
 }

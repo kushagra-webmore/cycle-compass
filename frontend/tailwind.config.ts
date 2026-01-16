@@ -127,6 +127,14 @@ export default {
           "0%, 100%": { opacity: "1" },
           "50%": { opacity: "0.7" },
         },
+        "liquid-morph": {
+          "0%, 100%": { borderRadius: "60% 40% 30% 70% / 60% 30% 70% 40%" },
+          "50%": { borderRadius: "30% 60% 70% 40% / 50% 60% 30% 60%" },
+        },
+        "float-gentle": {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-10px)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -137,6 +145,8 @@ export default {
         "slide-in-right": "slide-in-right 0.3s ease-out",
         "slide-up": "slide-up 0.4s ease-out",
         "pulse-gentle": "pulse-gentle 2s ease-in-out infinite",
+        "liquid": "liquid-morph 8s ease-in-out infinite",
+        "float": "float-gentle 6s ease-in-out infinite",
       },
       boxShadow: {
         soft: "var(--shadow-soft)",

@@ -176,6 +176,7 @@ export default function Profile() {
                   value={passwordForm.currentPassword}
                   onChange={(e) => setPasswordForm({ ...passwordForm, currentPassword: e.target.value })}
                   required
+                  className="bg-white/50 dark:bg-black/20"
                 />
               </div>
               <div className="space-y-2">
@@ -186,6 +187,7 @@ export default function Profile() {
                   value={passwordForm.newPassword}
                   onChange={(e) => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
                   required
+                  className="bg-white/50 dark:bg-black/20"
                 />
               </div>
               <div className="space-y-2">
@@ -196,6 +198,7 @@ export default function Profile() {
                   value={passwordForm.confirmPassword}
                   onChange={(e) => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })}
                   required
+                  className="bg-white/50 dark:bg-black/20"
                 />
               </div>
               <DialogFooter>

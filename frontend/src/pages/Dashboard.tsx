@@ -145,7 +145,7 @@ export default function Dashboard() {
                       </div>
                    </div>
                    <Button asChild size="sm" variant="default" className="shadow-md shadow-pink-200 dark:shadow-none">
-                      <Link to="/log">Log Now</Link>
+                      <Link to="/log">Log Symptoms Now</Link>
                    </Button>
                 </CardContent>
              </Card>
@@ -251,7 +251,7 @@ export default function Dashboard() {
 
             {/* Last Period & Next Period Split */}
             <div className="grid grid-cols-2 gap-4 mt-6">
-                <div className="flex flex-col items-center">
+                <Card variant="default" className="flex flex-col items-center justify-center py-6 shadow-sm border-none bg-white/60 dark:bg-card/50 backdrop-blur-sm">
                    <span className="text-4xl font-display font-bold text-foreground">
                       {formatDate(cycle.startDate).day}<span className="text-base align-top ml-0.5">th</span>
                    </span>
@@ -263,9 +263,9 @@ export default function Dashboard() {
                       <span className="h-2 w-2 rounded-full bg-rose-400" />
                       <span className="text-[10px] text-muted-foreground">Period</span>
                    </div>
-                </div>
+                </Card>
 
-                <div className="flex flex-col items-center">
+                <Card variant="default" className="flex flex-col items-center justify-center py-6 shadow-sm border-none bg-white/60 dark:bg-card/50 backdrop-blur-sm">
                    <span className="text-4xl font-display font-bold text-foreground">
                        {cycle.context.daysUntilNextPhase}
                        <span className="text-sm font-normal text-muted-foreground ml-1">days</span>
@@ -280,26 +280,30 @@ export default function Dashboard() {
                        <span className="h-2 w-2 rounded-full bg-foreground" />
                        <span className="text-[10px] text-muted-foreground">Until Bleed</span>
                    </div>
-                </div>
+                </Card>
             </div>
 
             {/* History & Calendar Section */}
             <div className="mt-8">
-               <HistoryChart data={cyclesHistory?.map(c => ({
-                  startDate: c.startDate,
-                  cycleLength: c.cycleLength,
-                  periodLength: avgPeriodLength 
-               })) || []} />
+               <Card className="p-6 bg-white dark:bg-card border-none shadow-sm rounded-3xl">
+                  <HistoryChart data={cyclesHistory?.map(c => ({
+                     startDate: c.startDate,
+                     cycleLength: c.cycleLength,
+                     periodLength: avgPeriodLength 
+                  })) || []} />
+               </Card>
             </div>
 
             <div className="mt-8 mx-auto max-w-xl">
-               <CycleCalendar 
-                  currentCycleStart={new Date(cycle.startDate)}
-                  avgCycleLength={avgCycleLength}
-                  avgPeriodLength={avgPeriodLength}
-                  cyclesHistory={cyclesHistory || []}
-                  intercourseDates={intercourseDates}
-               />
+               <Card className="bg-white dark:bg-card border-none shadow-sm rounded-3xl overflow-hidden p-6">
+                   <CycleCalendar 
+                      currentCycleStart={new Date(cycle.startDate)}
+                      avgCycleLength={avgCycleLength}
+                      avgPeriodLength={avgPeriodLength}
+                      cyclesHistory={cyclesHistory || []}
+                      intercourseDates={intercourseDates}
+                   />
+               </Card>
             </div>
 
             <AvgCycleStats 
@@ -309,15 +313,15 @@ export default function Dashboard() {
 
             {/* Mood/Energy Trends */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
-              <Card variant="lavender" className="p-4">
-                <CardDescription className="uppercase text-xs font-semibold tracking-wider text-lavender-foreground/70">Mood Trend</CardDescription>
-                <p className="text-lg font-semibold text-foreground mt-1">
+              <Card variant="lavender" className="p-4 bg-white/60 dark:bg-lavender/10 border-lavender/50 backdrop-blur-sm">
+                <CardDescription className="uppercase text-xs font-bold tracking-wider text-lavender-foreground/80">Mood Trend</CardDescription>
+                <p className="text-xl font-bold text-foreground mt-1">
                   {latestSymptom?.mood ? moodLabels[latestSymptom.mood] ?? 'Mixed' : 'Not logged yet'}
                 </p>
               </Card>
-              <Card variant="peach" className="p-4">
-                <CardDescription className="uppercase text-xs font-semibold tracking-wider text-peach-foreground/70">Energy Trend</CardDescription>
-                <p className="text-lg font-semibold text-foreground mt-1">
+              <Card variant="peach" className="p-4 bg-white/60 dark:bg-peach/10 border-peach/50 backdrop-blur-sm">
+                <CardDescription className="uppercase text-xs font-bold tracking-wider text-peach-foreground/80">Energy Trend</CardDescription>
+                <p className="text-xl font-bold text-foreground mt-1">
                   {latestSymptom?.energy ? energyLabels[latestSymptom.energy] ?? 'Balanced' : 'Not logged yet'}
                 </p>
               </Card>
@@ -331,19 +335,19 @@ export default function Dashboard() {
                   <span>Log Symptoms</span>
                 </Link>
               </Button>
-              <Button asChild variant="lavender" size="lg" className="h-auto py-4 flex-col gap-2 shadow-lg shadow-lavender/20">
+              <Button asChild variant="secondary" size="lg" className="h-auto py-4 flex-col gap-2 shadow-lg shadow-primary/10 border border-primary/20 hover:border-primary/50 transition-all">
                 <Link to="/chatbot">
-                  <Sparkles className="h-6 w-6" />
-                  <span>Ask AI</span>
+                  <Sparkles className="h-6 w-6 text-primary" />
+                  <span className="font-semibold text-primary">Ask AI</span>
                 </Link>
               </Button>
             </div>
           </>
         )}
 
-        <div className="text-center p-3 rounded-xl bg-sage/20 border border-sage/30">
-          <p className="text-xs text-sage-foreground">
-            🔒 Your data is private. Only you control what's shared.
+        <div className="text-center p-3 rounded-xl bg-emerald-50/60 dark:bg-emerald-950/20 border border-emerald-500/20">
+          <p className="text-xs text-emerald-700 dark:text-emerald-300 flex items-center justify-center gap-1.5 font-medium">
+             🔒 Your data is private. Only you control what's shared.
           </p>
         </div>
       </div>

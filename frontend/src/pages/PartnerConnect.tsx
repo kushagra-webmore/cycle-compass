@@ -21,7 +21,7 @@ export default function PartnerConnect() {
   const navigate = useNavigate();
   const { confirm } = useConfirm();
 
-  const [activePairing, setActivePairing] = useState<PairingData | null>(null);
+  const [activePairings, setActivePairings] = useState<PairingData[]>([]);
   const [inviteLink, setInviteLink] = useState('');
   const [pairingCode, setPairingCode] = useState('');
   const [loading, setLoading] = useState(true);
@@ -35,11 +35,14 @@ export default function PartnerConnect() {
     try {
       // Check for existing active pairing
       try {
-        const { data: pairing } = await apiClient.get<PairingData | null>('/pairings/me');
-        if (pairing && pairing.status === 'active') {
-          setActivePairing(pairing);
+        const { data: pairings } = await apiClient.get<PairingData[]>('/pairings/me');
+        if (pairings && Array.isArray(pairings) && pairings.length > 0) {
+          // Filter only active ones just in case
+          const active = pairings.filter(p => p.status === 'active');
+          setActivePairings(active);
           setLoading(false);
-          return;
+          // Don't return here, we might still want to show invite options or generate a new invite for MORE partners?
+          // If we want to allow adding multiple, we should proceed to generate invite.
         }
       } catch (e) {
         // Ignore 404 or missing
@@ -76,18 +79,18 @@ export default function PartnerConnect() {
     setTimeout(() => setCopied(null), 2000);
   };
 
-  const handleUnlink = async () => {
-    if (!activePairing) return;
+  const handleUnlink = async (pairingId: string) => {
     if (!await confirm({ title: "Disconnect Partner", description: "Are you sure you want to disconnect? Your partner will lose access to your shared data.", variant: "destructive" })) return;
 
     setIsRevoking(true);
     try {
-      await apiClient.post('/pairings/revoke', { pairingId: activePairing.id });
+      await apiClient.post('/pairings/revoke', { pairingId });
       toast({
         title: 'Disconnected',
         description: 'You have successfully unlinked from your partner.',
       });
-      setActivePairing(null);
+      // Remove locally
+      setActivePairings(prev => prev.filter(p => p.id !== pairingId));
       // Reload to generate new invite
       checkStatus();
     } catch (error) {
@@ -101,58 +104,8 @@ export default function PartnerConnect() {
     }
   };
 
-  if (activePairing) {
-    return (
-      <AppLayout title="Partner Connection">
-        <div className="space-y-6 animate-fade-in">
-          <Card variant="gradient" className="border-2 border-primary/20">
-            <CardHeader className="text-center pb-2">
-              <div className="mx-auto w-16 h-16 rounded-full bg-white/20 flex items-center justify-center mb-2">
-                <UserCheck className="h-8 w-8 text-primary-foreground" />
-              </div>
-              <CardTitle className="text-xl">You are connected!</CardTitle>
-              <CardDescription className="text-primary-foreground/80">
-                Sharing insights with {activePairing.partnerName || 'your partner'}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="text-center">
-              <p className="text-sm text-primary-foreground/70 mb-6">
-                Your partner can see the data you've chosen to share in their dashboard.
-              </p>
-              <Button 
-                variant="secondary" 
-                className="w-full sm:w-auto"
-                onClick={() => navigate('/consent')}
-              >
-                Manage Sharing Settings
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card variant="destructive" className="opacity-80 hover:opacity-100 transition-opacity">
-            <CardHeader>
-              <div className="flex items-center gap-2">
-                <XCircle className="h-5 w-5" />
-                <CardTitle className="text-base">Disconnect Partner</CardTitle>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground mb-4">
-                Revoking access will immediately stop sharing all data. Your partner will no longer be able to see your cycle insights.
-              </p>
-              <Button 
-                variant="destructive" 
-                onClick={handleUnlink}
-                disabled={isRevoking}
-              >
-                {isRevoking ? 'Disconnecting...' : 'Unlink Partner'}
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      </AppLayout>
-    );
-  }
+  // Render logic: Show Active Partners List + Invite Section
+  // If we have active pairings, we show them. We ALSO show the invite section below to allow adding more.
 
   return (
     <AppLayout title="Partner Connection">
@@ -165,6 +118,53 @@ export default function PartnerConnect() {
           <h2 className="font-display text-xl font-bold text-foreground">
             Connect with Your Partner
           </h2>
+          {/* Active Partners List */}
+          {activePairings.length > 0 && (
+            <div className="w-full max-w-md mx-auto space-y-4 mb-8">
+              {activePairings.map(pairing => (
+                <Card key={pairing.id} variant="gradient" className="border-2 border-primary/20">
+                  <CardHeader className="text-center pb-2">
+                    <div className="mx-auto w-12 h-12 rounded-full bg-white/20 flex items-center justify-center mb-2">
+                       <UserCheck className="h-6 w-6 text-primary-foreground" />
+                    </div>
+                    <CardTitle className="text-lg">Connected with {pairing.partnerName || 'Partnerm'}</CardTitle>
+                    <CardDescription className="text-primary-foreground/80 text-xs">
+                       {pairing.partnerUserId ? 'Active Connection' : 'Pending...'}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                     <p className="text-xs text-primary-foreground/70 text-center">
+                        Sharing data based on your consent settings.
+                     </p>
+                     <div className="flex flex-col gap-2">
+                        <Button 
+                          variant="secondary" 
+                          size="sm"
+                          className="w-full"
+                          onClick={() => navigate('/consent')}
+                        >
+                          Manage Consent
+                        </Button>
+                        <Button 
+                          variant="destructive" 
+                          size="sm"
+                          className="w-full bg-white/10 hover:bg-white/20 text-white border-none"
+                          onClick={() => handleUnlink(pairing.id)}
+                          disabled={isRevoking}
+                        >
+                          Disconnect
+                        </Button>
+                     </div>
+                  </CardContent>
+                </Card>
+              ))}
+              <div className="flex items-center gap-4 py-2">
+                 <div className="h-px bg-border flex-1" />
+                 <span className="text-xs text-muted-foreground uppercase font-medium">Add Another Partner</span>
+                 <div className="h-px bg-border flex-1" />
+              </div>
+            </div>
+          )}
           {loading && (
             <div className="flex justify-center py-4">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -174,21 +174,21 @@ export default function PartnerConnect() {
             Share selected insights with someone you trust. You control exactly what they see.
           </p>
           <div className="pt-2">
-            <Button variant="outline" asChild className="gap-2">
+            <Button variant="default" asChild className="gap-2 shadow-lg hover:shadow-xl transition-all duration-300">
               <a href="/consent">
                 <Shield className="h-4 w-4" />
-                Consent & Privacy
+                Click here to view Consent & Privacy Settings
               </a>
             </Button>
           </div>
         </div>
 
         {/* Privacy Notice */}
-        <Card variant="sage" className="border-2 border-sage/50">
+        <Card className="border-2 border-emerald-500/20 bg-emerald-50/60 dark:bg-emerald-950/20">
           <CardContent className="flex items-start gap-3 py-4">
-            <Shield className="h-5 w-5 text-sage-foreground shrink-0 mt-0.5" />
+            <Shield className="h-5 w-5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
             <div>
-              <p className="text-sm font-medium text-sage-foreground">Privacy First</p>
+              <p className="text-sm font-medium text-emerald-700 dark:text-emerald-300">Privacy First</p>
               <p className="text-xs text-muted-foreground mt-1">
                 Your partner will only see what you explicitly share. You can revoke access anytime.
                 Symptom details, journals, and personal notes remain private by default.
@@ -324,8 +324,8 @@ export default function PartnerConnect() {
         </Card>
 
         {/* Reassurance */}
-        <div className="text-center p-4 rounded-xl bg-primary-soft">
-          <p className="text-sm font-medium text-primary">
+        <div className="text-center p-4 rounded-xl bg-secondary/50 border border-secondary">
+          <p className="text-sm font-medium text-secondary-foreground">
             💕 You are in control of what you share
           </p>
         </div>

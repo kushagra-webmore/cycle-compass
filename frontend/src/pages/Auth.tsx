@@ -156,7 +156,7 @@ export default function Auth() {
       title: 'I am a partner',
       description: 'Receive shared insights to better understand and support your partner.',
       icon: Users,
-      color: 'lavender',
+      color: 'sage',
     },
   ];
 
@@ -166,7 +166,7 @@ export default function Auth() {
       <header className="flex items-center justify-between p-4 bg-background/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="flex items-center gap-2">
           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-peach dark:from-primary/80 dark:to-peach/80 flex items-center justify-center shadow-soft">
-            <Sparkles className="h-5 w-5 text-primary-foreground" />
+            <img src="/logo.svg" alt="App Logo" className="h-6 w-6" />
           </div>
           <span className="font-display font-bold text-lg text-foreground">Cycle-Aware</span>
         </div>
@@ -218,17 +218,21 @@ export default function Auth() {
                             selectedRole === role.id
                               ? role.color === 'primary'
                                 ? "border-primary bg-primary/20"
-                                : "border-lavender bg-lavender/30"
+                                : "border-sage bg-sage/30"
                               : "border-border hover:border-muted-foreground/30 hover:bg-muted/50"
                           )}
                         >
                           <div className={cn(
-                            "p-2 rounded-lg",
-                            role.color === 'primary' ? "bg-primary/20" : "bg-lavender/30"
+                            "p-2 rounded-lg transition-all duration-300",
+                            role.color === 'primary' 
+                              ? "bg-primary/20 dark:bg-violet-500/10 dark:shadow-[0_0_20px_-5px_rgba(124,58,237,0.8)]" 
+                              : "bg-sage/30 dark:bg-green-500/10 dark:shadow-[0_0_20px_-5px_rgba(74,222,128,0.8)]"
                           )}>
                             <role.icon className={cn(
-                              "h-5 w-5",
-                              role.color === 'primary' ? "text-primary dark:text-primary-foreground" : "text-lavender-foreground"
+                              "h-5 w-5 transition-all duration-300",
+                              role.color === 'primary' 
+                                ? "text-primary dark:text-violet-300 dark:drop-shadow-[0_0_4px_rgba(139,92,246,0.5)]" 
+                                : "text-sage-foreground dark:text-green-300 dark:drop-shadow-[0_0_4px_rgba(74,222,128,0.5)]"
                             )} />
                           </div>
                           <div className="flex-1">

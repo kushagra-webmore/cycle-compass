@@ -324,12 +324,12 @@ export default function CycleHistory() {
 
              {/* Metric Cards */}
              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <Card className="bg-primary/5 border-primary/20 relative group">
+                <Card className="bg-primary/10 border-primary/40 relative group">
                   <CardContent className="p-4 flex flex-col items-center justify-center text-center">
                     <Button 
                       variant="ghost" 
                       size="icon" 
-                      className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="absolute top-1 right-1 h-6 w-6 transition-opacity"
                       onClick={() => setIsStatsEditOpen(true)}
                     >
                       <Edit2 className="h-3 w-3 text-muted-foreground" />
@@ -343,12 +343,12 @@ export default function CycleHistory() {
                   </CardContent>
                 </Card>
                 
-                <Card className="bg-rose-500/5 border-rose-500/20 relative group">
+                <Card className="bg-rose-500/10 border-rose-500/40 relative group">
                   <CardContent className="p-4 flex flex-col items-center justify-center text-center">
                     <Button 
                       variant="ghost" 
                       size="icon" 
-                      className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="absolute top-1 right-1 h-6 w-6 transition-opacity"
                       onClick={() => setIsStatsEditOpen(true)}
                     >
                       <Edit2 className="h-3 w-3 text-muted-foreground" />
@@ -362,7 +362,7 @@ export default function CycleHistory() {
                   </CardContent>
                 </Card>
                 
-                <Card className="bg-purple-500/5 border-purple-500/20">
+                <Card className="bg-purple-500/10 border-purple-500/40">
                   <CardContent className="p-4 flex flex-col items-center justify-center text-center">
                     <div className="p-2 mb-2 rounded-full bg-purple-500/10 text-purple-500">
                       <Info className="h-4 w-4" />
@@ -373,7 +373,7 @@ export default function CycleHistory() {
                   </CardContent>
                 </Card>
 
-                <Card className="bg-sky-500/5 border-sky-500/20">
+                <Card className="bg-sky-500/10 border-sky-500/40">
                   <CardContent className="p-4 flex flex-col items-center justify-center text-center">
                     <div className="p-2 mb-2 rounded-full bg-sky-500/10 text-sky-500">
                       <CalendarIcon className="h-4 w-4" />

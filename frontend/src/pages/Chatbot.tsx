@@ -170,9 +170,9 @@ export default function Chatbot() {
                       setIsSidebarOpen(false);
                     }}
                   >
-                    <div className="flex items-center gap-2 overflow-hidden flex-1">
+                    <div className="flex items-center gap-2 flex-1 min-w-0">
                       <MessageSquare className="h-4 w-4 shrink-0 opacity-50" />
-                      <span className="truncate">{session.title || "Untitled Chat"}</span>
+                      <span className="line-clamp-2 leading-tight break-words" title={session.title}>{session.title || "Untitled Chat"}</span>
                     </div>
                     {/* Only show delete button on hover or if active */}
                     <div className="flex items-center gap-1">
@@ -291,7 +291,7 @@ export default function Chatbot() {
                       className={cn(
                         'max-w-[85%] md:max-w-[75%] rounded-2xl px-4 py-3 shadow-sm',
                         msg.role === 'USER'
-                          ? 'bg-primary text-primary-foreground rounded-br-none'
+                          ? 'bg-primary text-primary-foreground rounded-br-none selection:bg-primary-foreground/30 selection:text-primary-foreground'
                           : 'bg-muted text-foreground rounded-bl-none'
                       )}
                     >

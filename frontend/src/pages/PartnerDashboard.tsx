@@ -45,6 +45,14 @@ const phaseInfo = {
   },
 };
 
+const phaseGradients = {
+  MENSTRUAL: "bg-gradient-to-br from-rose-100 to-pink-50 dark:from-rose-950/40 dark:to-pink-950/20 border-rose-200 dark:border-rose-800",
+  FOLLICULAR: "bg-gradient-to-br from-purple-100 to-lavender-50 dark:from-purple-950/40 dark:to-lavender-950/20 border-purple-200 dark:border-purple-800",
+  FERTILE: "bg-gradient-to-br from-amber-100 to-orange-50 dark:from-amber-950/40 dark:to-orange-950/20 border-amber-200 dark:border-amber-800",
+  OVULATION: "bg-gradient-to-br from-amber-100 to-orange-50 dark:from-amber-950/40 dark:to-orange-950/20 border-amber-200 dark:border-amber-800",
+  LUTEAL: "bg-gradient-to-br from-indigo-100 to-blue-50 dark:from-indigo-950/40 dark:to-blue-950/20 border-indigo-200 dark:border-indigo-800",
+};
+
 interface GuidanceData {
   explanation: string;
   actions: string[];
@@ -130,7 +138,7 @@ export default function PartnerDashboard() {
           <>
             <div className="text-center pt-2">
               <h2 className="font-display text-2xl font-bold text-foreground">
-                Hey {user?.name ? user.name.split(' ')[0] : 'there'} 💕
+                Hey {user?.name ? user.name.split(' ')[0] : 'there'} 👀
               </h2>
               <p className="text-muted-foreground mt-1 text-sm">
                 Check in on {data.primaryUserName || 'your partner'} today
@@ -167,7 +175,7 @@ export default function PartnerDashboard() {
             </Card>
 
             {data.cycle && (
-              <Card className="border-2 bg-phase-luteal/10 border-phase-luteal/30">
+              <Card className={cn("border-2", phaseGradients[phaseKey as keyof typeof phaseGradients] || phaseGradients.MENSTRUAL)}>
                 <CardHeader className="pb-2">
                   <CardTitle className="text-lg flex items-center gap-2">
                     <Sparkles className={cn('h-5 w-5', `text-${phase.color}`)} />
@@ -267,10 +275,10 @@ export default function PartnerDashboard() {
 
             {/* Shared Data Stats */}
             <div className="grid grid-cols-2 gap-3 mt-4">
-              <Card variant="lavender" className="p-4">
+              <Card className="p-4 bg-gradient-to-br from-violet-100 to-indigo-50 dark:from-violet-950/40 dark:to-indigo-950/20 border-violet-200 dark:border-violet-800">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-lavender/30">
-                    <Heart className="h-5 w-5 text-lavender-foreground" />
+                  <div className="p-2 rounded-lg bg-violet-200/50 dark:bg-violet-900/50">
+                    <Heart className="h-5 w-5 text-violet-700 dark:text-violet-300" />
                   </div>
                   <div>
                     <span className="text-xs text-muted-foreground block">Mood</span>
@@ -280,10 +288,10 @@ export default function PartnerDashboard() {
                   </div>
                 </div>
               </Card>
-              <Card variant="peach" className="p-4">
+              <Card className="p-4 bg-gradient-to-br from-amber-100 to-orange-50 dark:from-amber-950/40 dark:to-orange-950/20 border-amber-200 dark:border-amber-800">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-peach/30">
-                    <Moon className="h-5 w-5 text-peach-foreground" />
+                  <div className="p-2 rounded-lg bg-amber-200/50 dark:bg-amber-900/50">
+                    <Moon className="h-5 w-5 text-amber-700 dark:text-amber-300" />
                   </div>
                   <div>
                     <span className="text-xs text-muted-foreground block">Energy</span>

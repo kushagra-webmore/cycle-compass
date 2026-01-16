@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Save, Droplets, Heart, Battery, Moon, Activity, Shield, Calendar as CalendarIcon, Wind, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -59,6 +59,7 @@ export default function SymptomLog() {
   
   // Date State - Default to Today
   const [logDate, setLogDate] = useState(new Date().toISOString().split('T')[0]);
+  const dateInputRef = useRef<HTMLInputElement>(null);
   
   const [pain, setPain] = useState([0]); // Slider expects array
   const [flow, setFlow] = useState<string | null>(null);
@@ -128,19 +129,23 @@ export default function SymptomLog() {
         {/* Date Picker Section */}
         <Card className="border-none shadow-none bg-transparent">
           <div className="flex items-center justify-center gap-2">
-             <CalendarIcon className="h-5 w-5 text-muted-foreground" />
+             <CalendarIcon 
+               className="h-5 w-5 text-muted-foreground cursor-pointer" 
+               onClick={() => dateInputRef.current?.showPicker()}
+             />
              <Input 
+               ref={dateInputRef}
                type="date" 
                value={logDate} 
                max={new Date().toISOString().split('T')[0]}
                onChange={(e) => setLogDate(e.target.value)}
-               className="w-auto font-display font-semibold text-lg bg-transparent border-none shadow-none focus-visible:ring-0 cursor-pointer dark:bg-card/50 dark:px-3"
+               className="w-auto font-display font-semibold text-lg bg-transparent border-none shadow-none focus-visible:ring-0 cursor-pointer dark:bg-card/50 dark:px-3 [&::-webkit-calendar-picker-indicator]:hidden"
              />
           </div>
         </Card>
 
         {/* Period Flow */}
-        <Card>
+        <Card className="border-l-4 border-l-blue-400 dark:border-l-blue-600">
           <CardHeader className="pb-3">
              <CardTitle className="text-base flex items-center gap-2">
                 <Droplets className="h-4 w-4 text-blue-500" /> Period Flow
@@ -168,7 +173,7 @@ export default function SymptomLog() {
         </Card>
 
         {/* Physical Signs */}
-        <Card>
+        <Card className="border-l-4 border-l-pink-400 dark:border-l-pink-600">
           <CardHeader className="pb-3">
              <CardTitle className="text-base flex items-center gap-2">
                 <Activity className="h-4 w-4 text-pink-500" /> Physical Signs
@@ -196,7 +201,7 @@ export default function SymptomLog() {
         </Card>
 
         {/* Cravings */}
-        <Card>
+        <Card className="border-l-4 border-l-orange-400 dark:border-l-orange-600">
            <CardHeader className="pb-3">
               <CardTitle className="text-base">Cravings</CardTitle>
            </CardHeader>
@@ -211,7 +216,7 @@ export default function SymptomLog() {
         </Card>
 
         {/* Pain Level */}
-        <Card>
+        <Card className="border-l-4 border-l-rose-500 dark:border-l-rose-700">
            <CardHeader className="pb-3">
               <div className="flex justify-between items-center">
                 <CardTitle className="text-base flex items-center gap-2">
@@ -239,11 +244,11 @@ export default function SymptomLog() {
         </Card>
 
         {/* Intercourse & Protection */}
-        <Card className="border-l-4 border-l-rose-300 dark:border-l-rose-700">
+        <Card className="border-l-4 border-l-violet-500 dark:border-l-violet-700">
            <CardContent className="pt-6">
               <div className="flex items-center justify-between mb-4">
                  <div className="flex items-center gap-2">
-                    <Heart className="h-5 w-5 text-rose-400" />
+                    <Heart className="h-5 w-5 text-violet-500" />
                     <Label className="text-base">Intercourse</Label>
                  </div>
                  <Switch checked={intercourse} onCheckedChange={setIntercourse} />
@@ -263,7 +268,7 @@ export default function SymptomLog() {
 
         {/* Mood & Energy */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-           <Card>
+           <Card className="border-l-4 border-l-amber-400 dark:border-l-amber-600">
              <CardHeader className="p-4 pb-2">
                <CardTitle className="text-sm">Mood</CardTitle>
              </CardHeader>
@@ -275,7 +280,7 @@ export default function SymptomLog() {
                       onClick={() => setMood(m.value)} 
                       className={cn(
                         "flex flex-col items-center p-2 rounded-lg transition-all hover:bg-muted w-full", 
-                        mood === m.value ? "bg-primary/20 scale-105 shadow-sm" : "opacity-70 hover:opacity-100"
+                        mood === m.value ? "bg-amber-100 dark:bg-amber-900/40 scale-105 shadow-sm" : "opacity-70 hover:opacity-100"
                       )}
                     >
                       <span className="text-2xl">{m.emoji}</span>
@@ -286,7 +291,7 @@ export default function SymptomLog() {
              </CardContent>
            </Card>
            
-           <Card>
+           <Card className="border-l-4 border-l-yellow-400 dark:border-l-yellow-600">
              <CardHeader className="p-4 pb-2">
                <CardTitle className="text-sm">Energy</CardTitle>
              </CardHeader>

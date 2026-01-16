@@ -387,11 +387,18 @@ export default function ComprehensiveAdminDashboard() {
                             </div>
                             <div>
                               <p className="text-xs text-muted-foreground">Connected Partner</p>
-                              <p className="text-sm font-medium">
-                                {userDetails.user.id === userDetails.pairing.primary_user_id 
-                                  ? (userDetails.pairing.partner?.profiles?.name || 'Unknown') 
-                                  : (userDetails.pairing.primary?.profiles?.name || 'Unknown')}
-                              </p>
+                              <div className="flex flex-col">
+                                <p className="text-sm font-medium">
+                                  {userDetails.user.id === userDetails.pairing.primary_user_id 
+                                    ? (userDetails.pairing.partner?.profiles?.name || 'Unknown') 
+                                    : (userDetails.pairing.primary?.profiles?.name || 'Unknown')}
+                                </p>
+                                {userDetails.pairing.connected_email && (
+                                  <p className="text-xs text-muted-foreground break-all">
+                                    {userDetails.pairing.connected_email}
+                                  </p>
+                                )}
+                              </div>
                             </div>
                             <div>
                               <p className="text-xs text-muted-foreground">Partner Role</p>

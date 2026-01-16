@@ -6,18 +6,19 @@ import {
   startOfMonth, 
   endOfMonth, 
   eachDayOfInterval, 
-  isSameMonth, 
   isSameDay, 
-  addDays,
   differenceInDays,
   isToday,
-  isWithinInterval,
-  parseISO
+  parseISO,
+  setMonth,
+  setYear
 } from 'date-fns';
-import { ChevronLeft, ChevronRight, Heart } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Heart, Calendar as CalendarIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { cn } from '@/lib/utils'; // Ensure utils are imported
+import { Card } from '@/components/ui/card';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { cn } from '@/lib/utils';
 // import { CycleContext, Phase } from '@/types/cycle'; 
 
 type Phase = 'MENSTRUAL' | 'FOLLICULAR' | 'FERTILE' | 'OVULATION' | 'LUTEAL';
@@ -26,7 +27,8 @@ type Phase = 'MENSTRUAL' | 'FOLLICULAR' | 'FERTILE' | 'OVULATION' | 'LUTEAL';
 const getPhaseColor = (phase: string) => {
   switch (phase) {
     case 'MENSTRUAL': return 'bg-rose-400 text-white hover:bg-rose-500';
-    case 'FOLLICULAR': return 'bg-purple-200 text-purple-900 border border-purple-300 dark:bg-purple-900/40 dark:text-purple-100 dark:border-purple-700 hover:bg-purple-300 dark:hover:bg-purple-800/60';
+    case 'MENSTRUAL': return 'bg-rose-400 text-white hover:bg-rose-500';
+    case 'FOLLICULAR': return 'bg-purple-200 text-purple-900 border border-purple-300 dark:bg-purple-700 dark:text-white dark:border-purple-600 hover:bg-purple-300 dark:hover:bg-purple-600';
     case 'FERTILE': 
     case 'OVULATION': return 'bg-emerald-400 text-white hover:bg-emerald-500';
     case 'LUTEAL': return 'bg-blue-100 text-blue-900 border border-blue-200 dark:bg-blue-900/40 dark:text-blue-100 dark:border-blue-700 hover:bg-blue-200 dark:hover:bg-blue-800/60';
@@ -160,9 +162,49 @@ export function CycleCalendar({ currentCycleStart, avgCycleLength, avgPeriodLeng
     <Card className="border-none shadow-none bg-transparent">
         {/* Header */}
         <div className="flex items-center justify-between mb-4 px-2">
-            <h3 className="font-display font-bold text-xl text-foreground">
-                {format(currentMonth, 'MMMM yyyy')}
-            </h3>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="ghost" className="font-display font-bold text-xl text-foreground hover:bg-muted/50 px-2 h-auto">
+                  {format(currentMonth, 'MMMM yyyy')}
+                  <CalendarIcon className="ml-2 h-4 w-4 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80 bg-card p-4">
+                 <div className="flex gap-2">
+                    <Select 
+                      value={currentMonth.getMonth().toString()} 
+                      onValueChange={(val) => setCurrentMonth(prev => setMonth(prev, parseInt(val)))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Month" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Array.from({ length: 12 }).map((_, i) => (
+                          <SelectItem key={i} value={i.toString()}>
+                            {format(new Date(2000, i, 1), 'MMMM')}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    
+                    <Select 
+                      value={currentMonth.getFullYear().toString()} 
+                      onValueChange={(val) => setCurrentMonth(prev => setYear(prev, parseInt(val)))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Year" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Array.from({ length: 10 }).map((_, i) => {
+                           const y = new Date().getFullYear() - 5 + i;
+                           return <SelectItem key={y} value={y.toString()}>{y}</SelectItem>
+                        })}
+                      </SelectContent>
+                    </Select>
+                 </div>
+              </PopoverContent>
+            </Popover>
+
             <div className="flex gap-1">
                 <Button variant="ghost" size="icon" onClick={() => setCurrentMonth(prev => subMonths(prev, 1))}>
                     <ChevronLeft className="h-4 w-4" />

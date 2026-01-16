@@ -84,8 +84,8 @@ export function CycleDailyInsights() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-violet-900/80 dark:text-violet-100/80 leading-relaxed font-medium italic">
-            "{insights.wisdom}"
+          <p className="text-sm text-violet-900/80 dark:text-violet-100/80 leading-relaxed font-medium">
+            {insights.wisdom}
           </p>
         </CardContent>
       </Card>

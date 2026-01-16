@@ -55,7 +55,7 @@ const pairingKeys = {
 export const usePairing = () =>
   useQuery({
     queryKey: pairingKeys.me,
-    queryFn: () => apiFetch<PairingInfo | null>('/pairings/me', { auth: true }),
+    queryFn: () => apiFetch<PairingInfo[]>('/pairings/me', { auth: true }),
   });
 
 export const useCreatePairing = () => {

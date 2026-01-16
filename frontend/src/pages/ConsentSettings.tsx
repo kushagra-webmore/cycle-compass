@@ -60,18 +60,16 @@ const consentFields = [
 export default function ConsentSettings() {
   const { user } = useAuth();
   const { toast } = useToast();
-  const { data: pairing, isLoading, isError, refetch } = usePairing();
+  // usePairing now returns an array
+  const { data: pairings = [], isLoading, isError, refetch } = usePairing();
   const updateConsent = useUpdateConsent();
   const revokePairing = useRevokePairing();
-  const hasPartner = Boolean(pairing && pairing.status === 'ACTIVE' && pairing.partnerUserId);
-  const consents = consentFields.map((field) => ({
-    ...field,
-    enabled: Boolean(pairing?.consent?.[field.id]),
-  }));
 
-  const handleToggle = async (key: (typeof consentFields)[number]['id'], value: boolean) => {
-    if (!pairing?.id) return;
+  // Filter active pairings if needed, though backend returns active only
+  const activePairings = Array.isArray(pairings) ? pairings : [];
+  const hasPartner = activePairings.length > 0;
 
+  const handleToggle = async (pairingId: string, key: (typeof consentFields)[number]['id'], value: boolean) => {
     const payloadKey =
       key === 'share_phase'
         ? 'sharePhase'
@@ -86,7 +84,7 @@ export default function ConsentSettings() {
         : 'shareMyCycle';
 
     try {
-      await updateConsent.mutateAsync({ pairingId: pairing.id, [payloadKey]: value });
+      await updateConsent.mutateAsync({ pairingId, [payloadKey]: value });
       toast({ title: 'Settings updated', description: 'Your consent preferences have been saved.' });
     } catch (error) {
       toast({
@@ -97,10 +95,9 @@ export default function ConsentSettings() {
     }
   };
 
-  const handleRevoke = async () => {
-    if (!pairing?.id) return;
+  const handleRevoke = async (pairingId: string) => {
     try {
-      await revokePairing.mutateAsync(pairing.id);
+      await revokePairing.mutateAsync(pairingId);
       toast({ title: 'Access revoked', description: 'Your partner no longer has access to shared data.' });
     } catch (error) {
       toast({
@@ -141,7 +138,7 @@ export default function ConsentSettings() {
 
   return (
     <AppLayout title="Consent & Privacy">
-      <div className="space-y-6 animate-fade-in">
+      <div className="space-y-8 animate-fade-in">
         {/* Header */}
         <div className="text-center space-y-2">
           <div className="w-16 h-16 mx-auto rounded-full bg-sage/30 flex items-center justify-center">
@@ -155,115 +152,135 @@ export default function ConsentSettings() {
           </p>
         </div>
 
-        {/* Partner Status */}
-        {hasPartner && (
-          <Card variant="lavender">
-            <CardContent className="flex items-center gap-4 py-4">
-              <div className="w-12 h-12 rounded-full bg-lavender/50 flex items-center justify-center">
-                <User className="h-6 w-6 text-lavender-foreground" />
-              </div>
-              <div className="flex-1">
-                <p className="font-semibold text-foreground">
-                  {user?.role === 'primary' ? 'Partner Connected' : 'Connected With'}
-                </p>
-                <p className="text-sm font-medium text-foreground">
-                  {(user?.role === 'primary' ? pairing?.partnerUserName : pairing?.primaryUserName) || 
-                   (user?.role === 'primary' ? pairing?.partner_user_id : pairing?.primary_user_id) || 
-                   'Unknown User'}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {(user?.role === 'primary' ? pairing?.partnerUserEmail : pairing?.primaryUserEmail) || 'No email'}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Consent Toggles */}
-        <Card variant="elevated">
-          <CardHeader>
-            <CardTitle className="text-base">Sharing Preferences</CardTitle>
-            <CardDescription>Toggle what your partner can see</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {user?.role === 'primary' ? (
-              consents.map((consent) => {
-              const Icon = consent.icon;
-              return (
-                <div
-                  key={consent.id}
-                  className="flex items-center justify-between p-3 rounded-xl bg-muted/30 hover:bg-muted/50 transition-colors"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-primary/10">
-                      <Icon className="h-4 w-4 text-primary" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-sm text-foreground">{consent.label}</p>
-                      <p className="text-xs text-muted-foreground">{consent.description}</p>
-                    </div>
-                  </div>
-                  <Switch
-                    checked={consent.enabled}
-                    disabled={!hasPartner || updateConsent.isPending}
-                    onCheckedChange={(checked) => handleToggle(consent.id, checked)}
-                  />
-                </div>
-              );
-            })
-            ) : (
-              <div className="py-6 text-center text-muted-foreground">
-                <p>Your partner controls what information is shared with you.</p>
-              </div>
-            )}
-            
-          </CardContent>
-        </Card>
-
-        {/* Important Notice */}
-        <Card variant="peach" className="border-2 border-peach/50 mt-6">
+        {/* Global Warning */}
+        <Card className="bg-yellow-50 dark:bg-yellow-900/20 border-2 border-yellow-200 dark:border-yellow-800">
           <CardContent className="flex items-start gap-3 py-4">
-            <AlertTriangle className="h-5 w-5 text-peach-foreground shrink-0 mt-0.5" />
+            <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-400 shrink-0 mt-0.5" />
             <div>
-              <p className="text-sm font-medium text-peach-foreground">Changes Apply Instantly</p>
+              <p className="text-sm font-medium text-yellow-800 dark:text-yellow-200">Changes Apply Instantly</p>
               <p className="text-xs text-muted-foreground mt-1">
-                When you toggle a setting off, your partner immediately loses access to that information.
-                There's no delay or waiting period.
+                When you toggle a setting off, access is removed immediately. No waiting period.
               </p>
             </div>
           </CardContent>
         </Card>
 
-        {/* Revoke Access */}
-        {hasPartner && user?.role === 'primary' && (
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="destructive" size="lg" className="w-full mt-6">
-                <UserX className="h-4 w-4 mr-2" />
-                Revoke All Access
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Revoke Partner Access?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This will immediately remove your partner's access to all shared information.
-                  They will need a new invite to reconnect.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleRevoke} className="bg-destructive text-destructive-foreground">
-                  Yes, Revoke Access
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+        {/* List of Partners */}
+        {!hasPartner && (
+            <div className="text-center p-8 border-2 border-dashed rounded-xl">
+                <p className="text-muted-foreground">No active partners connected.</p>
+                <Button variant="link" asChild className="mt-2">
+                    <a href="/connect">Connect a Partner</a>
+                </Button>
+            </div>
         )}
 
+        {activePairings.map((pairing) => {
+           // Calculate consents for THIS pairing instance
+           const currentConsents = consentFields.map((field) => ({
+             ...field,
+             enabled: Boolean(pairing?.consent?.[field.id]),
+           }));
+
+           return (
+             <div key={pairing.id} className="space-y-6">
+                {/* Partner Status Card */}
+                <Card className="bg-gradient-to-r from-violet-100 to-fuchsia-100 border-2 border-violet-200 dark:from-violet-900/30 dark:to-fuchsia-900/30 dark:border-violet-700 shadow-md">
+                    <CardContent className="flex items-center gap-4 py-4">
+                    <div className="w-12 h-12 rounded-full bg-lavender/50 flex items-center justify-center">
+                        <User className="h-6 w-6 text-lavender-foreground" />
+                    </div>
+                    <div className="flex-1">
+                        <p className="font-semibold text-foreground">
+                        {user?.role === 'primary' ? 'Partner Connected' : 'Connected With'}
+                        </p>
+                        <p className="text-sm font-medium text-foreground">
+                        {(user?.role === 'primary' ? pairing?.partnerUserName : pairing?.primaryUserName) || 
+                        (user?.role === 'primary' ? pairing?.partner_user_id : pairing?.primary_user_id) || 
+                        'Unknown User'}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                        {(user?.role === 'primary' ? pairing?.partnerUserEmail : pairing?.primaryUserEmail) || 'No email'}
+                        </p>
+                    </div>
+                    </CardContent>
+                </Card>
+
+                {/* Consent Toggles for THIS Partner */}
+                <Card variant="elevated">
+                <CardHeader>
+                    <CardTitle className="text-base text-lg text-primary">Sharing Preferences</CardTitle>
+                    <CardDescription>Control what <strong>{pairing.partnerUserName || 'this partner'}</strong> can see</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    {user?.role === 'primary' ? (
+                    currentConsents.map((consent) => {
+                        const Icon = consent.icon;
+                        return (
+                        <div
+                            key={consent.id}
+                            className="flex items-center justify-between p-3 rounded-xl bg-muted/30 hover:bg-muted/50 transition-colors"
+                        >
+                            <div className="flex items-center gap-3">
+                            <div className="p-2 rounded-lg bg-primary/10">
+                                <Icon className="h-4 w-4 text-primary" />
+                            </div>
+                            <div>
+                                <p className="font-medium text-sm text-foreground">{consent.label}</p>
+                                <p className="text-xs text-muted-foreground">{consent.description}</p>
+                            </div>
+                            </div>
+                            <Switch
+                            checked={consent.enabled}
+                            disabled={updateConsent.isPending}
+                            onCheckedChange={(checked) => handleToggle(pairing.id, consent.id, checked)}
+                            />
+                        </div>
+                        );
+                    })
+                    ) : (
+                    <div className="py-6 text-center text-muted-foreground">
+                        <p>Your partner controls what information is shared with you.</p>
+                    </div>
+                    )}
+                    
+                    {/* Revoke for THIS partner */}
+                    {user?.role === 'primary' && (
+                        <div className="pt-4 mt-4 border-t">
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                <Button variant="ghost" className="w-full text-destructive hover:text-destructive hover:bg-destructive/10">
+                                    <UserX className="h-4 w-4 mr-2" />
+                                    Revoke Access for {pairing.partnerUserName || 'Partner'}
+                                </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>Revoke Access?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                    This will immediately remove access for {pairing.partnerUserName || 'this partner'}.
+                                    They will need a new invite to reconnect.
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction onClick={() => handleRevoke(pairing.id)} className="bg-destructive text-destructive-foreground">
+                                    Yes, Revoke
+                                    </AlertDialogAction>
+                                </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
+                        </div>
+                    )}
+                </CardContent>
+                </Card>
+             </div>
+           );
+        })}
+
         {/* Reassurance */}
-        <div className="text-center p-4 rounded-xl bg-sage/20 border border-sage/30 mt-6">
-          <p className="text-sm font-medium text-sage-foreground">
+        <div className="text-center p-4 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800 mt-6">
+          <p className="text-sm font-medium text-emerald-800 dark:text-emerald-200">
             🔒 You are always in control. Your data, your decisions.
           </p>
         </div>
