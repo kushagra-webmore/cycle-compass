@@ -106,10 +106,6 @@
 - **Validation**: Zod
 - **Logging**: Winston
 
-## 📱 Screenshots
-
-_(Screenshots coming soon)_
-
 ## 🤝 Contributing
 
 1. Fork the repository
