@@ -109,13 +109,13 @@ export default function PartnerConnect() {
 
   return (
     <AppLayout title="Partner Connection">
-      <div className="space-y-6 animate-fade-in">
+      <div className="space-y-4 xs:space-y-6 animate-fade-in">
         {/* Header */}
         <div className="text-center space-y-2">
-          <div className="w-16 h-16 mx-auto rounded-full bg-lavender/30 flex items-center justify-center">
-            <Heart className="h-8 w-8 text-lavender-foreground" />
+          <div className="w-12 h-12 xs:w-16 xs:h-16 mx-auto rounded-full bg-lavender/30 flex items-center justify-center">
+            <Heart className="h-6 w-6 xs:h-8 xs:w-8 text-lavender-foreground" />
           </div>
-          <h2 className="font-display text-xl font-bold text-foreground">
+          <h2 className="font-display text-lg xs:text-xl font-bold text-foreground">
             Connect with Your Partner
           </h2>
           {/* Active Partners List */}
@@ -170,7 +170,7 @@ export default function PartnerConnect() {
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
             </div>
           )}
-          <p className="text-sm text-muted-foreground max-w-sm mx-auto">
+          <p className="text-xs xs:text-sm text-muted-foreground max-w-sm mx-auto px-2">
             Share selected insights with someone you trust. You control exactly what they see.
           </p>
           <div className="pt-2">
@@ -211,16 +211,17 @@ export default function PartnerConnect() {
             </div>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 xs:gap-2">
               <input
                 type="text"
                 value={inviteLink}
                 readOnly
-                className="flex-1 px-3 py-2 rounded-lg bg-muted text-sm text-foreground border border-border"
+                className="flex-1 min-w-0 px-2 xs:px-3 py-2 rounded-lg bg-muted text-xs xs:text-sm text-foreground border border-border overflow-hidden text-ellipsis"
               />
               <Button
                 variant={copied === 'link' ? 'sage' : 'default'}
                 size="icon"
+                className="flex-shrink-0"
                 onClick={() => handleCopy(inviteLink, 'link')}
               >
                 {copied === 'link' ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
@@ -243,9 +244,9 @@ export default function PartnerConnect() {
             </div>
           </CardHeader>
           <CardContent className="flex justify-center">
-            <div className="w-40 h-40 bg-card rounded-xl flex items-center justify-center border-2 border-border">
+            <div className="w-32 h-32 xs:w-40 xs:h-40 bg-card rounded-xl flex items-center justify-center border-2 border-border">
               {/* Mock QR Code */}
-              <div className="w-32 h-32 grid grid-cols-8 gap-0.5">
+              <div className="w-24 h-24 xs:w-32 xs:h-32 grid grid-cols-8 gap-0.5">
                 {Array.from({ length: 64 }).map((_, i) => (
                   <div
                     key={i}
@@ -266,13 +267,13 @@ export default function PartnerConnect() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex justify-center gap-2">
+            <div className="flex justify-center gap-1 xs:gap-2">
               {pairingCode.split('').map((digit, i) => (
                 <div
                   key={i}
-                  className="w-12 h-14 rounded-xl bg-card border-2 border-primary/30 flex items-center justify-center"
+                  className="w-9 h-11 xs:w-12 xs:h-14 rounded-lg xs:rounded-xl bg-card border-2 border-primary/30 flex items-center justify-center"
                 >
-                  <span className="text-2xl font-bold font-display text-foreground">{digit}</span>
+                  <span className="text-xl xs:text-2xl font-bold font-display text-foreground">{digit}</span>
                 </div>
               ))}
             </div>
