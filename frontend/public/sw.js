@@ -9,41 +9,56 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('push', function (event) {
+    console.log('[Service Worker] Push received:', event);
+
     if (event.data) {
         try {
             const data = event.data.json();
+            console.log('[Service Worker] Push data:', data);
 
-            // Basic options with fallback icon that actually exists
+            // Enhanced options for mobile compatibility
             const options = {
                 body: data.body || 'New notification',
-                icon: data.icon || '/logo.svg', // Fallback to logo.svg since icon-192 might be missing
-                badge: '/logo.svg', // Use logo for badge too
-                vibrate: [100, 50, 100],
+                icon: data.icon || '/icon-192.png',
+                badge: '/icon-192.png',
+                vibrate: [200, 100, 200],
+                tag: data.tag || 'cycle-compass-notification',
+                requireInteraction: false, // Set to true for critical notifications
                 data: {
                     dateOfArrival: Date.now(),
                     primaryKey: 1,
                     url: data.data?.url || '/'
                 },
                 actions: [
-                    { action: 'explore', title: 'View' } // Short title for mobile
-                ]
+                    { action: 'explore', title: 'View' }
+                ],
+                // Additional options for better mobile support
+                silent: false,
+                renotify: true
             };
 
             event.waitUntil(
                 self.registration.showNotification(data.title || 'Cycle Compass', options)
+                    .then(() => console.log('[Service Worker] Notification shown'))
+                    .catch(err => console.error('[Service Worker] Notification error:', err))
             );
         } catch (e) {
-            console.error('Push handling error:', e);
+            console.error('[Service Worker] Push handling error:', e);
             // Fallback for non-JSON or error cases
             const options = {
                 body: event.data.text(),
-                icon: '/logo.svg',
-                vibrate: [100, 50, 100]
+                icon: '/icon-192.png',
+                badge: '/icon-192.png',
+                vibrate: [200, 100, 200],
+                tag: 'cycle-compass-fallback',
+                requireInteraction: false
             };
             event.waitUntil(
                 self.registration.showNotification('Cycle Compass', options)
             );
         }
+    } else {
+        console.log('[Service Worker] Push event has no data');
     }
 });
 
