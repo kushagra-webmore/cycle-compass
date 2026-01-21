@@ -15,6 +15,8 @@ import { adminDataRouter } from './routes/admin-data.js';
 import { userRouter } from './routes/user.js';
 import { chatbotRouter } from './routes/chatbot.js';
 import { healthRouter } from './routes/health.js';
+import { waterRouter } from './routes/water.routes.js';
+import { notificationRouter } from './routes/notification.routes.js';
 
 const app = express();
 
@@ -86,7 +88,10 @@ app.use('/ai', aiRouter);
 app.use('/admin', adminRouter);
 app.use('/admin', adminDataRouter); 
 app.use('/users', userRouter);
+app.use('/users', userRouter);
 app.use('/chatbot', chatbotRouter);
+app.use('/water', waterRouter);
+app.use('/notifications', notificationRouter);
 
 app.use(errorHandler);
 

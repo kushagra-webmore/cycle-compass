@@ -172,4 +172,58 @@ export const deleteMythArticle = async (adminUserId, id) => {
         mythArticleId: id,
     });
 };
+export const impersonateUser = async (adminUserId, targetUserId) => {
+    const supabase = getSupabaseClient();
+    // Verify target user exists and get their details
+    const { data: targetUser, error: userError } = await supabase
+        .from('users')
+        .select('id, role, status')
+        .eq('id', targetUserId)
+        .single();
+    if (userError || !targetUser) {
+        throw new HttpError(404, 'Target user not found', userError);
+    }
+    // Get the user's auth data including email
+    const { data: authUser, error: authError } = await supabase.auth.admin.getUserById(targetUserId);
+    if (authError || !authUser.user) {
+        throw new HttpError(400, 'Failed to get user auth data', authError);
+    }
+    // Use Supabase admin to create a session for the target user
+    // We'll generate a temporary password reset token and exchange it for a session
+    const { data: linkData, error: linkError } = await supabase.auth.admin.generateLink({
+        type: 'magiclink',
+        email: authUser.user.email,
+    });
+    if (linkError || !linkData) {
+        throw new HttpError(400, 'Failed to generate session link', linkError);
+    }
+    // Extract the access token and refresh token from the hashed token
+    // The hashed_token can be used to create a session
+    // We need to verify the OTP to get actual session tokens
+    const { data: sessionData, error: sessionError } = await supabase.auth.verifyOtp({
+        token_hash: linkData.properties.hashed_token,
+        type: 'magiclink',
+    });
+    if (sessionError || !sessionData.session) {
+        throw new HttpError(400, 'Failed to create impersonation session', sessionError);
+    }
+    // Log the impersonation event
+    await logAuditEvent(adminUserId, 'admin.impersonate-user', {
+        targetUserId,
+        targetUserEmail: authUser.user.email,
+        targetUserRole: targetUser.role,
+        timestamp: new Date().toISOString(),
+    });
+    // Get the full user profile data
+    const { getUserWithProfile } = await import('./user.service.js');
+    const userProfile = await getUserWithProfile(targetUserId, authUser.user.email);
+    // Return the session and user data
+    return {
+        session: {
+            access_token: sessionData.session.access_token,
+            refresh_token: sessionData.session.refresh_token,
+        },
+        user: userProfile,
+    };
+};
 //# sourceMappingURL=admin.service.js.map

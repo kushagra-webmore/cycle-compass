@@ -4,7 +4,6 @@ import { validateBody } from '../middleware/validate.js';
 import { adminForceUnpairSchema, adminMythArticleSchema, adminUpdateUserSchema, } from '../validators/admin.js';
 import { asyncHandler } from '../utils/async-handler.js';
 import { deleteMythArticle, forceUnpair, getAnalyticsOverview, listAIInteractions, listConsentAuditLogs, listMythArticles, listPairings, listUsers, updateUserAccount, deleteUserAccount, upsertMythArticle, } from '../services/admin.service.js';
-import { getAllUserDetails, getUserActivityLog, getChatbotHistoryForUser, getUserCycleData, } from '../services/admin-data.service.js';
 import { getDashboardAnalytics } from '../services/analytics.service.js';
 export const adminRouter = Router();
 adminRouter.use(authenticate, requireRoles('ADMIN'));
@@ -21,27 +20,6 @@ adminRouter.delete('/users/:userId', asyncHandler(async (req, res) => {
     const { userId } = req.params;
     await deleteUserAccount(req.authUser.id, userId);
     res.json({ success: true });
-}));
-// Comprehensive user data endpoints
-adminRouter.get('/users/:userId/details', asyncHandler(async (req, res) => {
-    const { userId } = req.params;
-    const details = await getAllUserDetails(userId);
-    res.json(details);
-}));
-adminRouter.get('/users/:userId/activity', asyncHandler(async (req, res) => {
-    const { userId } = req.params;
-    const activity = await getUserActivityLog(userId);
-    res.json(activity);
-}));
-adminRouter.get('/users/:userId/chatbot', asyncHandler(async (req, res) => {
-    const { userId } = req.params;
-    const history = await getChatbotHistoryForUser(userId);
-    res.json({ history });
-}));
-adminRouter.get('/users/:userId/cycles', asyncHandler(async (req, res) => {
-    const { userId } = req.params;
-    const cycles = await getUserCycleData(userId);
-    res.json({ cycles });
 }));
 adminRouter.get('/pairings', asyncHandler(async (_req, res) => {
     const pairings = await listPairings();

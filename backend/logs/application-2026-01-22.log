@@ -1,0 +1,1507 @@
+2026-01-22 00:00:00 [info]: Running water reminder check... 
+2026-01-22 00:01:12 [http]: Request {
+  "method": "GET",
+  "url": "/symptoms/history?days=90",
+  "status": 304,
+  "responseTime": "828ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:01:12 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/current",
+  "status": 200,
+  "responseTime": "887ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:01:12 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/history",
+  "status": 200,
+  "responseTime": "862ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:01:29 [http]: Request {
+  "method": "POST",
+  "url": "/water",
+  "status": 201,
+  "responseTime": "453ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:01:29 [http]: Request {
+  "method": "POST",
+  "url": "/water",
+  "status": 201,
+  "responseTime": "127ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:01:38 [http]: Request {
+  "method": "GET",
+  "url": "/notifications/settings",
+  "status": 304,
+  "responseTime": "759ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:02:36 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/current",
+  "status": 304,
+  "responseTime": "486ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:02:37 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/history",
+  "status": 304,
+  "responseTime": "487ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:02:37 [http]: Request {
+  "method": "GET",
+  "url": "/symptoms/history?days=90",
+  "status": 304,
+  "responseTime": "967ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:04:27 [http]: Request {
+  "method": "GET",
+  "url": "/symptoms/history?days=90",
+  "status": 304,
+  "responseTime": "444ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:04:27 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/history",
+  "status": 304,
+  "responseTime": "488ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:04:27 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/current",
+  "status": 304,
+  "responseTime": "578ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:04:42 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/history",
+  "status": 304,
+  "responseTime": "226ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:04:42 [http]: Request {
+  "method": "GET",
+  "url": "/symptoms/history?days=90",
+  "status": 304,
+  "responseTime": "271ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:04:42 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/current",
+  "status": 304,
+  "responseTime": "329ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:04:46 [http]: Request {
+  "method": "GET",
+  "url": "/symptoms/history?days=90",
+  "status": 304,
+  "responseTime": "133ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:04:46 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/current",
+  "status": 304,
+  "responseTime": "200ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:04:46 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/history",
+  "status": 304,
+  "responseTime": "189ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:05:07 [http]: Request {
+  "method": "GET",
+  "url": "/symptoms/history?days=90",
+  "status": 304,
+  "responseTime": "520ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:05:07 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/history",
+  "status": 304,
+  "responseTime": "534ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:05:07 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/current",
+  "status": 304,
+  "responseTime": "577ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:05:20 [http]: Request {
+  "method": "GET",
+  "url": "/symptoms/history?days=90",
+  "status": 304,
+  "responseTime": "254ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:05:20 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/current",
+  "status": 304,
+  "responseTime": "279ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:05:20 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/history",
+  "status": 304,
+  "responseTime": "267ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:05:34 [http]: Request {
+  "method": "GET",
+  "url": "/symptoms/history?days=90",
+  "status": 304,
+  "responseTime": "185ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:05:34 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/history",
+  "status": 304,
+  "responseTime": "252ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:05:34 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/current",
+  "status": 304,
+  "responseTime": "450ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:05:43 [http]: Request {
+  "method": "GET",
+  "url": "/symptoms/history?days=90",
+  "status": 304,
+  "responseTime": "202ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:05:43 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/current",
+  "status": 304,
+  "responseTime": "236ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:05:43 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/history",
+  "status": 304,
+  "responseTime": "236ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:05:53 [http]: Request {
+  "method": "GET",
+  "url": "/symptoms/history?days=90",
+  "status": 304,
+  "responseTime": "189ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:05:53 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/history",
+  "status": 304,
+  "responseTime": "250ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:05:53 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/current",
+  "status": 304,
+  "responseTime": "299ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:06:01 [http]: Request {
+  "method": "GET",
+  "url": "/symptoms/history?days=90",
+  "status": 304,
+  "responseTime": "245ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:06:01 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/history",
+  "status": 304,
+  "responseTime": "250ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:06:01 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/current",
+  "status": 304,
+  "responseTime": "270ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:06:14 [http]: Request {
+  "method": "POST",
+  "url": "/water",
+  "status": 201,
+  "responseTime": "191ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:06:14 [http]: Request {
+  "method": "POST",
+  "url": "/water",
+  "status": 201,
+  "responseTime": "178ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:06:15 [http]: Request {
+  "method": "POST",
+  "url": "/water",
+  "status": 201,
+  "responseTime": "140ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:06:16 [http]: Request {
+  "method": "POST",
+  "url": "/water",
+  "status": 201,
+  "responseTime": "138ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:06:17 [http]: Request {
+  "method": "POST",
+  "url": "/water",
+  "status": 201,
+  "responseTime": "128ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:06:18 [http]: Request {
+  "method": "POST",
+  "url": "/water",
+  "status": 201,
+  "responseTime": "154ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:06:18 [http]: Request {
+  "method": "POST",
+  "url": "/water",
+  "status": 201,
+  "responseTime": "144ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:06:18 [http]: Request {
+  "method": "POST",
+  "url": "/water",
+  "status": 201,
+  "responseTime": "134ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:06:19 [http]: Request {
+  "method": "POST",
+  "url": "/water",
+  "status": 201,
+  "responseTime": "143ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:06:19 [http]: Request {
+  "method": "POST",
+  "url": "/water",
+  "status": 201,
+  "responseTime": "147ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:06:28 [http]: Request {
+  "method": "POST",
+  "url": "/water",
+  "status": 201,
+  "responseTime": "432ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:06:44 [http]: Request {
+  "method": "GET",
+  "url": "/symptoms/history?days=90",
+  "status": 304,
+  "responseTime": "166ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:06:44 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/history",
+  "status": 304,
+  "responseTime": "210ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:06:44 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/current",
+  "status": 304,
+  "responseTime": "303ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:06:54 [http]: Request {
+  "method": "GET",
+  "url": "/symptoms/history?days=90",
+  "status": 304,
+  "responseTime": "269ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:06:54 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/current",
+  "status": 304,
+  "responseTime": "311ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:06:54 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/history",
+  "status": 304,
+  "responseTime": "433ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:07:00 [http]: Request {
+  "method": "GET",
+  "url": "/symptoms/history?days=90",
+  "status": 304,
+  "responseTime": "213ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:07:00 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/history",
+  "status": 304,
+  "responseTime": "223ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:07:00 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/current",
+  "status": 304,
+  "responseTime": "523ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:07:08 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/current",
+  "status": 304,
+  "responseTime": "218ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:07:08 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/history",
+  "status": 304,
+  "responseTime": "211ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:07:08 [http]: Request {
+  "method": "GET",
+  "url": "/symptoms/history?days=90",
+  "status": 304,
+  "responseTime": "222ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:07:52 [http]: Request {
+  "method": "GET",
+  "url": "/symptoms/history?days=90",
+  "status": 304,
+  "responseTime": "299ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:07:52 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/history",
+  "status": 304,
+  "responseTime": "293ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:07:52 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/current",
+  "status": 304,
+  "responseTime": "369ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:07:56 [http]: Request {
+  "method": "GET",
+  "url": "/symptoms/history?days=90",
+  "status": 304,
+  "responseTime": "173ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:07:56 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/current",
+  "status": 304,
+  "responseTime": "243ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:07:56 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/history",
+  "status": 304,
+  "responseTime": "226ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:07:59 [http]: Request {
+  "method": "POST",
+  "url": "/water",
+  "status": 201,
+  "responseTime": "159ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:08:02 [http]: Request {
+  "method": "POST",
+  "url": "/water",
+  "status": 201,
+  "responseTime": "155ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:08:19 [http]: Request {
+  "method": "GET",
+  "url": "/symptoms/history?days=90",
+  "status": 304,
+  "responseTime": "179ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:08:19 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/history",
+  "status": 304,
+  "responseTime": "212ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:08:19 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/current",
+  "status": 304,
+  "responseTime": "498ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:08:22 [http]: Request {
+  "method": "GET",
+  "url": "/symptoms/history?days=90",
+  "status": 304,
+  "responseTime": "139ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:08:22 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/current",
+  "status": 304,
+  "responseTime": "171ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:08:22 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/history",
+  "status": 304,
+  "responseTime": "194ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:08:25 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/current",
+  "status": 304,
+  "responseTime": "152ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:08:25 [http]: Request {
+  "method": "GET",
+  "url": "/symptoms/history?days=90",
+  "status": 304,
+  "responseTime": "172ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:08:25 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/history",
+  "status": 304,
+  "responseTime": "191ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:08:31 [http]: Request {
+  "method": "GET",
+  "url": "/symptoms/history?days=90",
+  "status": 304,
+  "responseTime": "184ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:08:31 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/current",
+  "status": 304,
+  "responseTime": "281ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:08:31 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/history",
+  "status": 304,
+  "responseTime": "434ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:09:24 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/current",
+  "status": 304,
+  "responseTime": "320ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:09:24 [http]: Request {
+  "method": "GET",
+  "url": "/symptoms/history?days=90",
+  "status": 304,
+  "responseTime": "406ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:09:24 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/history",
+  "status": 304,
+  "responseTime": "458ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:09:28 [http]: Request {
+  "method": "POST",
+  "url": "/water",
+  "status": 201,
+  "responseTime": "190ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:09:28 [http]: Request {
+  "method": "POST",
+  "url": "/water",
+  "status": 201,
+  "responseTime": "129ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:09:28 [http]: Request {
+  "method": "POST",
+  "url": "/water",
+  "status": 201,
+  "responseTime": "120ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:09:29 [http]: Request {
+  "method": "POST",
+  "url": "/water",
+  "status": 201,
+  "responseTime": "110ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:09:29 [http]: Request {
+  "method": "POST",
+  "url": "/water",
+  "status": 201,
+  "responseTime": "118ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:09:29 [http]: Request {
+  "method": "POST",
+  "url": "/water",
+  "status": 201,
+  "responseTime": "121ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:09:29 [http]: Request {
+  "method": "POST",
+  "url": "/water",
+  "status": 201,
+  "responseTime": "139ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:09:29 [http]: Request {
+  "method": "POST",
+  "url": "/water",
+  "status": 201,
+  "responseTime": "130ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:09:30 [http]: Request {
+  "method": "POST",
+  "url": "/water",
+  "status": 201,
+  "responseTime": "111ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:09:30 [http]: Request {
+  "method": "POST",
+  "url": "/water",
+  "status": 201,
+  "responseTime": "119ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:09:34 [http]: Request {
+  "method": "POST",
+  "url": "/water",
+  "status": 201,
+  "responseTime": "202ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:09:35 [http]: Request {
+  "method": "POST",
+  "url": "/water",
+  "status": 201,
+  "responseTime": "133ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:09:36 [http]: Request {
+  "method": "POST",
+  "url": "/water",
+  "status": 201,
+  "responseTime": "115ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:09:36 [http]: Request {
+  "method": "POST",
+  "url": "/water",
+  "status": 201,
+  "responseTime": "125ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:09:36 [http]: Request {
+  "method": "POST",
+  "url": "/water",
+  "status": 201,
+  "responseTime": "114ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:09:37 [http]: Request {
+  "method": "POST",
+  "url": "/water",
+  "status": 201,
+  "responseTime": "121ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:09:37 [http]: Request {
+  "method": "POST",
+  "url": "/water",
+  "status": 201,
+  "responseTime": "111ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:10:36 [http]: Request {
+  "method": "GET",
+  "url": "/symptoms/history?days=90",
+  "status": 304,
+  "responseTime": "1169ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:10:36 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/history",
+  "status": 304,
+  "responseTime": "1191ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:10:36 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/current",
+  "status": 304,
+  "responseTime": "1219ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:10:39 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/current",
+  "status": 304,
+  "responseTime": "175ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:10:39 [http]: Request {
+  "method": "GET",
+  "url": "/symptoms/history?days=90",
+  "status": 304,
+  "responseTime": "179ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:10:39 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/history",
+  "status": 304,
+  "responseTime": "264ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:11:16 [http]: Request {
+  "method": "GET",
+  "url": "/symptoms/history?days=90",
+  "status": 304,
+  "responseTime": "273ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:11:16 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/history",
+  "status": 304,
+  "responseTime": "247ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:11:16 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/current",
+  "status": 304,
+  "responseTime": "491ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:11:21 [http]: Request {
+  "method": "GET",
+  "url": "/notifications/settings",
+  "status": 304,
+  "responseTime": "508ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:11:23 [http]: Request {
+  "method": "POST",
+  "url": "/notifications/test",
+  "status": 200,
+  "responseTime": "143ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:13:16 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/current",
+  "status": 304,
+  "responseTime": "362ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:13:16 [http]: Request {
+  "method": "GET",
+  "url": "/symptoms/history?days=90",
+  "status": 304,
+  "responseTime": "546ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:13:16 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/history",
+  "status": 304,
+  "responseTime": "540ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:13:22 [http]: Request {
+  "method": "POST",
+  "url": "/water",
+  "status": 201,
+  "responseTime": "194ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:13:23 [http]: Request {
+  "method": "POST",
+  "url": "/water",
+  "status": 201,
+  "responseTime": "150ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:13:23 [http]: Request {
+  "method": "POST",
+  "url": "/water",
+  "status": 201,
+  "responseTime": "204ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:13:23 [http]: Request {
+  "method": "POST",
+  "url": "/water",
+  "status": 201,
+  "responseTime": "136ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:13:24 [http]: Request {
+  "method": "POST",
+  "url": "/water",
+  "status": 201,
+  "responseTime": "128ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:13:25 [http]: Request {
+  "method": "POST",
+  "url": "/water",
+  "status": 201,
+  "responseTime": "130ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:13:25 [http]: Request {
+  "method": "POST",
+  "url": "/water",
+  "status": 201,
+  "responseTime": "189ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:13:25 [http]: Request {
+  "method": "POST",
+  "url": "/water",
+  "status": 201,
+  "responseTime": "377ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:13:25 [http]: Request {
+  "method": "POST",
+  "url": "/water",
+  "status": 201,
+  "responseTime": "265ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:13:26 [http]: Request {
+  "method": "POST",
+  "url": "/water",
+  "status": 201,
+  "responseTime": "507ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:13:26 [http]: Request {
+  "method": "POST",
+  "url": "/water",
+  "status": 201,
+  "responseTime": "570ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:13:26 [http]: Request {
+  "method": "POST",
+  "url": "/water",
+  "status": 201,
+  "responseTime": "345ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:13:26 [http]: Request {
+  "method": "POST",
+  "url": "/water",
+  "status": 201,
+  "responseTime": "257ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:13:32 [http]: Request {
+  "method": "POST",
+  "url": "/water",
+  "status": 201,
+  "responseTime": "955ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:13:32 [http]: Request {
+  "method": "POST",
+  "url": "/water",
+  "status": 201,
+  "responseTime": "149ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:13:33 [http]: Request {
+  "method": "POST",
+  "url": "/water",
+  "status": 201,
+  "responseTime": "953ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:13:33 [http]: Request {
+  "method": "POST",
+  "url": "/water",
+  "status": 201,
+  "responseTime": "145ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:13:33 [http]: Request {
+  "method": "POST",
+  "url": "/water",
+  "status": 201,
+  "responseTime": "138ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:13:33 [http]: Request {
+  "method": "POST",
+  "url": "/water",
+  "status": 201,
+  "responseTime": "138ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:13:33 [http]: Request {
+  "method": "POST",
+  "url": "/water",
+  "status": 201,
+  "responseTime": "146ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:14:16 [info]: Received SIGINT. Shutting down gracefully... 
+2026-01-22 00:14:30 [info]: 🚀 Server listening on port 4000 
+2026-01-22 00:14:30 [info]: Environment: development 
+2026-01-22 00:14:30 [info]: Scheduler initialized 
+2026-01-22 00:15:00 [info]: Running water reminder check... 
+2026-01-22 00:15:05 [http]: Request {
+  "method": "POST",
+  "url": "/auth/refresh",
+  "status": 200,
+  "responseTime": "711ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:15:06 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/current",
+  "status": 200,
+  "responseTime": "374ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:15:06 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/history",
+  "status": 200,
+  "responseTime": "409ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:15:06 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/current",
+  "status": 304,
+  "responseTime": "290ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:15:06 [http]: Request {
+  "method": "GET",
+  "url": "/water/2026-01-21",
+  "status": 200,
+  "responseTime": "308ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:15:06 [http]: Request {
+  "method": "GET",
+  "url": "/symptoms/history?days=90",
+  "status": 200,
+  "responseTime": "968ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:15:12 [http]: Request {
+  "method": "POST",
+  "url": "/ai/daily-insights",
+  "status": 200,
+  "responseTime": "6300ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:15:15 [http]: Request {
+  "method": "GET",
+  "url": "/notifications/settings",
+  "status": 304,
+  "responseTime": "137ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:15:20 [http]: Request {
+  "method": "POST",
+  "url": "/notifications/test",
+  "status": 200,
+  "responseTime": "173ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:15:32 [error]: Error updating notification settings: new row for relation "notification_settings" violates check constraint "notification_settings_reminder_interval_minutes_check" 
+2026-01-22 00:15:32 [error]: Internal server error {
+  "err": {
+    "status": 500
+  }
+}
+2026-01-22 00:15:32 [http]: Request {
+  "method": "PUT",
+  "url": "/notifications/settings",
+  "status": 500,
+  "responseTime": "368ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:16:06 [http]: Request {
+  "method": "GET",
+  "url": "/symptoms/history?days=90",
+  "status": 304,
+  "responseTime": "214ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:16:06 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/history",
+  "status": 304,
+  "responseTime": "249ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:16:06 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/current",
+  "status": 304,
+  "responseTime": "265ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:16:07 [http]: Request {
+  "method": "POST",
+  "url": "/notifications/test",
+  "status": 200,
+  "responseTime": "148ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:16:33 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/history",
+  "status": 304,
+  "responseTime": "216ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:16:33 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/current",
+  "status": 304,
+  "responseTime": "244ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:16:33 [http]: Request {
+  "method": "GET",
+  "url": "/symptoms/history?days=90",
+  "status": 304,
+  "responseTime": "900ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:17:08 [http]: Request {
+  "method": "GET",
+  "url": "/symptoms/history?days=90",
+  "status": 304,
+  "responseTime": "257ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:17:08 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/history",
+  "status": 304,
+  "responseTime": "282ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:17:08 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/current",
+  "status": 304,
+  "responseTime": "505ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:17:38 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/history",
+  "status": 304,
+  "responseTime": "269ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:17:39 [http]: Request {
+  "method": "GET",
+  "url": "/symptoms/history?days=90",
+  "status": 304,
+  "responseTime": "405ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:17:39 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/current",
+  "status": 304,
+  "responseTime": "459ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:17:44 [http]: Request {
+  "method": "GET",
+  "url": "/notifications/settings",
+  "status": 304,
+  "responseTime": "199ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:18:25 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/history",
+  "status": 304,
+  "responseTime": "253ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:18:26 [http]: Request {
+  "method": "GET",
+  "url": "/symptoms/history?days=90",
+  "status": 304,
+  "responseTime": "441ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:18:26 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/current",
+  "status": 304,
+  "responseTime": "492ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:18:32 [info]: Received SIGINT. Shutting down gracefully... 
+2026-01-22 00:18:47 [info]: 🚀 Server listening on port 4000 
+2026-01-22 00:18:47 [info]: Environment: development 
+2026-01-22 00:18:48 [info]: Scheduler initialized 
+2026-01-22 00:18:49 [http]: Request {
+  "method": "POST",
+  "url": "/auth/refresh",
+  "status": 200,
+  "responseTime": "936ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:18:50 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/current",
+  "status": 304,
+  "responseTime": "302ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:18:50 [http]: Request {
+  "method": "GET",
+  "url": "/symptoms/history?days=90",
+  "status": 304,
+  "responseTime": "324ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:18:50 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/history",
+  "status": 304,
+  "responseTime": "481ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:18:51 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/current",
+  "status": 304,
+  "responseTime": "817ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:18:51 [http]: Request {
+  "method": "GET",
+  "url": "/water/2026-01-21",
+  "status": 304,
+  "responseTime": "882ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:18:54 [http]: Request {
+  "method": "GET",
+  "url": "/notifications/settings",
+  "status": 304,
+  "responseTime": "148ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:18:57 [http]: Request {
+  "method": "POST",
+  "url": "/notifications/subscribe",
+  "status": 201,
+  "responseTime": "131ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:18:58 [http]: Request {
+  "method": "POST",
+  "url": "/notifications/test",
+  "status": 200,
+  "responseTime": "453ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:18:58 [http]: Request {
+  "method": "POST",
+  "url": "/ai/daily-insights",
+  "status": 200,
+  "responseTime": "7280ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:19:09 [http]: Request {
+  "method": "POST",
+  "url": "/auth/refresh",
+  "status": 200,
+  "responseTime": "183ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:19:09 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/current",
+  "status": 304,
+  "responseTime": "238ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:19:09 [http]: Request {
+  "method": "GET",
+  "url": "/symptoms/history?days=90",
+  "status": 304,
+  "responseTime": "253ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:19:09 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/history",
+  "status": 304,
+  "responseTime": "254ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:19:10 [http]: Request {
+  "method": "GET",
+  "url": "/water/2026-01-21",
+  "status": 304,
+  "responseTime": "214ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:19:10 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/current",
+  "status": 304,
+  "responseTime": "255ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:19:13 [http]: Request {
+  "method": "GET",
+  "url": "/symptoms/history?days=90",
+  "status": 304,
+  "responseTime": "145ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:19:14 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/history",
+  "status": 304,
+  "responseTime": "159ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:19:14 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/current",
+  "status": 304,
+  "responseTime": "175ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:19:25 [http]: Request {
+  "method": "GET",
+  "url": "/symptoms/history?days=90",
+  "status": 304,
+  "responseTime": "228ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:19:26 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/history",
+  "status": 304,
+  "responseTime": "497ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:19:26 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/current",
+  "status": 304,
+  "responseTime": "545ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:19:38 [http]: Request {
+  "method": "PUT",
+  "url": "/notifications/settings",
+  "status": 200,
+  "responseTime": "171ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:21:28 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/history",
+  "status": 304,
+  "responseTime": "468ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:21:28 [http]: Request {
+  "method": "GET",
+  "url": "/symptoms/history?days=90",
+  "status": 304,
+  "responseTime": "489ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:21:28 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/current",
+  "status": 304,
+  "responseTime": "540ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-01-22 00:23:07 [info]: 🚀 Server listening on port 4000 
+2026-01-22 00:23:07 [info]: Environment: development 
+2026-01-22 00:23:07 [info]: Scheduler initialized 

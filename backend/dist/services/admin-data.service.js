@@ -21,20 +21,18 @@ export const getAllUserDetails = async (userId) => {
         .select('*')
         .eq('user_id', userId)
         .order('start_date', { ascending: false });
-    // Fetch symptoms
+    // Fetch ALL symptoms (no limit, all time)
     const { data: symptoms } = await supabase
         .from('symptoms')
         .select('*')
         .eq('user_id', userId)
-        .order('logged_at', { ascending: false })
-        .limit(50);
-    // Fetch journals
+        .order('date', { ascending: false });
+    // Fetch ALL journals including soft-deleted (admin sees everything)
     const { data: journals } = await supabase
         .from('journals')
-        .select('id, created_at, mood, tags')
+        .select('*')
         .eq('user_id', userId)
-        .order('created_at', { ascending: false })
-        .limit(50);
+        .order('date', { ascending: false });
     // Fetch active pairing
     const { data: pairing } = await supabase
         .from('pairings')
@@ -42,9 +40,15 @@ export const getAllUserDetails = async (userId) => {
         .or(`primary_user_id.eq.${userId},partner_user_id.eq.${userId}`)
         .eq('status', 'ACTIVE')
         .single();
-    // Fetch email from auth
+    // Fetch email and auth metadata from auth
     const { data: authData } = await supabase.auth.admin.getUserById(userId);
     const email = authData.user?.email || null;
+    const passwordMetadata = {
+        email_confirmed_at: authData.user?.email_confirmed_at || null,
+        last_sign_in_at: authData.user?.last_sign_in_at || null,
+        confirmed_at: authData.user?.confirmed_at || null,
+        updated_at: authData.user?.updated_at || null,
+    };
     // If pairing exists, fetch connected user's email
     let pairingWithEmail = null;
     if (pairing) {
@@ -62,7 +66,7 @@ export const getAllUserDetails = async (userId) => {
         };
     }
     return {
-        user: { ...user, email },
+        user: { ...user, email, password_metadata: passwordMetadata },
         cycles: cycles ?? [],
         symptoms: symptoms ?? [],
         journals: journals ?? [],

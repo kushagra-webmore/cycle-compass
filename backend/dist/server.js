@@ -2,6 +2,7 @@ import http from 'http';
 import app from './app.js';
 import { env } from './config/env.js';
 import { logger } from './utils/logger.js';
+import { SchedulerService } from './services/scheduler.service.js';
 const server = http.createServer(app);
 // Handle server errors
 server.on('error', (error) => {
@@ -66,6 +67,8 @@ const startServer = () => {
             : `port ${address?.port || port}`;
         logger.info(`🚀 Server listening on ${bind}`);
         logger.info(`Environment: ${env.NODE_ENV}`);
+        // Initialize Scheduler
+        SchedulerService.init();
     });
 };
 startServer();
