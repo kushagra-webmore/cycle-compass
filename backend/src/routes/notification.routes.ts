@@ -1,6 +1,6 @@
 import express from 'express';
 import { NotificationService } from '../services/notification.service.js';
-import { authenticate } from '../middleware/auth.js';
+import { authenticate, requireRoles } from '../middleware/auth.js';
 import { StatusCodes } from 'http-status-codes';
 
 const router = express.Router();
@@ -58,13 +58,14 @@ router.post('/test', async (req, res, next) => {
   }
 });
 
-router.post('/broadcast', async (req, res, next) => {
+router.post('/broadcast', requireRoles('ADMIN'), async (req, res, next) => {
   try {
-    // SECURITY: In a real app, check for ADMIN role here!
-    // For now, we allow authenticated users (the dev) to trigger it.
+    const { title, body } = req.body;
+    
+    // SECURITY: Role check handled by requireRoles middleware
     const count = await NotificationService.sendBroadcast({
-      title: 'System Broadcast 📢',
-      body: 'This is a test message to all users.',
+      title: title || 'System Broadcast 📢',
+      body: body || 'This is a test message to all users.',
     });
     res.json({ message: `Broadcast sent to ${count} devices` });
   } catch (error) {

@@ -12,6 +12,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { 
   useAdminUsers, 
   useUserDetails, 
@@ -60,6 +63,10 @@ export default function ComprehensiveAdminDashboard() {
   const { impersonate } = useAuth();
   const navigate = useNavigate();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [broadcastOpen, setBroadcastOpen] = useState(false);
+  const [broadcastTitle, setBroadcastTitle] = useState('System Broadcast 📢');
+  const [broadcastMessage, setBroadcastMessage] = useState('');
+  const [isBroadcasting, setIsBroadcasting] = useState(false);
 
   const handleDeleteUser = async () => {
     if (!selectedUserId) return;
@@ -93,17 +100,29 @@ export default function ComprehensiveAdminDashboard() {
   };
 
   const handleBroadcast = async () => {
-    if (!confirm('This will send a push notification to ALL subscribed users. Are you sure?')) return;
-    
+    if (!broadcastMessage.trim()) return;
+
+    setIsBroadcasting(true);
     const t = toast.loading('Sending broadcast...');
     try {
-      await apiFetch('/notifications/broadcast', { method: 'POST', auth: true });
+      await apiFetch('/notifications/broadcast', { 
+        method: 'POST', 
+        auth: true,
+        body: JSON.stringify({
+            title: broadcastTitle,
+            body: broadcastMessage
+        })
+      });
       toast.dismiss(t);
       toast.success('Broadcast sent successfully!');
+      setBroadcastOpen(false);
+      setBroadcastMessage('');
     } catch (error) {
       toast.dismiss(t);
       toast.error('Failed to send broadcast');
       console.error(error);
+    } finally {
+        setIsBroadcasting(false);
     }
   };
 
@@ -141,14 +160,50 @@ export default function ComprehensiveAdminDashboard() {
           </div>
           <div className="flex items-center gap-3">
             <Button 
-                variant="default" // Changed to default (primary color) or destructive if you want caution
+                variant="default" 
                 size="sm" 
                 className="gap-2 bg-indigo-600 hover:bg-indigo-700 text-white"
-                onClick={handleBroadcast}
+                onClick={() => setBroadcastOpen(true)}
             >
                 <Bell className="h-4 w-4" />
                 Send Broadcast
             </Button>
+
+            <Dialog open={broadcastOpen} onOpenChange={setBroadcastOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Send Broadcast Notification</DialogTitle>
+                        <DialogDescription>
+                            This message will be sent to ALL users who have enabled push notifications.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                        <div className="grid gap-2">
+                            <Label htmlFor="title">Title</Label>
+                            <Input 
+                                id="title" 
+                                value={broadcastTitle} 
+                                onChange={(e) => setBroadcastTitle(e.target.value)} 
+                            />
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="message">Message</Label>
+                            <Textarea 
+                                id="message" 
+                                placeholder="Type your announcement here..."
+                                value={broadcastMessage} 
+                                onChange={(e) => setBroadcastMessage(e.target.value)} 
+                            />
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setBroadcastOpen(false)}>Cancel</Button>
+                        <Button onClick={handleBroadcast} disabled={isBroadcasting || !broadcastMessage.trim()}>
+                            {isBroadcasting ? 'Sending...' : 'Send Broadcast'}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
             <Badge variant="outline" className="gap-2">
                 <Shield className="h-4 w-4" />
                 Admin Access
