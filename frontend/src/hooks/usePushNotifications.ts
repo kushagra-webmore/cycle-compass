@@ -9,22 +9,16 @@ export function usePushNotifications() {
   const [subscription, setSubscription] = useState<PushSubscription | null>(null);
 
   useEffect(() => {
-    // Check if SW is supported
-    if ('serviceWorker' in navigator && 'PushManager' in window) {
-      registerServiceWorker();
-    }
+    // Just check for existing subscription on mount
+    const checkSubscription = async () => {
+      if ('serviceWorker' in navigator && 'PushManager' in window) {
+        const registration = await navigator.serviceWorker.ready;
+        const sub = await registration.pushManager.getSubscription();
+        setSubscription(sub);
+      }
+    };
+    checkSubscription();
   }, []);
-
-  const registerServiceWorker = async () => {
-    try {
-      const registration = await navigator.serviceWorker.register('/sw.js');
-      console.log('SW Registered:', registration);
-      const sub = await registration.pushManager.getSubscription();
-      setSubscription(sub);
-    } catch (error) {
-      console.error('SW Registration failed:', error);
-    }
-  };
 
   const subscribeToPush = async () => {
     if (!VAPID_PUBLIC_KEY) {
