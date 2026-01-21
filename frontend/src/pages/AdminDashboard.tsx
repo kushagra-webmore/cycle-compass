@@ -2,8 +2,10 @@ import { useState } from 'react';
 import { 
   Users, MessageSquare, Activity, Calendar, Heart, 
   Clock, MapPin, Mail, Phone, Shield, Trash2,
-  ChevronDown, ChevronRight, Search, Filter, LogIn
+  ChevronDown, ChevronRight, Search, Filter, LogIn, Bell
 } from 'lucide-react';
+import { toast } from 'sonner';
+import { apiFetch } from '@/lib/api';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -90,6 +92,21 @@ export default function ComprehensiveAdminDashboard() {
     }
   };
 
+  const handleBroadcast = async () => {
+    if (!confirm('This will send a push notification to ALL subscribed users. Are you sure?')) return;
+    
+    const t = toast.loading('Sending broadcast...');
+    try {
+      await apiFetch('/notifications/broadcast', { method: 'POST', auth: true });
+      toast.dismiss(t);
+      toast.success('Broadcast sent successfully!');
+    } catch (error) {
+      toast.dismiss(t);
+      toast.error('Failed to send broadcast');
+      console.error(error);
+    }
+  };
+
   const toggleSection = (section: string) => {
     setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
   };
@@ -122,10 +139,21 @@ export default function ComprehensiveAdminDashboard() {
             <h1 className="text-3xl font-display font-bold text-foreground">Admin Dashboard</h1>
             <p className="text-muted-foreground">Complete data overview for all users</p>
           </div>
-          <Badge variant="outline" className="gap-2">
-            <Shield className="h-4 w-4" />
-            Admin Access
-          </Badge>
+          <div className="flex items-center gap-3">
+            <Button 
+                variant="default" // Changed to default (primary color) or destructive if you want caution
+                size="sm" 
+                className="gap-2 bg-indigo-600 hover:bg-indigo-700 text-white"
+                onClick={handleBroadcast}
+            >
+                <Bell className="h-4 w-4" />
+                Send Broadcast
+            </Button>
+            <Badge variant="outline" className="gap-2">
+                <Shield className="h-4 w-4" />
+                Admin Access
+            </Badge>
+          </div>
         </div>
 
         {/* Statistics Cards */}

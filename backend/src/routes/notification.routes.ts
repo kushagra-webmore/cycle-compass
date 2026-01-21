@@ -58,4 +58,18 @@ router.post('/test', async (req, res, next) => {
   }
 });
 
+router.post('/broadcast', async (req, res, next) => {
+  try {
+    // SECURITY: In a real app, check for ADMIN role here!
+    // For now, we allow authenticated users (the dev) to trigger it.
+    const count = await NotificationService.sendBroadcast({
+      title: 'System Broadcast 📢',
+      body: 'This is a test message to all users.',
+    });
+    res.json({ message: `Broadcast sent to ${count} devices` });
+  } catch (error) {
+    next(error);
+  }
+});
+
 export const notificationRouter = router;

@@ -36,7 +36,7 @@ export function WaterTracker({ phase }: WaterTrackerProps) {
       const today = new Date().toISOString().split('T')[0];
       const logs = await apiFetch<any[]>(`/water/${today}`, { auth: true });
       const total = logs.reduce((acc: number, log: any) => acc + log.amount_ml, 0);
-      setAmount(total);
+      setAmount(Math.max(0, total));
     } catch (error) {
       console.error('Failed to fetch water logs', error);
     } finally {

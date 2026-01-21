@@ -11,7 +11,7 @@ interface WaterBottleProps {
 }
 
 export function WaterBottle({ current, target, onAdd, className }: WaterBottleProps) {
-  const percentage = Math.min((current / target) * 100, 100);
+  const percentage = Math.min(Math.max((current / target) * 100, 0), 100);
   
   // Calculate distinct bubble positions once to avoid re-renders constantly changing them
   const bubbles = useMemo(() => [...Array(8)].map(() => ({

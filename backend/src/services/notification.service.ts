@@ -88,6 +88,30 @@ export class NotificationService {
     };
   }
 
+  static async sendBroadcast(payload: any): Promise<number> {
+    // 1. Get ALL subscriptions
+    const { data: subs, error } = await supabase
+      .from('push_subscriptions')
+      .select('*');
+
+    if (error || !subs || subs.length === 0) return 0;
+
+    // 2. Send to all
+    const notifications = subs.map(sub => {
+      return webpush.sendNotification(
+        { endpoint: sub.endpoint, keys: sub.keys },
+        JSON.stringify(payload)
+      ).catch(err => {
+        if (err.statusCode === 410 || err.statusCode === 404) {
+          supabase.from('push_subscriptions').delete().eq('id', sub.id).then();
+        }
+      });
+    });
+
+    await Promise.all(notifications);
+    return subs.length;
+  }
+
   static async sendNotification(userId: string, payload: any): Promise<void> {
     // 1. Get all user subscriptions
     const { data: subs, error } = await supabase
