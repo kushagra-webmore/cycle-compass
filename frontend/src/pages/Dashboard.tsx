@@ -10,6 +10,7 @@ import { AvgCycleStats } from '@/components/dashboard/AvgCycleStats';
 import { FertilityChart } from '@/components/dashboard/FertilityChart';
 import { HistoryChart } from '@/components/dashboard/HistoryChart';
 import { CycleCalendar } from '@/components/dashboard/CycleCalendar';
+import { WaterTracker } from '@/components/WaterTracker/WaterTracker';
 import { useCurrentCycle, useSymptomHistory, useCycles } from '@/hooks/api/cycles';
 import { useAuth } from '@/contexts/AuthContext';
 import { format, addDays, differenceInDays } from 'date-fns';
@@ -225,6 +226,11 @@ export default function Dashboard() {
             <div className="mt-3 xs:mt-4">
                <h3 className="text-base xs:text-lg font-display font-semibold mb-2 xs:mb-3 px-1 text-foreground">Daily Insights</h3>
                <CycleDailyInsights />
+            </div>
+
+            {/* Water Tracker */}
+            <div className="mt-6">
+               <WaterTracker phase={cycle?.context?.phase} />
             </div>
 
             {/* Fertility Chart - Show if relevant or user goal is conception (future) */}
