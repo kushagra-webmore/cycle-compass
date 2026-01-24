@@ -1,6 +1,19 @@
+const CACHE_NAME = 'cycle-compass-v1';
+const ASSETS_TO_CACHE = [
+    '/icon-192.png',
+    '/logo.svg'
+];
+
 self.addEventListener('install', (event) => {
     // Force this SW to become the active one immediately
     self.skipWaiting();
+
+    // Validate assets are cached for offline/background notification reliability
+    event.waitUntil(
+        caches.open(CACHE_NAME)
+            .then(cache => cache.addAll(ASSETS_TO_CACHE))
+            .catch(err => console.error('[Service Worker] Cache error:', err))
+    );
 });
 
 self.addEventListener('activate', (event) => {

@@ -99,9 +99,10 @@ export class NotificationService {
     // 2. Send to all
     const notifications = subs.map(sub => {
       const options = {
+        urgency: 'high' as const, // Top-level option for web-push
+        TTL: 86400, // Top-level option for web-push
         headers: {
-          'Urgency': 'high', // Critical for mobile to wake up
-          'TTL': '86400' // 24 hours
+           // Any other custom headers if needed
         }
       };
 
@@ -132,10 +133,8 @@ export class NotificationService {
     // 2. Send to all endpoints
     const notifications = subs.map(sub => {
       const options = {
-        headers: {
-          'Urgency': 'high',
-          'TTL': '86400'
-        }
+        urgency: 'high' as const,
+        TTL: 86400
       };
       
       return webpush.sendNotification(
