@@ -82,7 +82,7 @@ export function CycleHistoryChart({ cycles }: CycleHistoryChartProps) {
   return (
     <Card className="col-span-1 lg:col-span-2">
       <CardHeader>
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <CardTitle>Cycle Length History</CardTitle>
             <CardDescription>
@@ -121,53 +121,55 @@ export function CycleHistoryChart({ cycles }: CycleHistoryChartProps) {
           <p className="text-xs text-muted-foreground text-center mt-2">{dateRange}</p>
         )}
       </CardHeader>
-      <CardContent className="h-[300px] w-full">
-         <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data} margin={{ top: 20, right: 20, left: -20, bottom: 0 }}>
-               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
-               <XAxis 
-                 dataKey="date" 
-                 fontSize={12} 
-                 tickLine={false} 
-                 axisLine={false} 
-                 tickMargin={10}
-                 tick={{ fill: 'hsl(var(--muted-foreground))' }}
-               />
-               <YAxis 
-                 fontSize={12} 
-                 tickLine={false} 
-                 axisLine={false} 
-                 tick={{ fill: 'hsl(var(--muted-foreground))' }}
-                 domain={['auto', 'auto']}
-               />
-               <Tooltip 
-                 cursor={{ fill: 'hsl(var(--muted)/0.2)' }}
-                 contentStyle={{ 
-                    borderRadius: '8px', 
-                    border: '1px solid hsl(var(--border))', 
-                    backgroundColor: 'hsl(var(--popover))',
-                    color: 'hsl(var(--popover-foreground))',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)' 
-                 }}
-               />
-               <ReferenceLine y={28} stroke="hsl(var(--muted-foreground))" strokeDasharray="3 3" label={{ position: 'right', value: '28d', fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} />
-               {avgLength !== 28 && (
-                   <ReferenceLine y={avgLength} stroke="#ec4899" strokeDasharray="3 3" label={{ position: 'right', value: 'Avg', fontSize: 10, fill: '#ec4899' }} />
-               )}
-               <Bar 
-                 dataKey="length" 
-                 fill="#ec4899" 
-                 radius={[4, 4, 0, 0]} 
-                 barSize={40}
-                 fillOpacity={0.8}
-                 activeBar={{ fill: '#be185d' }}
-               />
-            </BarChart>
-         </ResponsiveContainer>
+      <CardContent className="w-full">
+         <div className="h-[300px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+               <BarChart data={data} margin={{ top: 20, right: 45, left: -20, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
+                  <XAxis 
+                    dataKey="date" 
+                    fontSize={12} 
+                    tickLine={false} 
+                    axisLine={false} 
+                    tickMargin={10}
+                    tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                  />
+                  <YAxis 
+                    fontSize={12} 
+                    tickLine={false} 
+                    axisLine={false} 
+                    tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                    domain={['auto', 'auto']}
+                  />
+                  <Tooltip 
+                    cursor={{ fill: 'hsl(var(--muted)/0.2)' }}
+                    contentStyle={{ 
+                       borderRadius: '8px', 
+                       border: '1px solid hsl(var(--border))', 
+                       backgroundColor: 'hsl(var(--popover))',
+                       color: 'hsl(var(--popover-foreground))',
+                       boxShadow: '0 4px 12px rgba(0,0,0,0.1)' 
+                    }}
+                  />
+                  <ReferenceLine y={28} stroke="hsl(var(--muted-foreground))" strokeDasharray="3 3" label={{ position: 'right', value: '28d', fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} />
+                  {avgLength !== 28 && (
+                      <ReferenceLine y={avgLength} stroke="#ec4899" strokeDasharray="3 3" label={{ position: 'right', value: 'Avg', fontSize: 10, fill: '#ec4899' }} />
+                  )}
+                  <Bar 
+                    dataKey="length" 
+                    fill="#ec4899" 
+                    radius={[4, 4, 0, 0]} 
+                    barSize={40}
+                    fillOpacity={0.8}
+                    activeBar={{ fill: '#be185d' }}
+                  />
+               </BarChart>
+            </ResponsiveContainer>
+         </div>
 
          {/* Page dots indicator for mobile */}
          {totalPages > 1 && isMobile && (
-           <div className="flex justify-center gap-1.5 mt-4">
+           <div className="flex justify-center gap-1.5 mt-6 pb-2">
              {Array.from({ length: totalPages }).map((_, index) => (
                <button
                  key={index}

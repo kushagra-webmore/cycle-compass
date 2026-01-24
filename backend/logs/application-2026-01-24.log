@@ -3663,3 +3663,153 @@
   "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
 }
 2026-01-24 17:16:42 [info]: Received SIGINT. Shutting down gracefully... 
+2026-01-24 17:28:09 [info]: 🚀 Server listening on port 4000 
+2026-01-24 17:28:09 [info]: Environment: development 
+2026-01-24 17:28:09 [info]: Scheduler initialized 
+2026-01-24 17:29:01 [http]: Request {
+  "method": "POST",
+  "url": "/auth/login",
+  "status": 200,
+  "responseTime": "861ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36"
+}
+2026-01-24 17:29:01 [http]: Request {
+  "method": "GET",
+  "url": "/symptoms/history?days=90",
+  "status": 200,
+  "responseTime": "351ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36"
+}
+2026-01-24 17:29:01 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/current",
+  "status": 200,
+  "responseTime": "377ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36"
+}
+2026-01-24 17:29:02 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/history",
+  "status": 200,
+  "responseTime": "579ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36"
+}
+2026-01-24 17:29:02 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/current",
+  "status": 304,
+  "responseTime": "557ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36"
+}
+2026-01-24 17:29:02 [http]: Request {
+  "method": "GET",
+  "url": "/water/2026-01-24",
+  "status": 200,
+  "responseTime": "743ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36"
+}
+2026-01-24 17:29:08 [http]: Request {
+  "method": "POST",
+  "url": "/ai/daily-insights",
+  "status": 200,
+  "responseTime": "6294ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36"
+}
+2026-01-24 17:29:14 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/history",
+  "status": 304,
+  "responseTime": "422ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36"
+}
+2026-01-24 17:29:51 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/history",
+  "status": 304,
+  "responseTime": "485ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Mobile/15E148 Safari/604.1"
+}
+2026-01-24 17:30:00 [info]: Running water reminder check... 
+2026-01-24 17:30:00 [info]: Reminder sent to user 7c7f8006-a0b2-4567-accb-1e03cf901f75 
+2026-01-24 17:30:45 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/history",
+  "status": 304,
+  "responseTime": "470ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Mobile/15E148 Safari/604.1"
+}
+2026-01-24 17:31:11 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/history",
+  "status": 304,
+  "responseTime": "769ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Mobile/15E148 Safari/604.1"
+}
+2026-01-24 17:31:15 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/history",
+  "status": 304,
+  "responseTime": "184ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Mobile/15E148 Safari/604.1"
+}
+2026-01-24 17:31:23 [http]: Request {
+  "method": "GET",
+  "url": "/symptoms/history?days=90",
+  "status": 304,
+  "responseTime": "181ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Mobile/15E148 Safari/604.1"
+}
+2026-01-24 17:31:23 [http]: Request {
+  "method": "GET",
+  "url": "/water/2026-01-24",
+  "status": 304,
+  "responseTime": "360ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Mobile/15E148 Safari/604.1"
+}
+2026-01-24 17:31:23 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/history",
+  "status": 304,
+  "responseTime": "414ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Mobile/15E148 Safari/604.1"
+}
+2026-01-24 17:31:24 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/current",
+  "status": 304,
+  "responseTime": "934ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Mobile/15E148 Safari/604.1"
+}
+2026-01-24 17:31:30 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/history",
+  "status": 304,
+  "responseTime": "234ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Mobile/15E148 Safari/604.1"
+}
+2026-01-24 17:31:53 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/history",
+  "status": 304,
+  "responseTime": "531ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Mobile/15E148 Safari/604.1"
+}
+2026-01-24 17:31:54 [info]: Received SIGINT. Shutting down gracefully... 

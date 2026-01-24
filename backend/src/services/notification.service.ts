@@ -98,9 +98,17 @@ export class NotificationService {
 
     // 2. Send to all
     const notifications = subs.map(sub => {
+      const options = {
+        headers: {
+          'Urgency': 'high', // Critical for mobile to wake up
+          'TTL': '86400' // 24 hours
+        }
+      };
+
       return webpush.sendNotification(
         { endpoint: sub.endpoint, keys: sub.keys },
-        JSON.stringify(payload)
+        JSON.stringify(payload),
+        options
       ).catch(err => {
         if (err.statusCode === 410 || err.statusCode === 404) {
           supabase.from('push_subscriptions').delete().eq('id', sub.id).then();
@@ -123,9 +131,17 @@ export class NotificationService {
 
     // 2. Send to all endpoints
     const notifications = subs.map(sub => {
+      const options = {
+        headers: {
+          'Urgency': 'high',
+          'TTL': '86400'
+        }
+      };
+      
       return webpush.sendNotification(
         { endpoint: sub.endpoint, keys: sub.keys },
-        JSON.stringify(payload)
+        JSON.stringify(payload),
+        options
       ).catch(err => {
         if (err.statusCode === 410 || err.statusCode === 404) {
           // Subscription is gone, delete it
