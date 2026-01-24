@@ -1,5 +1,17 @@
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
+import { Plus } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { useCreateCycle } from '@/hooks/api/cycles';
+import { useToast } from '@/hooks/use-toast';
 
 interface CycleWheelProps {
   currentDay: number;
@@ -69,7 +81,32 @@ const getSegments = (length: number, ovDay: number, fertile: { start: number; en
 };
 
 export const CycleWheel = ({ currentDay, cycleLength, phase, ovulationDay, fertileWindow }: CycleWheelProps) => {
-  const [hoverInfo, setHoverInfo] = useState<string | null>(null);
+  const [hoverInfo, setHoverInfo] = useState<{ name: string; range: string } | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const createCycle = useCreateCycle();
+  const { toast } = useToast();
+
+  const handleStartNewCycle = async () => {
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      await createCycle.mutateAsync({
+        startDate: today,
+        endDate: undefined,
+      });
+      
+      setIsDialogOpen(false);
+      toast({
+        title: "New cycle started",
+        description: "Your new cycle has been logged successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to start new cycle. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
   const radius = 80;
   const strokeWidth = 12; // Increased for easier hovering
@@ -79,6 +116,15 @@ export const CycleWheel = ({ currentDay, cycleLength, phase, ovulationDay, ferti
   const fertile = fertileWindow ?? { start: ovDay - 3, end: ovDay + 3 };
   
   const segments = getSegments(cycleLength, ovDay, fertile);
+
+  // Calculate day ranges for each phase
+  const phaseRanges = {
+    menstrual: { start: 1, end: 5 },
+    follicular: { start: 6, end: fertile.start - 1 },
+    fertile: { start: fertile.start, end: fertile.end },
+    ovulation: { start: ovDay, end: ovDay },
+    luteal: { start: fertile.end + 1, end: cycleLength }
+  };
 
   // Helper for legend dots
   const LegendItem = ({ color, label }: { color: string, label: string }) => (
@@ -103,35 +149,35 @@ export const CycleWheel = ({ currentDay, cycleLength, phase, ovulationDay, ferti
           {/* Menstrual */}
           <circle cx="100" cy="100" r={radius} fill="none" className="stroke-red-500 transition-all hover:stroke-width-[16] cursor-pointer" strokeWidth={strokeWidth}
             strokeDasharray={segments.mens.dash} strokeDashoffset={0} 
-            onMouseEnter={() => setHoverInfo('Menstrual')}
+            onMouseEnter={() => setHoverInfo({ name: 'Menstrual', range: `Day ${phaseRanges.menstrual.start}-${phaseRanges.menstrual.end}` })}
             onMouseLeave={() => setHoverInfo(null)}
           />
             
           {/* Follicular */}
           <circle cx="100" cy="100" r={radius} fill="none" className="stroke-blue-600 transition-all hover:stroke-width-[16] cursor-pointer" strokeWidth={strokeWidth}
             strokeDasharray={segments.foll.dash} strokeDashoffset={segments.foll.off} 
-            onMouseEnter={() => setHoverInfo('Follicular')}
+            onMouseEnter={() => setHoverInfo({ name: 'Follicular', range: `Day ${phaseRanges.follicular.start}-${phaseRanges.follicular.end}` })}
             onMouseLeave={() => setHoverInfo(null)}
           />
   
           {/* Fertile */}
           <circle cx="100" cy="100" r={radius} fill="none" className="stroke-green-500 transition-all hover:stroke-width-[16] cursor-pointer" strokeWidth={strokeWidth}
             strokeDasharray={segments.fert.dash} strokeDashoffset={segments.fert.off}
-            onMouseEnter={() => setHoverInfo('Fertile Window')}
+            onMouseEnter={() => setHoverInfo({ name: 'Fertile Window', range: `Day ${phaseRanges.fertile.start}-${phaseRanges.fertile.end}` })}
             onMouseLeave={() => setHoverInfo(null)} 
           />
             
           {/* Ovulation */}
           <circle cx="100" cy="100" r={radius} fill="none" className="stroke-emerald-600 transition-all hover:stroke-width-[16] cursor-pointer" strokeWidth={strokeWidth}
             strokeDasharray={segments.ov.dash} strokeDashoffset={segments.ov.off}
-            onMouseEnter={() => setHoverInfo('Ovulation')}
+            onMouseEnter={() => setHoverInfo({ name: 'Ovulation', range: `Day ${phaseRanges.ovulation.start}` })}
             onMouseLeave={() => setHoverInfo(null)}
           />
             
           {/* Luteal */}
           <circle cx="100" cy="100" r={radius} fill="none" className="stroke-blue-400 transition-all hover:stroke-width-[16] cursor-pointer" strokeWidth={strokeWidth}
             strokeDasharray={segments.lut.dash} strokeDashoffset={segments.lut.off}
-            onMouseEnter={() => setHoverInfo('Luteal')}
+            onMouseEnter={() => setHoverInfo({ name: 'Luteal', range: `Day ${phaseRanges.luteal.start}-${phaseRanges.luteal.end}` })}
             onMouseLeave={() => setHoverInfo(null)}
           />
           
@@ -144,7 +190,7 @@ export const CycleWheel = ({ currentDay, cycleLength, phase, ovulationDay, ferti
             className="text-foreground animate-pulse-gentle shadow-lg pointer-events-none"
             style={{
               transformOrigin: '100px 100px',
-              transform: `rotate(${(currentDay / cycleLength) * 360}deg)`,
+              transform: `rotate(${((currentDay - 1) / cycleLength) * 360 + 90}deg)`,
             }}
           />
         </svg>
@@ -152,9 +198,14 @@ export const CycleWheel = ({ currentDay, cycleLength, phase, ovulationDay, ferti
         {/* Center content */}
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
           {hoverInfo ? (
-            <span className="text-base xs:text-lg font-bold text-foreground animate-fade-in">
-              {hoverInfo}
-            </span>
+            <div className="animate-fade-in">
+              <span className="text-base xs:text-lg font-bold text-foreground block">
+                {hoverInfo.name}
+              </span>
+              <span className="text-xs xs:text-sm text-muted-foreground mt-1 block">
+                {hoverInfo.range}
+              </span>
+            </div>
           ) : (
             <>
               <span className="text-3xl xs:text-4xl font-display font-bold text-foreground">
@@ -182,6 +233,40 @@ export const CycleWheel = ({ currentDay, cycleLength, phase, ovulationDay, ferti
         <LegendItem color="bg-emerald-600" label="Ovulation" />
         <LegendItem color="bg-blue-400" label="Luteal" />
       </div>
+
+      {/* Start New Cycle Button - Below Legend */}
+      <Button
+        variant="outline"
+        size="sm"
+        className="mt-3 xs:mt-4 h-8 xs:h-9 px-3 xs:px-4 text-xs gap-1.5 hover:bg-primary/10 hover:text-primary hover:border-primary transition-all"
+        onClick={() => setIsDialogOpen(true)}
+      >
+        <Plus className="h-3.5 w-3.5" />
+        <span>Start New Cycle</span>
+      </Button>
+
+      {/* Start New Cycle Dialog */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Start New Cycle?</DialogTitle>
+            <DialogDescription>
+              This will mark today as the start of a new menstrual cycle. Your previous cycle will be automatically ended.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleStartNewCycle}
+              disabled={createCycle.isPending}
+            >
+              {createCycle.isPending ? 'Starting...' : 'Start New Cycle'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

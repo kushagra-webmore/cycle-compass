@@ -222,39 +222,6 @@ export default function Dashboard() {
 
             <PhaseCard phase={cycle.context.phase as any} />
 
-            {/* Daily Insights Cards */}
-            <div className="mt-3 xs:mt-4">
-               <h3 className="text-base xs:text-lg font-display font-semibold mb-2 xs:mb-3 px-1 text-foreground">Daily Insights</h3>
-               <CycleDailyInsights />
-            </div>
-
-            {/* Water Tracker */}
-            <div className="mt-6">
-               <WaterTracker phase={cycle?.context?.phase} />
-            </div>
-
-            {/* Fertility Chart - Show if relevant or user goal is conception (future) */}
-            <div className="mt-6">
-               <FertilityChart />
-            </div>
-
-            {/* Conception / Fertilization Chance (Only if Fertile/Ovulation) */}
-            {(cycle.context.phase === 'FERTILE' || cycle.context.phase === 'OVULATION') && (
-               <Card className="bg-gradient-to-r from-pink-50 to-rose-50 dark:from-pink-950/50 dark:to-rose-950/50 border-pink-100 dark:border-pink-900">
-                  <CardContent className="p-4 flex items-center justify-between">
-                     <div className="flex gap-3 items-center">
-                        <div className="p-2 bg-white dark:bg-card rounded-full text-pink-500 shadow-sm">
-                           <Baby className="h-5 w-5" />
-                        </div>
-                        <div>
-                           <p className="font-semibold text-pink-900 dark:text-pink-100">Pregnancy Chance: High</p>
-                           <p className="text-xs text-pink-700 dark:text-pink-300">You are in your fertile window.</p>
-                        </div>
-                     </div>
-                  </CardContent>
-               </Card>
-            )}
-
             {/* Last Period & Next Period Split */}
             <div className="grid grid-cols-2 gap-3 xs:gap-4 mt-4 xs:mt-6">
                 <Card variant="default" className="flex flex-col items-center justify-center py-4 xs:py-6 shadow-sm border-none bg-white/60 dark:bg-card/50 backdrop-blur-sm">
@@ -289,14 +256,50 @@ export default function Dashboard() {
                 </Card>
             </div>
 
+            {/* Daily Insights Cards */}
+            <div className="mt-3 xs:mt-4">
+               <h3 className="text-base xs:text-lg font-display font-semibold mb-2 xs:mb-3 px-1 text-foreground">Daily Insights</h3>
+               <CycleDailyInsights />
+            </div>
+
+            {/* Fertility Chart - Show if relevant or user goal is conception (future) */}
+            <div className="mt-6">
+               <FertilityChart />
+            </div>
+
+            {/* Conception / Fertilization Chance (Only if Fertile/Ovulation) */}
+            {(cycle.context.phase === 'FERTILE' || cycle.context.phase === 'OVULATION') && (
+               <Card className="bg-gradient-to-r from-pink-50 to-rose-50 dark:from-pink-950/50 dark:to-rose-950/50 border-pink-100 dark:border-pink-900">
+                  <CardContent className="p-4 flex items-center justify-between">
+                     <div className="flex gap-3 items-center">
+                        <div className="p-2 bg-white dark:bg-card rounded-full text-pink-500 shadow-sm">
+                           <Baby className="h-5 w-5" />
+                        </div>
+                        <div>
+                           <p className="font-semibold text-pink-900 dark:text-pink-100">Pregnancy Chance: High</p>
+                           <p className="text-xs text-pink-700 dark:text-pink-300">You are in your fertile window.</p>
+                        </div>
+                     </div>
+                  </CardContent>
+               </Card>
+            )}
+
             {/* History & Calendar Section */}
             <div className="mt-8">
                <Card className="p-6 bg-white dark:bg-card border-none shadow-sm rounded-3xl">
-                  <HistoryChart data={cyclesHistory?.map(c => ({
-                     startDate: c.startDate,
-                     cycleLength: c.cycleLength,
-                     periodLength: avgPeriodLength 
-                  })) || []} />
+                  <HistoryChart data={cyclesHistory?.map(c => {
+                     // Calculate actual period length from cycle's endDate
+                     // Period length = days from startDate to endDate (inclusive)
+                     const periodLength = c.endDate 
+                       ? differenceInDays(new Date(c.endDate), new Date(c.startDate)) + 1
+                       : avgPeriodLength; // fallback to average if no endDate
+                     
+                     return {
+                       startDate: c.startDate,
+                       cycleLength: c.cycleLength,
+                       periodLength: periodLength
+                     };
+                  }) || []} />
                </Card>
             </div>
 
@@ -332,6 +335,11 @@ export default function Dashboard() {
                   {latestSymptom?.energy ? energyLabels[latestSymptom.energy] ?? 'Balanced' : 'Not logged yet'}
                 </p>
               </Card>
+            </div>
+
+            {/* Water Tracker */}
+            <div className="mt-6">
+               <WaterTracker phase={cycle?.context?.phase} />
             </div>
 
             {/* Actions */}

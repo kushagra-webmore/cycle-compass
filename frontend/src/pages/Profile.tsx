@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { User as UserIcon, Calendar, MapPin, Phone, Mail, Clock, Edit2, Save, X, Lock, Shield, Sparkles } from 'lucide-react';
+import { User as UserIcon, Calendar, MapPin, Phone, Mail, Clock, Edit2, Save, X, Lock, Shield, Sparkles, Heart } from 'lucide-react';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -442,6 +442,78 @@ export default function Profile() {
                         })()}
                       </p>
                     )}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {user.role === 'primary' && (
+            <Card variant="elevated" className="lg:col-span-3">
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div className="space-y-1">
+                  <CardTitle className="flex items-center gap-2">
+                    <Heart className="h-5 w-5 text-lavender-foreground" />
+                    Partner Connection
+                  </CardTitle>
+                  <CardDescription>Share your cycle insights with someone you trust</CardDescription>
+                </div>
+                <Button variant="default" asChild>
+                  <a href="/connect" className="flex items-center gap-2">
+                    Manage Connection
+                  </a>
+                </Button>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="p-4 rounded-lg bg-emerald-50/60 dark:bg-emerald-950/20 border border-emerald-500/20">
+                    <div className="flex items-start gap-3">
+                      <Shield className="h-5 w-5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+                      <div>
+                        <p className="text-sm font-medium text-emerald-700 dark:text-emerald-300">Privacy First</p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Your partner will only see what you explicitly share. You can revoke access anytime.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="p-4 rounded-lg bg-muted border">
+                      <p className="text-sm font-medium mb-2">What partners can see:</p>
+                      <ul className="space-y-1.5 text-xs text-muted-foreground">
+                        <li className="flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-sage" />
+                          Current phase (if enabled)
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-sage" />
+                          Mood summary (if enabled)
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-sage" />
+                          Energy levels (if enabled)
+                        </li>
+                      </ul>
+                    </div>
+                    
+                    <div className="p-4 rounded-lg bg-muted border">
+                      <p className="text-sm font-medium mb-2">Always private:</p>
+                      <ul className="space-y-1.5 text-xs text-muted-foreground">
+                        <li className="flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-destructive" />
+                          Specific symptoms
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-destructive" />
+                          Journal entries
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-destructive" />
+                          Personal notes
+                        </li>
+                      </ul>
+                    </div>
                   </div>
                 </div>
               </CardContent>

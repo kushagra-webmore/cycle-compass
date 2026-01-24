@@ -1,6 +1,10 @@
+import { useState, useMemo } from "react";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, ReferenceLine } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { format } from "date-fns";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 interface HistoryChartProps {
   data: {
@@ -11,18 +15,59 @@ interface HistoryChartProps {
 }
 
 export function HistoryChart({ data }: HistoryChartProps) {
+  const [currentPage, setCurrentPage] = useState(0);
+  
+  // Responsive cycles per page
+  const isMobile = useMediaQuery("(max-width: 640px)");
+  const isTablet = useMediaQuery("(max-width: 1024px)");
+  
+  const cyclesPerPage = useMemo(() => {
+    if (isMobile) return 3;
+    if (isTablet) return 6;
+    return 8;
+  }, [isMobile, isTablet]);
+
   // Transform data for the chart
-  // We want to show the last 6-12 cycles
-  const chartData = data
-    .slice(0, 12)
-    .reverse() // Show chronological order left to right
-    .map(cycle => ({
-      date: format(new Date(cycle.startDate), 'MMM'), // Jun, Jul
-      fullDate: format(new Date(cycle.startDate), 'MMMM d, yyyy'),
-      period: cycle.periodLength,
-      cycleRemainder: cycle.cycleLength - cycle.periodLength,
-      totalLength: cycle.cycleLength,
-    }));
+  const allChartData = useMemo(() => 
+    data
+      .slice(0, 24) // Limit to last 24 cycles max
+      .reverse() // Show chronological order left to right
+      .map(cycle => ({
+        date: format(new Date(cycle.startDate), 'MMM'),
+        fullDate: format(new Date(cycle.startDate), 'MMMM d, yyyy'),
+        period: cycle.periodLength,
+        cycleRemainder: cycle.cycleLength - cycle.periodLength,
+        totalLength: cycle.cycleLength,
+      })),
+    [data]
+  );
+
+  // Pagination
+  const totalPages = Math.ceil(allChartData.length / cyclesPerPage);
+  const startIndex = currentPage * cyclesPerPage;
+  const endIndex = startIndex + cyclesPerPage;
+  const chartData = allChartData.slice(startIndex, endIndex);
+
+  // Get date range for current page
+  const dateRange = useMemo(() => {
+    if (chartData.length === 0) return "";
+    const firstDate = chartData[0].fullDate;
+    const lastDate = chartData[chartData.length - 1].fullDate;
+    if (chartData.length === 1) return firstDate;
+    return `${format(new Date(firstDate), 'MMM yyyy')} - ${format(new Date(lastDate), 'MMM yyyy')}`;
+  }, [chartData]);
+
+  const goToNextPage = () => {
+    if (currentPage < totalPages - 1) {
+      setCurrentPage(prev => prev + 1);
+    }
+  };
+
+  const goToPrevPage = () => {
+    if (currentPage > 0) {
+      setCurrentPage(prev => prev - 1);
+    }
+  };
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
@@ -42,15 +87,52 @@ export function HistoryChart({ data }: HistoryChartProps) {
     return null;
   };
 
+  if (allChartData.length === 0) {
+    return null;
+  }
+
   return (
     <div className="w-full">
-      <div className="flex items-center justify-between mb-6 px-2">
+      <div className="flex items-center justify-between mb-4 px-2">
         <div>
           <h3 className="text-xl font-display font-bold text-foreground">My Cycle</h3>
           <p className="text-sm text-muted-foreground">History & Trends</p>
         </div>
+        
+        {totalPages > 1 && (
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={goToPrevPage}
+              disabled={currentPage === 0}
+              className="h-8 w-8"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <div className="text-xs text-muted-foreground min-w-[80px] text-center">
+              Page {currentPage + 1} of {totalPages}
+            </div>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={goToNextPage}
+              disabled={currentPage === totalPages - 1}
+              className="h-8 w-8"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
       </div>
-      <div className="h-[250px] w-full">
+
+      {totalPages > 1 && dateRange && (
+        <div className="text-center mb-3">
+          <p className="text-xs text-muted-foreground">{dateRange}</p>
+        </div>
+      )}
+
+      <div className="h-[250px] w-full transition-all duration-300">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={chartData} barSize={32} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
@@ -74,6 +156,24 @@ export function HistoryChart({ data }: HistoryChartProps) {
           </BarChart>
         </ResponsiveContainer>
       </div>
+
+      {/* Page dots indicator for mobile */}
+      {totalPages > 1 && isMobile && (
+        <div className="flex justify-center gap-1.5 mt-4">
+          {Array.from({ length: totalPages }).map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentPage(index)}
+              className={`h-1.5 rounded-full transition-all ${
+                index === currentPage 
+                  ? 'w-6 bg-primary' 
+                  : 'w-1.5 bg-muted-foreground/30'
+              }`}
+              aria-label={`Go to page ${index + 1}`}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
