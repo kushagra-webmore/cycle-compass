@@ -373,27 +373,46 @@ export default function PartnerDashboard() {
               </div>
             )}
 
-            {/* Shared Cycles Section */}
-            {data.consent.share_my_cycle && data.sharedData?.cycles && data.sharedData.cycles.length > 0 && (() => {
-               const cyclesHistory = data.sharedData!.cycles;
-               const avgCycleLength = cyclesHistory.length 
-                 ? Math.round(cyclesHistory.reduce((acc: number, c: any) => acc + c.cycleLength, 0) / cyclesHistory.length)
-                 : 28;
-               
-               const avgPeriodLength = 5; 
+             {/* Shared Cycles Section */}
+             {data.consent.share_my_cycle && data.sharedData?.cycles && data.sharedData.cycles.length > 0 && (() => {
+                const cyclesHistory = data.sharedData!.cycles;
+                
+                // Calculate Average Obsereved Cycle Length logic (same as CycleHistory.tsx)
+                const sortedCycles = [...cyclesHistory].sort((a: any, b: any) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime());
+                const cycleLengths: number[] = [];
+                
+                for (let i = 0; i < sortedCycles.length - 1; i++) {
+                  const currentStart = new Date(sortedCycles[i].startDate);
+                  const prevStart = new Date(sortedCycles[i+1].startDate);
+                  const days = differenceInDays(currentStart, prevStart);
+                  
+                  // Filter out unreasonable cycle lengths
+                  if (days > 5 && days < 180) {
+                    cycleLengths.push(days);
+                  }
+                }
+
+                const avgCycleLength = cycleLengths.length 
+                  ? Math.round(cycleLengths.reduce((a, b) => a + b, 0) / cycleLengths.length)
+                  : (data.cycle?.context.cycleLength || 28);
+                
+                const avgPeriodLength = 5; 
 
                return (
                   <div className="mt-8">
-                     <h3 className="font-display font-bold text-lg text-foreground mb-3 flex items-center gap-2 px-1">
-                      <Activity className="h-5 w-5 text-primary" />
-                      {data.primaryUserName}'s Cycle
-                     </h3>
-                     
-                     <HistoryChart data={cyclesHistory.map((c: any) => ({
-                        startDate: c.startDate,
-                        cycleLength: c.cycleLength,
-                        periodLength: avgPeriodLength 
-                     }))} />
+                     <Card className="p-6 bg-white dark:bg-card border-none shadow-sm rounded-3xl">
+                       <HistoryChart 
+                         data={cyclesHistory.map((c: any) => ({
+                            startDate: c.startDate,
+                            cycleLength: c.cycleLength,
+                            periodLength: c.endDate 
+                               ? differenceInDays(new Date(c.endDate), new Date(c.startDate)) + 1
+                               : avgPeriodLength 
+                         }))} 
+                         title={`${data.primaryUserName}'s Cycle`}
+                         averageCycleLength={avgCycleLength}
+                       />
+                     </Card>
                      
                      <div className="mt-8 mx-auto max-w-xl">
                         <CycleCalendar 
@@ -406,7 +425,7 @@ export default function PartnerDashboard() {
                      </div>
                   </div>
                );
-            })()}
+             })()}
 
             <Card variant="soft" className="mt-6">
               <CardHeader className="pb-2">

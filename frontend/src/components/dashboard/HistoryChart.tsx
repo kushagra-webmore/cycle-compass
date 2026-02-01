@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useMemo, useRef, useEffect } from "react";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, ReferenceLine } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,21 +12,14 @@ interface HistoryChartProps {
     cycleLength: number;
     periodLength: number;
   }[];
+  title?: string;
+  subtitle?: string;
+  averageCycleLength?: number;
 }
 
-export function HistoryChart({ data }: HistoryChartProps) {
-  const [currentPage, setCurrentPage] = useState(0);
+export function HistoryChart({ data, title = "My Cycle", subtitle = "History & Trends", averageCycleLength = 28 }: HistoryChartProps) {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   
-  // Responsive cycles per page
-  const isMobile = useMediaQuery("(max-width: 640px)");
-  const isTablet = useMediaQuery("(max-width: 1024px)");
-  
-  const cyclesPerPage = useMemo(() => {
-    if (isMobile) return 3;
-    if (isTablet) return 6;
-    return 8;
-  }, [isMobile, isTablet]);
-
   // Transform data for the chart
   const allChartData = useMemo(() => 
     data
@@ -42,30 +35,26 @@ export function HistoryChart({ data }: HistoryChartProps) {
     [data]
   );
 
-  // Pagination
-  const totalPages = Math.ceil(allChartData.length / cyclesPerPage);
-  const startIndex = currentPage * cyclesPerPage;
-  const endIndex = startIndex + cyclesPerPage;
-  const chartData = allChartData.slice(startIndex, endIndex);
+  // Scroll to end on mount or when data changes
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      const { scrollWidth, clientWidth } = scrollContainerRef.current;
+      scrollContainerRef.current.scrollTo({
+        left: scrollWidth - clientWidth,
+        behavior: 'smooth'
+      });
+    }
+  }, [allChartData]);
 
-  // Get date range for current page
-  const dateRange = useMemo(() => {
-    if (chartData.length === 0) return "";
-    const firstDate = chartData[0].fullDate;
-    const lastDate = chartData[chartData.length - 1].fullDate;
-    if (chartData.length === 1) return firstDate;
-    return `${format(new Date(firstDate), 'MMM yyyy')} - ${format(new Date(lastDate), 'MMM yyyy')}`;
-  }, [chartData]);
-
-  const goToNextPage = () => {
-    if (currentPage < totalPages - 1) {
-      setCurrentPage(prev => prev + 1);
+  const scrollLeft = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: -200, behavior: 'smooth' });
     }
   };
 
-  const goToPrevPage = () => {
-    if (currentPage > 0) {
-      setCurrentPage(prev => prev - 1);
+  const scrollRight = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: 200, behavior: 'smooth' });
     }
   };
 
@@ -73,13 +62,13 @@ export function HistoryChart({ data }: HistoryChartProps) {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
-        <div className="bg-popover p-3 border border-border rounded-xl shadow-lg text-sm">
+        <div className="bg-popover p-3 border border-border rounded-xl shadow-lg text-sm z-50">
           <p className="font-semibold text-popover-foreground mb-1">{data.fullDate}</p>
           <p className="text-muted-foreground font-medium">
             {data.totalLength} days cycle
           </p>
           <p className="text-rose-500 text-xs mt-0.5">
-            {data.period} days Period
+            {data.period} days period
           </p>
         </div>
       );
@@ -91,87 +80,90 @@ export function HistoryChart({ data }: HistoryChartProps) {
     return null;
   }
 
+  // Calculate dynamic width based on number of items
+  // Minimum width or a fixed width per item
+  const minWidthPerItem = 60; // px
+  const dynamicWidth = Math.max(allChartData.length * minWidthPerItem, 300); // 300px min or calculated
+
   return (
-    <div className="w-full">
+    <div className="w-full max-w-full">
       <div className="flex items-center justify-between mb-4 px-2">
         <div>
-          <h3 className="text-xl font-display font-bold text-foreground">My Cycle</h3>
-          <p className="text-sm text-muted-foreground">History & Trends</p>
+          <h3 className="text-xl font-display font-bold text-foreground">{title}</h3>
+          <p className="text-sm text-muted-foreground">{subtitle}</p>
         </div>
-        
-        {totalPages > 1 && (
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={goToPrevPage}
-              disabled={currentPage === 0}
-              className="h-8 w-8"
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <div className="text-xs text-muted-foreground min-w-[80px] text-center">
-              Page {currentPage + 1} of {totalPages}
-            </div>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={goToNextPage}
-              disabled={currentPage === totalPages - 1}
-              className="h-8 w-8"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-        )}
       </div>
 
-      {totalPages > 1 && dateRange && (
-        <div className="text-center mb-3">
-          <p className="text-xs text-muted-foreground">{dateRange}</p>
+      <div 
+        ref={scrollContainerRef}
+        className="w-full overflow-x-auto pb-2 scrollbar-hide"
+        style={{ 
+          WebkitOverflowScrolling: 'touch',
+          scrollBehavior: 'smooth'
+        }}
+      >
+        <div style={{ width: allChartData.length > 5 ? `${dynamicWidth}px` : '100%', minWidth: '100%', height: '250px' }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={allChartData} barSize={32} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
+                <XAxis 
+                  dataKey="date" 
+                  axisLine={false} 
+                  tickLine={false} 
+                  tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} 
+                  dy={10}
+                  interval={0} // Force show all ticks
+                  padding={{ left: 10, right: 10 }}
+                />
+                <YAxis 
+                  hide 
+                  domain={[0, 45]} // Fix max to a reasonable cycle length + padding
+                />
+                <Tooltip content={<CustomTooltip />} cursor={{ fill: 'transparent' }} />
+                <ReferenceLine 
+                  y={averageCycleLength} 
+                  stroke="#94a3b8" 
+                  strokeDasharray="3 3" 
+                  strokeOpacity={0.5} 
+                  label={{ 
+                    value: `Avg: ${averageCycleLength}`, 
+                    position: 'insideRight', 
+                    fill: '#94a3b8', 
+                    fontSize: 10, 
+                    offset: 10,
+                    // Add background-like effect for readability if overlapping
+                    style: { textShadow: '0px 0px 4px white' }
+                  }} 
+                />
+                
+                {/* Stacked Bars */}
+                <Bar dataKey="period" stackId="a" fill="#f43f5e" radius={[0, 0, 4, 4]} />
+                <Bar dataKey="cycleRemainder" stackId="a" fill="#bfdbfe" radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
         </div>
-      )}
-
-      <div className="h-[250px] w-full transition-all duration-300">
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={chartData} barSize={32} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
-              <XAxis 
-                dataKey="date" 
-                axisLine={false} 
-                tickLine={false} 
-                tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} 
-                dy={10}
-              />
-              <YAxis 
-                hide 
-                domain={[0, 45]} // Fix max to a reasonable cycle length + padding
-              />
-              <Tooltip content={<CustomTooltip />} cursor={{ fill: 'transparent' }} />
-              <ReferenceLine y={28} stroke="#94a3b8" strokeDasharray="3 3" strokeOpacity={0.5} label={{ value: 'Avg', position: 'right', fill: '#94a3b8', fontSize: 10 }} />
-              
-              {/* Stacked Bars */}
-              <Bar dataKey="period" stackId="a" fill="#f43f5e" radius={[0, 0, 4, 4]} />
-              <Bar dataKey="cycleRemainder" stackId="a" fill="#bfdbfe" radius={[4, 4, 0, 0]} />
-          </BarChart>
-        </ResponsiveContainer>
       </div>
 
-      {/* Page dots indicator for mobile */}
-      {totalPages > 1 && isMobile && (
-        <div className="flex justify-center gap-1.5 mt-4">
-          {Array.from({ length: totalPages }).map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentPage(index)}
-              className={`h-1.5 rounded-full transition-all ${
-                index === currentPage 
-                  ? 'w-6 bg-primary' 
-                  : 'w-1.5 bg-muted-foreground/30'
-              }`}
-              aria-label={`Go to page ${index + 1}`}
-            />
-          ))}
+      {/* Navigation Controls */}
+      {allChartData.length > 5 && (
+        <div className="flex justify-center items-center gap-4 mt-1">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={scrollLeft}
+            className="h-8 w-8 rounded-full text-muted-foreground hover:bg-muted hover:text-foreground"
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </Button>
+          <div className="h-1 w-1 rounded-full bg-muted-foreground/30" />
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={scrollRight}
+            className="h-8 w-8 rounded-full text-muted-foreground hover:bg-muted hover:text-foreground"
+          >
+            <ChevronRight className="h-5 w-5" />
+          </Button>
         </div>
       )}
     </div>

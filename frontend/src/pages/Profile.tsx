@@ -10,10 +10,14 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { apiClient } from '@/lib/api-client';
-import { format, formatDistanceToNow } from 'date-fns';
+import { format, formatDistanceToNow, addDays } from 'date-fns';
+import { useCycles, useCurrentCycle } from '@/hooks/api/cycles';
+import { calculateCycleStats } from '@/lib/cycle-stats';
 
 export default function Profile() {
   const { user, updateUser } = useAuth();
+  const { data: cycles } = useCycles();
+  const { data: currentCycle } = useCurrentCycle();
   const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
@@ -24,6 +28,16 @@ export default function Profile() {
     dateOfBirth: user?.dateOfBirth ? new Date(user.dateOfBirth).toISOString().split('T')[0] : '',
     goal: user?.goal || 'TRACKING',
   });
+
+  // Calculate stats from actual history
+  const calculatedStats = calculateCycleStats(cycles || [], user?.cycleLength, user?.periodLength);
+  const displayCycleLength = calculatedStats.avgCycleLength;
+  
+  // Calculate next period date using current cycle (matching Dashboard logic)
+  // Use the current cycle's predicted length, not the historical average
+  const nextPeriodDate = currentCycle 
+    ? addDays(new Date(currentCycle.startDate), currentCycle.context.cycleLength)
+    : null;
 
   // Calculate age from DOB
   const calculateAge = (dobString: string) => {
@@ -393,7 +407,7 @@ export default function Profile() {
                 <Button variant="outline" size="sm" asChild>
                   <a href="/cycles/history" className="flex items-center gap-2">
                     <Clock className="h-4 w-4" />
-                    View History
+                    View & Edit Cycle Data
                   </a>
                 </Button>
               </CardHeader>
@@ -402,44 +416,39 @@ export default function Profile() {
                   <div className="p-4 rounded-lg bg-primary/10 border border-primary/20">
                     <p className="text-sm text-muted-foreground mb-1">Last Period Date</p>
                     <p className="text-lg font-semibold">
-                      {user.lastPeriodDate
-                        ? format(new Date(user.lastPeriodDate), 'dd MMM yyyy')
+                      {currentCycle?.startDate
+                        ? format(new Date(currentCycle.startDate), 'dd MMM yyyy')
                         : 'Not set'}
                     </p>
-                    {user.lastPeriodDate && (
+                    {currentCycle?.startDate && (
                       <p className="text-xs text-muted-foreground mt-1">
-                        {formatDistanceToNow(new Date(user.lastPeriodDate))} ago
+                        {formatDistanceToNow(new Date(currentCycle.startDate))} ago
                       </p>
                     )}
                   </div>
 
                   <div className="p-4 rounded-lg bg-sage/20 border border-sage/30">
-                    <p className="text-sm text-muted-foreground mb-1">Cycle Length</p>
+                    <p className="text-sm text-muted-foreground mb-1">Avg. Cycle Length</p>
                     <p className="text-lg font-semibold">
-                      {user.cycleLength ? `${user.cycleLength} days` : 'Not set'}
+                      {displayCycleLength ? `${displayCycleLength} days` : 'Not set'}
                     </p>
-                    <p className="text-xs text-muted-foreground mt-1">Average cycle duration</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {user?.cycleLength && user.cycleLength !== displayCycleLength 
+                        ? `Calculated from history (you entered ${user.cycleLength} days during onboarding)`
+                        : 'Average cycle duration'}
+                    </p>
                   </div>
 
                   <div className="p-4 rounded-lg bg-lavender/30 border border-lavender/40">
                     <p className="text-sm text-muted-foreground mb-1">Next Period (Est.)</p>
                     <p className="text-lg font-semibold">
-                      {user.lastPeriodDate && user.cycleLength
-                        ? (() => {
-                            const nextDate = new Date(user.lastPeriodDate);
-                            nextDate.setDate(nextDate.getDate() + user.cycleLength);
-                            return format(nextDate, 'dd MMM yyyy');
-                          })()
+                      {nextPeriodDate
+                        ? format(nextPeriodDate, 'dd MMM yyyy')
                         : 'Not available'}
                     </p>
-                    {user.lastPeriodDate && user.cycleLength && (
+                    {nextPeriodDate && (
                       <p className="text-xs text-muted-foreground mt-1">
-                        In{' '}
-                        {(() => {
-                          const nextDate = new Date(user.lastPeriodDate);
-                          nextDate.setDate(nextDate.getDate() + user.cycleLength);
-                          return formatDistanceToNow(nextDate);
-                        })()}
+                        In {formatDistanceToNow(nextPeriodDate)}
                       </p>
                     )}
                   </div>

@@ -15,6 +15,7 @@ import { useCurrentCycle, useSymptomHistory, useCycles } from '@/hooks/api/cycle
 import { useAuth } from '@/contexts/AuthContext';
 import { format, addDays, differenceInDays } from 'date-fns';
 import { useMemo } from 'react';
+import { calculateCycleStats } from '@/lib/cycle-stats';
 
 const moodLabels: Record<string, string> = {
   LOW: 'Low',
@@ -48,47 +49,10 @@ export default function Dashboard() {
   const hasData = Boolean(cycle);
   const navigate = useNavigate();
 
-  // Calculate Average Cycle Length from history
-  const avgCycleLength = useMemo(() => {
-    if (!cyclesHistory || cyclesHistory.length === 0) return user?.cycleLength || 28;
-    const total = cyclesHistory.reduce((acc, c) => acc + c.cycleLength, 0);
-    return Math.round(total / cyclesHistory.length);
-  }, [cyclesHistory, user?.cycleLength]);
-
-  // Calculate Average Period Length based on recorded flow in symptoms
-  const avgPeriodLength = useMemo(() => {
-    if (!symptomHistory || symptomHistory.length === 0) return user?.periodLength || 5;
-
-    // Filter, sort and group consecutive flow days
-    const flowLogs = symptomHistory
-      .filter(log => log.flow && log.flow !== 'NONE')
-      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-
-    if (flowLogs.length === 0) return user?.periodLength || 5;
-
-    const periods: number[] = [];
-    let currentStreak = 1;
-
-    for (let i = 0; i < flowLogs.length - 1; i++) {
-       const current = new Date(flowLogs[i].date);
-       const next = new Date(flowLogs[i+1].date);
-       const diff = Math.round((next.getTime() - current.getTime()) / (1000 * 60 * 60 * 24));
-
-       if (diff === 1) {
-          currentStreak++;
-       } else {
-          if (currentStreak > 1) periods.push(currentStreak);
-          currentStreak = 1;
-       }
-    }
-    // Push the last streak if valid
-    if (currentStreak > 1) periods.push(currentStreak);
-
-    if (periods.length === 0) return user?.periodLength || 5;
-
-    const totalDays = periods.reduce((a, b) => a + b, 0);
-    return Math.round(totalDays / periods.length);
-  }, [symptomHistory, user?.periodLength]);
+  // Calculate statistics using shared utility
+  const { avgCycleLength, avgPeriodLength } = useMemo(() => {
+    return calculateCycleStats(cyclesHistory || [], user?.cycleLength, user?.periodLength);
+  }, [cyclesHistory, user?.cycleLength, user?.periodLength]);
 
   // Check for discrepancy
   const discrepancy = useMemo(() => {
@@ -299,7 +263,9 @@ export default function Dashboard() {
                        cycleLength: c.cycleLength,
                        periodLength: periodLength
                      };
-                  }) || []} />
+                  }) || []} 
+                  averageCycleLength={avgCycleLength}
+                  />
                </Card>
             </div>
 

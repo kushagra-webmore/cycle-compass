@@ -340,6 +340,11 @@ export default function CycleHistory() {
                     <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Avg Cycle</p>
                     <p className="text-2xl font-bold">{stats.avgCycleLength || user?.cycleLength || '-'}</p>
                     <p className="text-xs text-muted-foreground">days</p>
+                    {user?.cycleLength && stats.avgCycleLength && user.cycleLength !== stats.avgCycleLength && (
+                      <p className="text-[10px] text-muted-foreground mt-1 px-2">
+                        Onboarding input: {user.cycleLength}d
+                      </p>
+                    )}
                   </CardContent>
                 </Card>
                 
@@ -359,6 +364,11 @@ export default function CycleHistory() {
                     <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Avg Period</p>
                     <p className="text-2xl font-bold">{stats.avgPeriodLength}</p>
                     <p className="text-xs text-muted-foreground">days</p>
+                    {user?.periodLength && stats.avgPeriodLength && user.periodLength !== stats.avgPeriodLength && (
+                      <p className="text-[10px] text-muted-foreground mt-1 px-2">
+                        Onboarding input: {user.periodLength}d
+                      </p>
+                    )}
                   </CardContent>
                 </Card>
                 
@@ -411,12 +421,19 @@ export default function CycleHistory() {
               </div>
             ) : (
               <div className="space-y-4">
-                {cycles.map((cycle: any) => {
+                {cycles.map((cycle: any, index: number) => {
                   const startDate = new Date(cycle.startDate);
                   const endDate = cycle.endDate ? new Date(cycle.endDate) : null;
                   const length = endDate 
                     ? differenceInDays(endDate, startDate) + 1 
                     : differenceInDays(new Date(), startDate) + 1;
+                  
+                  // Calculate cycle length (days from this period to the next period)
+                  // cycles array is sorted newest first, so index-1 is the chronologically next cycle
+                  const nextCycle = cycles[index - 1];
+                  const cycleLength = nextCycle 
+                    ? differenceInDays(new Date(nextCycle.startDate), startDate)
+                    : (cycle.cycleLength || null); // Fallback to stored cycleLength for newest entry
                   
                   const isEditingThis = editingCycle === cycle.id;
 
@@ -441,7 +458,7 @@ export default function CycleHistory() {
                                />
                              </div>
                              <div className="grid gap-2">
-                               <Label>End Date</Label>
+                               <Label>End Date (Optional)</Label>
                                <Input
                                  type="date"
                                  value={formData.endDate}
@@ -475,7 +492,13 @@ export default function CycleHistory() {
                                 {endDate ? `Ended ${format(endDate, 'MMMM d')}` : 'Ongoing'}
                               </span>
                               <span className="w-1 h-1 rounded-full bg-muted-foreground/40" />
-                              <span>{length} days</span>
+                              <span>{length} days period</span>
+                              {cycleLength && (
+                                <>
+                                  <span className="w-1 h-1 rounded-full bg-muted-foreground/40" />
+                                  <span>{cycleLength} days cycle</span>
+                                </>
+                              )}
                             </div>
                           </div>
                           
