@@ -105,7 +105,7 @@ export const getPartnerSummary = async (partnerUserId: string) => {
   // Fetch primary user name
   const { data: primaryProfile } = await supabase
     .from('profiles')
-    .select('name')
+    .select('name, avatar_url')
     .eq('user_id', primaryUserId)
     .single();
 
@@ -113,6 +113,7 @@ export const getPartnerSummary = async (partnerUserId: string) => {
     pairingId: pairing.id,
     primaryUserId,
     primaryUserName: primaryProfile?.name,
+    primaryUserAvatar: primaryProfile?.avatar_url,
     consent,
     cycle,
     summaries: {

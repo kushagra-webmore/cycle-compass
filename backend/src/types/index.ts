@@ -18,6 +18,7 @@ export interface AuthUser {
   goal?: 'TRACKING' | 'CONCEIVE' | 'PREGNANCY' | null;
   lastLogin?: string | null;
   lastActivity?: string | null;
+  avatarUrl?: string | null;
 }
 
 declare global {

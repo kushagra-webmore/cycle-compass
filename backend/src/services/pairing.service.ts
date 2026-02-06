@@ -180,7 +180,7 @@ export const getInviteDetails = async (options: { token?: string; pairCode?: str
   // Fetch inviter profile
   const { data: profile } = await supabase
     .from('profiles')
-    .select('name')
+    .select('name, avatar_url')
     .eq('user_id', pairing.primary_user_id)
     .single();
 
@@ -190,6 +190,7 @@ export const getInviteDetails = async (options: { token?: string; pairCode?: str
   return {
     inviterName: profile?.name,
     inviterEmail: userData.user?.email,
+    inviterAvatar: profile?.avatar_url,
     expiresAt: pairing.token_expires_at,
   };
 };
@@ -257,7 +258,7 @@ export const getActivePairingsForUser = async (userId: string) => {
 
   const { data: profiles } = await supabase
     .from('profiles')
-    .select('user_id, name')
+    .select('user_id, name, avatar_url')
     .in('user_id', userIds);
 
   // Fetch emails (requires admin)
@@ -278,8 +279,10 @@ export const getActivePairingsForUser = async (userId: string) => {
       ...pairing,
       primaryUserName: primaryProfile?.name,
       primaryUserEmail: emailMap.get(pairing.primary_user_id),
+      primaryUserAvatar: primaryProfile?.avatar_url,
       partnerUserName: partnerProfile?.name,
       partnerUserEmail: pairing.partner_user_id ? emailMap.get(pairing.partner_user_id) : undefined,
+      partnerAvatar: partnerProfile?.avatar_url,
     };
   });
 };

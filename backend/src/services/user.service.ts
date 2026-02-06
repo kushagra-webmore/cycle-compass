@@ -21,6 +21,7 @@ interface UserRow {
     cycle_length?: number | null;
     period_length?: number | null;
     goal?: 'TRACKING' | 'CONCEIVE' | 'PREGNANCY' | null;
+    avatar_url?: string | null;
   } | {
     name?: string | null;
     age?: number | null;
@@ -33,6 +34,7 @@ interface UserRow {
     cycle_length?: number | null;
     period_length?: number | null;
     goal?: 'TRACKING' | 'CONCEIVE' | 'PREGNANCY' | null;
+    avatar_url?: string | null;
   }[] | null;
 }
 
@@ -60,6 +62,7 @@ const mapUserRowToAuthUser = (
     goal: profileData?.goal ?? 'TRACKING',
     lastLogin: row.last_login ?? null,
     lastActivity: row.last_activity ?? null,
+    avatarUrl: profileData?.avatar_url ?? null,
   };
 };
 
@@ -71,7 +74,7 @@ export const getUserWithProfile = async (
   const { data, error }: PostgrestSingleResponse<UserRow> = await supabase
     .from('users')
     .select(
-      'id, role, status, last_login, last_activity, profiles(name, age, date_of_birth, phone, city, timezone, onboarding_completed, last_period_date, cycle_length, period_length, goal)',
+      'id, role, status, last_login, last_activity, profiles(name, age, date_of_birth, phone, city, timezone, onboarding_completed, last_period_date, cycle_length, period_length, goal, avatar_url)',
     )
     .eq('id', userId)
     .single();
@@ -170,6 +173,7 @@ interface UpdateProfileArgs {
   cycle_length?: number | null;
   period_length?: number | null;
   goal?: 'TRACKING' | 'CONCEIVE' | 'PREGNANCY' | null;
+  avatar_url?: string | null;
 }
 
 export const updateUserProfile = async (
@@ -214,17 +218,17 @@ export const updateUserProfile = async (
     return getUserWithProfile(userId, userData.user?.email ?? '');
   }
 
-  // Use upsert instead of update to handle missing profiles for legacy/partner users
+  // Use update instead of upsert to avoid constraint violations on partial updates
+  // Since we know the user exists and upload works, update is safer for partial patches.
   const { error } = await supabase
     .from('profiles')
-    .upsert(
+    .update(
       { 
-        user_id: userId, 
         ...cleanUpdates,
         updated_at: new Date().toISOString()
-      },
-      { onConflict: 'user_id' }
-    );
+      }
+    )
+    .eq('user_id', userId);
 
   if (error) {
     console.error('Profile update/upsert error:', error);
@@ -246,4 +250,59 @@ export const getUserById = async (userId: string): Promise<AuthUser> => {
   }
 
   return getUserWithProfile(userId, userData.user.email ?? '');
+};
+
+interface UploadAvatarArgs {
+  userId: string;
+  fileBuffer: Buffer;
+  mimeType: string;
+}
+
+export const uploadUserAvatar = async ({
+  userId,
+  fileBuffer,
+  mimeType
+}: UploadAvatarArgs): Promise<string> => {
+  const supabase = getSupabaseClient();
+  
+  // 1. Upload to Supabase Storage
+  const fileName = `${userId}-${Date.now()}.jpg`; // standardized extension or use mime-types
+  
+  // Remove old avatar if exists (optional logic, skipping for MVP complexity)
+
+  const { data: uploadData, error: uploadError } = await supabase
+    .storage
+    .from('avatars')
+    .upload(fileName, fileBuffer, {
+      contentType: mimeType,
+      upsert: true
+    });
+
+  if (uploadError) {
+    console.error('Avatar upload error:', uploadError);
+    throw new HttpError(500, 'Failed to upload avatar image', uploadError);
+  }
+
+  // 2. Get Public URL
+  const { data: { publicUrl } } = supabase
+    .storage
+    .from('avatars')
+    .getPublicUrl(fileName);
+
+  // 3. Update Profile with new URL
+  if (!publicUrl) {
+     throw new HttpError(500, 'Failed to generate public URL for avatar');
+  }
+
+  const { error: updateError } = await supabase
+    .from('profiles')
+    .update({ avatar_url: publicUrl, updated_at: new Date().toISOString() })
+    .eq('user_id', userId);
+
+  if (updateError) {
+    console.error('Profile avatar update error:', updateError);
+    throw new HttpError(500, 'Failed to link avatar to user profile', updateError);
+  }
+
+  return publicUrl;
 };
