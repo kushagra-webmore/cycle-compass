@@ -231,50 +231,6 @@ export default function CycleHistory() {
             <p className="text-muted-foreground pl-10">Track and analyze your past cycles</p>
           </div>
           
-          <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-            <DialogTrigger asChild>
-              <Button className="gap-2">
-                <Plus className="h-4 w-4" />
-                Log Past Cycle
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Log Past Cycle</DialogTitle>
-                <DialogDescription>
-                  Enter the start and end dates of a past period.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="startDate">Start Date</Label>
-                  <Input
-                    id="startDate"
-                    type="date"
-                    value={formData.startDate}
-                    onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-                    max={new Date().toISOString().split('T')[0]}
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="endDate">End Date (Optional)</Label>
-                  <Input
-                    id="endDate"
-                    type="date"
-                    value={formData.endDate}
-                    onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
-                    min={formData.startDate}
-                    max={new Date().toISOString().split('T')[0]}
-                  />
-                </div>
-              </div>
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setIsCreateOpen(false)}>Cancel</Button>
-                <Button onClick={handleCreate} disabled={!formData.startDate}>Save Cycle</Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-          
           <Dialog open={isStatsEditOpen} onOpenChange={setIsStatsEditOpen}>
             <DialogContent>
               <DialogHeader>
@@ -404,10 +360,57 @@ export default function CycleHistory() {
         {/* Cycles List */}
         <Card variant="elevated">
           <CardHeader>
-            <CardTitle>History Log</CardTitle>
-            <CardDescription>
-              Detailed view of your past menstrual cycles
-            </CardDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>History Log</CardTitle>
+                <CardDescription>
+                  Detailed view of your past menstrual cycles
+                </CardDescription>
+              </div>
+              <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+                <DialogTrigger asChild>
+                  <Button className="gap-2" size="sm">
+                    <Plus className="h-4 w-4" />
+                    Add Cycle
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Add Cycle</DialogTitle>
+                    <DialogDescription>
+                      Enter the start and end dates of a past period.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="grid gap-4 py-4">
+                    <div className="grid gap-2">
+                      <Label htmlFor="startDate">Start Date</Label>
+                      <Input
+                        id="startDate"
+                        type="date"
+                        value={formData.startDate}
+                        onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+                        max={new Date().toISOString().split('T')[0]}
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="endDate">End Date (Optional if you are in your cycle)</Label>
+                      <Input
+                        id="endDate"
+                        type="date"
+                        value={formData.endDate}
+                        onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+                        min={formData.startDate}
+                        max={new Date().toISOString().split('T')[0]}
+                      />
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button variant="outline" onClick={() => setIsCreateOpen(false)}>Cancel</Button>
+                    <Button onClick={handleCreate} disabled={!formData.startDate}>Save Cycle</Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </div>
           </CardHeader>
           <CardContent>
             {isLoading ? (
@@ -489,7 +492,7 @@ export default function CycleHistory() {
                             </div>
                             <div className="text-sm text-muted-foreground flex items-center gap-2">
                               <span>
-                                {endDate ? `Ended ${format(endDate, 'MMMM d')}` : 'Ongoing'}
+                                {endDate ? `Period ended ${format(endDate, 'MMMM d')}` : 'Ongoing'}
                               </span>
                               <span className="w-1 h-1 rounded-full bg-muted-foreground/40" />
                               <span>{length} days period</span>

@@ -103,7 +103,7 @@ export function CycleCalendar({ currentCycleStart, avgCycleLength, avgPeriodLeng
           effectiveCycleLength = currentCycleLength;
       }
       
-      // If no end date recorded, use average period length for menstruation projection
+      // For logged cycles without endDate, show MENSTRUAL for the expected period length
       if (!relevantCycle.endDate && dayInCycle <= avgPeriodLength) {
         return 'MENSTRUAL';
       }
@@ -121,8 +121,35 @@ export function CycleCalendar({ currentCycleStart, avgCycleLength, avgPeriodLeng
           return 'LUTEAL';
       }
       
-      // If we are PAST the expected length, project future cycles
+      // If we are PAST the expected length, check if there's a newer logged cycle
+      // If there is, we should NOT project a new cycle start (MENSTRUAL phase)
+      // but we CAN show the luteal phase (end of this cycle)
+      
+      // Calculate when the next projected cycle would start
+      const nextProjectedCycleStart = new Date(cycleStart);
+      nextProjectedCycleStart.setDate(nextProjectedCycleStart.getDate() + effectiveCycleLength);
+      
+      // Check if there's a logged cycle that starts after this cycle
+      const newerCycle = sortedCycles.find(c => {
+        const [cy, cm, cd] = c.startDate.split('-').map(Number);
+        const cStart = new Date(cy, cm - 1, cd);
+        
+        // A newer cycle exists if it starts after this cycle
+        // and within the range we're trying to project
+        return cStart.getTime() > cycleStart.getTime() && 
+               cStart.getTime() < nextProjectedCycleStart.getTime() + (avgCycleLength * 24 * 60 * 60 * 1000);
+      });
+
+      // If there's a newer logged cycle, don't project MENSTRUAL phase
+      // but still show luteal phase for the gap
       const projectedDayInCycle = ((dayInCycle - effectiveCycleLength - 1) % avgCycleLength) + 1;
+      
+      // Don't show MENSTRUAL if there's a newer logged cycle
+      if (newerCycle && projectedDayInCycle <= avgPeriodLength) {
+        // This would be a projected period, but we have a logged cycle instead
+        // Show luteal phase (end of previous cycle) instead
+        return 'LUTEAL';
+      }
       
       if (projectedDayInCycle <= avgPeriodLength) return 'MENSTRUAL';
       

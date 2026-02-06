@@ -16,7 +16,7 @@ interface ReminderSettingsProps {
 
 export function ReminderSettings({ onSave }: ReminderSettingsProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [enabled, setEnabled] = useState(true);
+  const [enabled, setEnabled] = useState(false);
   const [startTime, setStartTime] = useState('08:00');
   const [endTime, setEndTime] = useState('22:00');
   const [interval, setInterval] = useState(60);
