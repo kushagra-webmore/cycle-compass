@@ -242,12 +242,18 @@ export default function Journal() {
                       })}</span>
                       <span>{item.ai_summary ? 'AI reflection saved' : 'Manual entry'}</span>
                     </div>
-                    <p className="text-sm text-foreground whitespace-pre-line line-clamp-3">
-                      {item.encrypted_text}
-                    </p>
+                    <div className="space-y-1">
+                      <p className="text-xs font-medium text-muted-foreground">User input:</p>
+                      <p className="text-sm text-foreground whitespace-pre-line line-clamp-3">
+                        {item.encrypted_text}
+                      </p>
+                    </div>
                     {item.ai_summary && (
-                      <div className="rounded-lg bg-sage/15 p-3 text-xs text-sage-foreground whitespace-pre-line">
-                        {item.ai_summary}
+                      <div className="space-y-1">
+                        <p className="text-xs font-medium text-muted-foreground">AI reflection:</p>
+                        <div className="rounded-lg bg-sage/15 p-3 text-xs text-sage-foreground whitespace-pre-line">
+                          {item.ai_summary}
+                        </div>
                       </div>
                     )}
                     <div className="absolute top-4 right-4">

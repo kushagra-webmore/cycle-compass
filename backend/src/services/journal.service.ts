@@ -11,18 +11,18 @@ export interface CreateJournalParams {
 
 export const createJournalEntry = async ({ userId, date, encryptedText, aiSummary }: CreateJournalParams) => {
   const supabase = getSupabaseClient();
-  const istNow = DateTime.now().setZone('Asia/Kolkata');
+  const now = DateTime.utc();
 
   const isoDate = date
-    ? DateTime.fromISO(date, { setZone: true }).setZone('Asia/Kolkata')
-    : istNow;
+    ? DateTime.fromISO(date, { setZone: true }).toUTC()
+    : now;
 
   const { data, error } = await supabase
     .from('journals')
     .insert({
       user_id: userId,
       date: isoDate.toISO(),
-      created_at: istNow.toISO(),
+      created_at: now.toISO(),
       encrypted_text: encryptedText,
       ai_summary: aiSummary,
     })
@@ -44,6 +44,7 @@ export const listJournalEntries = async (userId: string, limit = 30) => {
     .eq('user_id', userId)
     .eq('is_deleted', false)
     .order('date', { ascending: false })
+    .order('created_at', { ascending: false })
     .limit(limit);
 
   if (error) {
@@ -55,13 +56,13 @@ export const listJournalEntries = async (userId: string, limit = 30) => {
 
 export const softDeleteJournalEntry = async (userId: string, journalId: string) => {
   const supabase = getSupabaseClient();
-  const istNow = DateTime.now().setZone('Asia/Kolkata');
+  const now = DateTime.utc();
 
   const { error } = await supabase
     .from('journals')
     .update({
       is_deleted: true,
-      deleted_at: istNow.toISO(),
+      deleted_at: now.toISO(),
     })
     .eq('id', journalId)
     .eq('user_id', userId);

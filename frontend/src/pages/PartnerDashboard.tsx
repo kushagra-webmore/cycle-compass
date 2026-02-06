@@ -321,6 +321,11 @@ export default function PartnerDashboard() {
                         <div className="w-full">
                           <p className="text-sm font-medium mb-2">{new Date(symptom.date).toLocaleDateString()}</p>
                           <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
+                            {symptom.other_symptoms && symptom.other_symptoms.length > 0 && (
+                              <Badge variant="outline" className="bg-rose-50 dark:bg-rose-900/20 border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-200">
+                                Symptoms: {symptom.other_symptoms.map((s: string) => s.replace('_', ' ').split(' ').map((word: string) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')).join(', ')}
+                              </Badge>
+                            )}
                             {symptom.mood && <Badge variant="outline" className="bg-lavender/20 border-lavender/50 text-foreground capitalize">Mood: {symptom.mood.toLowerCase()}</Badge>}
                             {symptom.energy && <Badge variant="outline" className="bg-peach/20 border-peach/50 text-foreground capitalize">Energy: {symptom.energy.toLowerCase()}</Badge>}
                             {symptom.pain !== null && <Badge variant="outline" className="bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-foreground">Pain: {symptom.pain}/10</Badge>}
@@ -332,11 +337,6 @@ export default function PartnerDashboard() {
                                     Intercourse {symptom.protection_used !== null ? (symptom.protection_used ? '(Protected)' : '(Unprotected)') : ''}
                                 </Badge>
                             )}
-                            {symptom.other_symptoms && symptom.other_symptoms.map((s: string) => (
-                              <Badge key={s} variant="outline" className="bg-rose-50 dark:bg-rose-900/20 border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-200 capitalize">
-                                {s.replace('_', ' ')}
-                              </Badge>
-                            ))}
                           </div>
                         </div>
                       </div>
@@ -358,16 +358,15 @@ export default function PartnerDashboard() {
                      <Card key={journal.id} className="bg-muted/30">
                        <CardHeader className="py-3">
                          <CardTitle className="text-sm font-medium">
-                           {new Date(journal.date).toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' })}
+                           {new Date(journal.created_at || journal.date).toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' })} at {new Date(journal.created_at || journal.date).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit', hour12: true })}
                          </CardTitle>
                        </CardHeader>
                        <CardContent className="py-2 pb-4 text-sm text-muted-foreground">
-                         <p className="text-foreground whitespace-pre-line line-clamp-3 mb-2">
-                            {journal.encrypted_text}
-                         </p>
+                         <div className="space-y-1"><p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">User input:</p><p className="text-foreground whitespace-pre-line line-clamp-3">{journal.encrypted_text}</p></div>
                          {journal.ai_summary && (
                            <div className="rounded-lg bg-primary/5 p-2 text-xs italic text-muted-foreground">
-                             ✨ "{journal.ai_summary}"
+                              <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">AI reflection:</p>
+                             ✨ {journal.ai_summary}
                            </div>
                          )}
                        </CardContent>
