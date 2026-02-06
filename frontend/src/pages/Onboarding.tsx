@@ -384,7 +384,11 @@ export default function Onboarding() {
 
                 <div className="space-y-3">
                   {cycles.map((cycle, index) => {
-                    const label = index === 0 ? "Current / Most Recent Cycle" : `Previous Cycle ${index}`;
+                    const baseDate = cycles[0]?.startDate ? new Date(cycles[0].startDate) : new Date();
+                    const targetDate = subMonths(baseDate, index);
+                    const label = index === 0 
+                      ? "Current / Most Recent Cycle" 
+                      : `Previous Cycle (${format(targetDate, 'MMMM')})`;
                     return (
                       <div key={index} className="p-4 rounded-xl border border-border/60 bg-muted/20 space-y-4">
                         <div className="flex items-center justify-between">
