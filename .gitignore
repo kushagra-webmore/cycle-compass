@@ -11,3 +11,4 @@ session_security_migration.sql
 backend/keepalive_migration.sql
 backend/migration_share_my_cycle.sql
 backend/migration_water_notifications.sql
+backend/migration_add_avatar.sql
