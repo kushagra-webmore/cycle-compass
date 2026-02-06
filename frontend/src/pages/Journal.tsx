@@ -232,7 +232,7 @@ export default function Journal() {
                 <Card key={item.id} variant="default" className="transition-shadow group relative">
                   <CardContent className="py-4 space-y-2">
                     <div className="flex items-center justify-between text-xs text-muted-foreground">
-                      <span>{new Date(item.date ?? item.created_at).toLocaleString('en-US', {
+                      <span>{new Date(item.created_at ?? item.date).toLocaleString('en-US', {
                         month: 'short',
                         day: 'numeric',
                         hour: '2-digit',
