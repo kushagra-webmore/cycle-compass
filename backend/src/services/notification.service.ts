@@ -84,7 +84,7 @@ export class NotificationService {
       reminder_start_time: '08:00:00',
       reminder_end_time: '22:00:00',
       reminder_interval_minutes: 60,
-      enabled: true
+      enabled: false
     };
   }
 
