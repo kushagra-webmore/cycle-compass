@@ -51,8 +51,10 @@ const refreshSession = async () => {
 };
 
 export const apiFetch = async <T>(path: string, options: RequestOptions = {}): Promise<T> => {
+  const isFormData = options.body instanceof FormData;
+  
   const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
+    ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
     ...(options.headers as Record<string, string> ?? {}),
   };
 

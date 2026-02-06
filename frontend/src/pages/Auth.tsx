@@ -1,6 +1,6 @@
 ﻿import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Heart, Users, Mail, Lock, ArrowRight, Sparkles, AlertCircle, Eye, EyeOff } from 'lucide-react';
+import { Heart, Users, Mail, Lock, ArrowRight, Sparkles, AlertCircle, Eye, EyeOff, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -214,30 +214,44 @@ export default function Auth() {
                           type="button"
                           onClick={() => setSelectedRole(role.id)}
                           className={cn(
-                            "flex items-start gap-4 p-4 rounded-xl border-2 transition-all duration-300 text-left",
+                            "relative flex items-start gap-4 p-4 rounded-xl border-2 transition-all duration-300 text-left",
                             selectedRole === role.id
                               ? role.color === 'primary'
-                                ? "border-primary bg-primary/20"
-                                : "border-sage bg-sage/30"
-                              : "border-border hover:border-muted-foreground/30 hover:bg-muted/50"
+                                ? "border-primary bg-primary/25 shadow-sm ring-1 ring-primary/20"
+                                : "border-teal-500 bg-teal-100/70 dark:bg-teal-900/40 shadow-sm ring-1 ring-teal-500/20"
+                              : "border-border hover:border-primary/30 hover:bg-muted/30"
                           )}
                         >
+                          {/* Selection Indicator */}
                           <div className={cn(
-                            "p-2 rounded-lg transition-all duration-300",
-                            role.color === 'primary' 
-                              ? "bg-primary/20 dark:bg-violet-500/10 dark:shadow-[0_0_20px_-5px_rgba(124,58,237,0.8)]" 
-                              : "bg-sage/30 dark:bg-green-500/10 dark:shadow-[0_0_20px_-5px_rgba(74,222,128,0.8)]"
+                            "absolute top-3 right-3 transition-all duration-300",
+                            selectedRole === role.id 
+                              ? "opacity-100 scale-100" 
+                              : "opacity-0 scale-90"
                           )}>
-                            <role.icon className={cn(
-                              "h-5 w-5 transition-all duration-300",
-                              role.color === 'primary' 
-                                ? "text-primary dark:text-violet-300 dark:drop-shadow-[0_0_4px_rgba(139,92,246,0.5)]" 
-                                : "text-sage-foreground dark:text-green-300 dark:drop-shadow-[0_0_4px_rgba(74,222,128,0.5)]"
+                            <CheckCircle2 className={cn(
+                              "h-5 w-5 fill-background",
+                              role.color === 'primary' ? "text-primary" : "text-teal-500"
                             )} />
                           </div>
+
+                          <div className={cn(
+                            "p-3 rounded-lg transition-all duration-300 shrink-0",
+                            role.color === 'primary' 
+                              ? "bg-primary/10 text-primary" 
+                              : "bg-teal-100 text-teal-600 dark:bg-teal-900/30 dark:text-teal-400"
+                          )}>
+                            <role.icon className="h-5 w-5" />
+                          </div>
+                          
                           <div className="flex-1">
-                            <h3 className="font-semibold text-foreground">{role.title}</h3>
-                            <p className="text-xs text-muted-foreground mt-0.5">{role.description}</p>
+                            <h3 className={cn(
+                              "font-semibold transition-colors",
+                              selectedRole === role.id ? "text-foreground" : "text-muted-foreground"
+                            )}>{role.title}</h3>
+                            <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                              {role.description}
+                            </p>
                           </div>
                         </button>
                       ))}

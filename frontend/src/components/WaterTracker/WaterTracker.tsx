@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { WaterBottle } from './WaterBottle';
 import { ReminderSettings } from './ReminderSettings';
 import { HydrationTips } from './HydrationTips';
-import { Droplets, Plus, Pencil, Check } from 'lucide-react';
+import { Droplets, Plus, Minus, Pencil, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import { apiFetch } from '@/lib/api';
 
@@ -91,59 +91,80 @@ export function WaterTracker({ phase }: WaterTrackerProps) {
         </CardTitle>
         <ReminderSettings />
       </CardHeader>
-      <CardContent className="flex flex-col items-center gap-6">
+      <CardContent className="flex flex-row items-center justify-center gap-6 px-4 pb-6 pt-2">
         
-        {/* Target Editor */}
-        <div className="flex items-center gap-2 text-sm text-muted-foreground -mt-2 mb-2">
-           <span>Daily Goal:</span>
-           {isEditingTarget ? (
-             <div className="flex items-center gap-1">
-               <Input 
-                 value={tempTarget} 
-                 onChange={(e) => setTempTarget(e.target.value)}
-                 className="h-6 w-16 px-1 text-center bg-white dark:bg-black"
-               />
-               <Button size="icon" variant="ghost" className="h-6 w-6" onClick={saveTarget}>
-                 <Check className="w-3 h-3 text-green-500" />
-               </Button>
-             </div>
-           ) : (
-             <button 
-               onClick={() => setIsEditingTarget(true)} 
-               className="font-medium hover:text-foreground flex items-center gap-1 transition-colors"
-             >
-               {target} ml
-               <Pencil className="w-3 h-3 opacity-50" />
-             </button>
-           )}
-        </div>
-
         <WaterBottle 
           current={amount} 
           target={target} 
           onAdd={handleAddWater}
-          className="my-2"
+          className="scale-95 origin-center shrink-0"
         />
 
-        <div className="w-full max-w-xs space-y-4">
-           {/* Custom Input */}
-           <div className="flex gap-2">
-             <div className="relative flex-1">
-                <Input 
-                  type="number" 
-                  placeholder="Custom amount..." 
-                  value={customInput}
-                  onChange={(e) => setCustomInput(e.target.value)}
-                  className="pr-8 bg-white dark:bg-slate-900" 
-                />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">ml</span>
-             </div>
-             <Button size="icon" onClick={handleCustomAdd} disabled={!customInput}>
-               <Plus className="w-4 h-4" />
-             </Button>
-           </div>
-           
-           <HydrationTips phase={phase} />
+        <div className="flex flex-col gap-3 w-full max-w-[200px]">
+            {/* Target Editor */}
+            <div className="flex items-center justify-between p-2 rounded-lg border border-slate-300 bg-slate-50 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+               <span className="text-xs text-muted-foreground font-medium">Daily Goal</span>
+               {isEditingTarget ? (
+                 <div className="flex items-center gap-1">
+                   <Input 
+                     value={tempTarget} 
+                     onChange={(e) => setTempTarget(e.target.value)}
+                     className="h-5 w-14 px-1 text-center bg-white dark:bg-black text-xs border-slate-200 dark:border-slate-700"
+                   />
+                   <Button size="icon" variant="ghost" className="h-5 w-5 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-full" onClick={saveTarget}>
+                     <Check className="w-3 h-3 text-green-600 dark:text-green-500" />
+                   </Button>
+                 </div>
+               ) : (
+                 <button 
+                   onClick={() => setIsEditingTarget(true)} 
+                   className="font-semibold text-xs text-foreground hover:text-blue-600 flex items-center gap-1.5 transition-colors px-1.5 py-0.5 rounded-md hover:bg-white dark:hover:bg-slate-800"
+                 >
+                   {target} ml
+                   <Pencil className="w-3 h-3 opacity-40" />
+                 </button>
+               )}
+            </div>
+
+            {/* Quick Actions (Buttons) */}
+            <div className="grid grid-cols-2 gap-2">
+               <Button 
+                variant="outline" 
+                size="sm" 
+                className="h-8 text-xs font-medium border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900"
+                onClick={() => handleAddWater(-250)}
+                disabled={amount <= 0}
+               >
+                 <Minus className="w-3 h-3 mr-1" /> 250
+               </Button>
+               <Button 
+                variant="default" 
+                size="sm" 
+                className="h-8 text-xs font-medium bg-blue-600 hover:bg-blue-500 text-white shadow-sm shadow-blue-200 dark:shadow-none"
+                onClick={() => handleAddWater(250)}
+               >
+                 <Plus className="w-3 h-3 mr-1" /> 250
+               </Button>
+            </div>
+
+            {/* Custom Input */}
+            <div className="flex gap-2 w-full">
+              <div className="relative flex-1">
+                 <Input 
+                   type="number" 
+                   placeholder="Custom..." 
+                   value={customInput}
+                   onChange={(e) => setCustomInput(e.target.value)}
+                   className="pr-6 h-8 text-xs bg-white dark:bg-slate-900" 
+                 />
+                 <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground">ml</span>
+              </div>
+              <Button size="icon" className="h-8 w-8 shrink-0 bg-slate-800 text-white hover:bg-slate-700 dark:bg-slate-700 dark:hover:bg-slate-600" onClick={handleCustomAdd} disabled={!customInput}>
+                <Plus className="w-3 h-3" />
+              </Button>
+            </div>
+            
+            <HydrationTips phase={phase} />
         </div>
 
       </CardContent>

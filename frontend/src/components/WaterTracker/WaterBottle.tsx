@@ -15,33 +15,33 @@ export function WaterBottle({ current, target, onAdd, className }: WaterBottlePr
   
   // Calculate distinct bubble positions once to avoid re-renders constantly changing them
   const bubbles = useMemo(() => [...Array(8)].map(() => ({
-    size: Math.random() * 10 + 5,
+    size: Math.random() * 8 + 3,
     left: Math.random() * 80 + 10,
     duration: Math.random() * 3 + 2,
     delay: Math.random() * 2,
   })), []);
 
   return (
-    <div className={cn("flex flex-col items-center gap-6", className)}>
+    <div className={cn("flex flex-col items-center gap-4", className)}>
       {/* Bottle Graphic */}
       <div className="relative flex flex-col items-center">
         {/* Cap */}
-        <div className="w-16 h-8 bg-gradient-to-r from-slate-200 via-slate-100 to-slate-200 dark:from-slate-700 dark:via-slate-600 dark:to-slate-700 rounded-t-sm rounded-b-sm border border-slate-300 dark:border-slate-600 shadow-sm z-20 relative">
+        <div className="w-12 h-5 bg-gradient-to-r from-slate-200 via-slate-100 to-slate-200 dark:from-slate-700 dark:via-slate-600 dark:to-slate-700 rounded-t-sm rounded-b-sm border border-slate-300 dark:border-slate-600 shadow-sm z-20 relative">
              <div className="absolute top-1/2 left-0 right-0 h-[1px] bg-slate-400/20 dark:bg-slate-900/40" />
         </div>
         
         {/* Neck */}
-        <div className="w-12 h-6 bg-white/20 dark:bg-slate-800/20 border-x border-slate-300/50 dark:border-slate-600/50 backdrop-blur-sm z-10 relative overflow-hidden" />
+        <div className="w-8 h-3 bg-white/20 dark:bg-slate-800/20 border-x border-slate-300/50 dark:border-slate-600/50 backdrop-blur-sm z-10 relative overflow-hidden" />
 
         {/* Body */}
-        <div className="relative w-44 h-80 rounded-[2.5rem] border-4 border-slate-200/50 dark:border-slate-700/50 overflow-hidden bg-gradient-to-br from-slate-50/80 to-slate-100/30 dark:from-slate-900/80 dark:to-slate-950/30 shadow-2xl backdrop-blur-md -mt-1 ring-1 ring-white/40 dark:ring-slate-800/40">
+        <div className="relative w-32 h-52 rounded-[2rem] border-4 border-slate-200/50 dark:border-slate-700/50 overflow-hidden bg-gradient-to-br from-slate-50/80 to-slate-100/30 dark:from-slate-900/80 dark:to-slate-950/30 shadow-2xl backdrop-blur-md -mt-1 ring-1 ring-white/40 dark:ring-slate-800/40">
             
             {/* Measurement Lines (Graduation) */}
-            <div className="absolute right-0 top-[15%] bottom-[15%] w-8 flex flex-col justify-between items-end pr-2 z-0 opacity-40 mix-blend-multiply dark:mix-blend-screen">
+            <div className="absolute right-0 top-[15%] bottom-[15%] w-7 flex flex-col justify-between items-end pr-1 z-0 opacity-40 mix-blend-multiply dark:mix-blend-screen">
                  {[...Array(5)].map((_, i) => (
-                    <div key={i} className="flex items-center gap-1">
-                        <span className="text-[10px] font-mono font-medium">{Math.round(target * (1 - (i+1)/6))}</span>
-                        <div className="w-3 h-[1px] bg-slate-800 dark:bg-slate-200" />
+                    <div key={i} className="flex items-center gap-0.5">
+                        <span className="text-[7px] font-mono font-medium">{Math.round(target * (1 - (i+1)/6))}</span>
+                        <div className="w-2 h-[1px] bg-slate-800 dark:bg-slate-200" />
                     </div>
                  ))}
             </div>
@@ -76,7 +76,7 @@ export function WaterBottle({ current, target, onAdd, className }: WaterBottlePr
                         left: `${b.left}%`,
                       }}
                       animate={{
-                        y: [320, -20],
+                        y: [200, -20],
                         opacity: [0, 0.8, 0],
                         scale: [0.8, 1.2],
                       }}
@@ -93,36 +93,19 @@ export function WaterBottle({ current, target, onAdd, className }: WaterBottlePr
 
             {/* Glass Reflections / Highlights */}
             {/* Left curved highlight */}
-            <div className="absolute top-4 left-3 w-4 h-[90%] bg-gradient-to-b from-white/80 via-white/20 to-transparent pointer-events-none rounded-full blur-[1px]" />
+            <div className="absolute top-4 left-3 w-3 h-[90%] bg-gradient-to-b from-white/80 via-white/20 to-transparent pointer-events-none rounded-full blur-[1px]" />
             {/* Right sharp highlight */}
-            <div className="absolute top-8 right-4 w-1 h-[80%] bg-gradient-to-b from-white/60 to-transparent pointer-events-none rounded-full blur-[0.5px] opacity-70" />
+            <div className="absolute top-8 right-3 w-1 h-[80%] bg-gradient-to-b from-white/60 to-transparent pointer-events-none rounded-full blur-[0.5px] opacity-70" />
             
             {/* Bottom Curve Shadow */}
-            <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-blue-900/20 to-transparent pointer-events-none" />
+            <div className="absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-blue-900/20 to-transparent pointer-events-none" />
 
             {/* Text Overlay (Slightly reduced size for elegance) */}
             <div className="absolute inset-0 flex flex-col items-center justify-center z-10 font-bold text-slate-800 dark:text-white drop-shadow-md pointer-events-none">
-              <span className="text-4xl font-display font-black tracking-tight drop-shadow-sm">{Math.round(percentage)}%</span>
-              <span className="text-[10px] opacity-90 font-bold tracking-widest uppercase mt-1 bg-white/30 dark:bg-black/30 px-2 py-0.5 rounded-full">{current} ml</span>
+              <span className="text-2xl font-display font-black tracking-tight drop-shadow-sm">{Math.round(percentage)}%</span>
+              <span className="text-[9px] opacity-90 font-bold tracking-widest uppercase mt-0.5 bg-white/30 dark:bg-black/30 px-1.5 py-0.5 rounded-full">{current} ml</span>
             </div>
         </div>
-      </div>
-
-      {/* Quick Actions */}
-      <div className="flex gap-4">
-        <button 
-          onClick={() => onAdd(-250)}
-          className="p-3 rounded-full bg-white hover:bg-slate-50 border border-slate-200 shadow-sm dark:bg-slate-800 dark:border-slate-700 dark:hover:bg-slate-700 transition-all active:scale-95 group"
-          disabled={current <= 0}
-        >
-          <Minus className="w-5 h-5 text-slate-400 group-hover:text-slate-600 dark:text-slate-500 dark:group-hover:text-slate-300 transition-colors" />
-        </button>
-        <button 
-          onClick={() => onAdd(250)}
-          className="p-3 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-400 hover:to-blue-500 shadow-lg shadow-blue-500/30 text-white transition-all active:scale-95 group"
-        >
-          <Plus className="w-6 h-6 group-hover:rotate-90 transition-transform duration-300" />
-        </button>
       </div>
     </div>
   );

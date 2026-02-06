@@ -11,11 +11,12 @@ export const apiClient = {
   },
   
   post: async <T>(url: string, data?: any) => {
+    const isFormData = data instanceof FormData;
     return {
       data: await apiFetch<T>(url, {
         method: 'POST',
         auth: true,
-        body: data ? JSON.stringify(data) : undefined,
+        body: isFormData ? data : (data ? JSON.stringify(data) : undefined),
       }),
     };
   },

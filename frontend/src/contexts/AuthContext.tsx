@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { apiFetch, clearSession, saveSession } from '@/lib/api';
 
 export type UserRole = 'primary' | 'partner' | 'admin';
@@ -21,6 +22,7 @@ export interface User {
   lastLogin?: string | null;
   lastActivity?: string | null;
   goal?: 'TRACKING' | 'CONCEIVE' | 'PREGNANCY' | null;
+  avatarUrl?: string | null;
 }
 
 interface AuthResponse {
@@ -97,9 +99,11 @@ const mapUserFromResponse = (payload: AuthResponse['user']): User => ({
   lastLogin: payload.lastLogin ?? null,
   lastActivity: payload.lastActivity ?? null,
   goal: payload.goal ?? 'TRACKING',
+  avatarUrl: (payload as any).avatarUrl ?? null,
 });
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const queryClient = useQueryClient();
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -344,8 +348,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       localStorage.removeItem(IMPERSONATION_KEY);
       setIsImpersonating(false);
       setImpersonatedUser(null);
+      
+      // Clear all react-query cache to prevent data leaks between users
+      queryClient.removeQueries();
     }
-  }, [persistUser]);
+  }, [persistUser, queryClient]);
 
   const updateUser = useCallback(async (updates: Partial<User>): Promise<User> => {
     if (!user) throw new Error('No user is currently logged in');

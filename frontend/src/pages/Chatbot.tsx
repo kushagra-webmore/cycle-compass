@@ -182,10 +182,10 @@ export default function Chatbot() {
                         <Button
                         variant="ghost"
                         size="icon"
-                        className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="h-6 w-6 text-muted-foreground hover:text-destructive transition-colors"
                         onClick={(e) => handleDeleteSession(e, session.id)}
                         >
-                        <Trash2 className="h-3 w-3 text-muted-foreground hover:text-destructive" />
+                        <Trash2 className="h-3 w-3" />
                         </Button>
                     </div>
                   </div>
@@ -234,6 +234,15 @@ export default function Chatbot() {
                     : config.title}
                 </span>
              </div>
+             <Button 
+                variant="ghost" 
+                size="sm" 
+                className="gap-2 text-muted-foreground hover:text-primary"
+                onClick={() => setSelectedSessionId(undefined)}
+              >
+                <Plus className="h-4 w-4" />
+                <span className="hidden sm:inline">New Chat</span>
+              </Button>
           </div>
 
           <div className="flex-1 overflow-y-auto p-4 space-y-4">

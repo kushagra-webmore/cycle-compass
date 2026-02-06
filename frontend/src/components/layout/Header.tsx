@@ -1,5 +1,6 @@
 import { LogOut, User, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ThemeToggle } from './ThemeToggle';
 import { useAuth } from '@/contexts/AuthContext';
 import { useConfirm } from '@/components/ui/confirm-dialog';
@@ -73,7 +74,16 @@ export const Header = ({ title = 'Cycle-Aware Companion', showBack }: HeaderProp
                 className="text-primary hover:bg-primary/10 hover:text-primary transition-all duration-300 rounded-full h-8 w-8 xs:h-10 xs:w-10"
                 onClick={() => navigate('/profile')}
               >
-                <User className="h-4 w-4 xs:h-5 xs:w-5" />
+                {user.avatarUrl ? (
+                  <Avatar className="h-6 w-6 xs:h-8 xs:w-8">
+                    <AvatarImage src={user.avatarUrl} className="object-cover" />
+                    <AvatarFallback className="text-[10px] xs:text-xs bg-primary/10 text-primary">
+                      {user.name?.[0]?.toUpperCase() || 'U'}
+                    </AvatarFallback>
+                  </Avatar>
+                ) : (
+                  <User className="h-4 w-4 xs:h-5 xs:w-5" />
+                )}
               </Button>
               <Button 
                 variant="ghost" 

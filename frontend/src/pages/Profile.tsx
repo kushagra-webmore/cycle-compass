@@ -1,7 +1,8 @@
-import { useState } from 'react';
-import { User as UserIcon, Calendar, MapPin, Phone, Mail, Clock, Edit2, Save, X, Lock, Shield, Sparkles, Heart } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { User as UserIcon, Calendar, MapPin, Phone, Mail, Clock, Edit2, Save, X, Lock, Shield, Sparkles, Heart, Camera, Loader2, Trash2 } from 'lucide-react';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -13,12 +14,14 @@ import { apiClient } from '@/lib/api-client';
 import { format, formatDistanceToNow, addDays } from 'date-fns';
 import { useCycles, useCurrentCycle } from '@/hooks/api/cycles';
 import { calculateCycleStats } from '@/lib/cycle-stats';
+import { useConfirm } from '@/components/ui/confirm-dialog';
 
 export default function Profile() {
   const { user, updateUser } = useAuth();
   const { data: cycles } = useCycles();
   const { data: currentCycle } = useCurrentCycle();
   const { toast } = useToast();
+  const { confirm } = useConfirm();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     name: user?.name || '',
@@ -88,6 +91,77 @@ export default function Profile() {
   const [passwordForm, setPasswordForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
   const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: 'File too large',
+        description: 'Image must be less than 5MB.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setIsUploadingAvatar(true);
+    const formData = new FormData();
+    formData.append('avatar', file);
+
+    try {
+      const { data } = await apiClient.post<{ avatarUrl: string }>('/users/avatar', formData);
+      const { avatarUrl } = data;
+
+      await updateUser({ avatarUrl });
+      
+      toast({
+        title: 'Avatar Updated',
+        description: 'Your profile picture has been updated.',
+      });
+    } catch (error) {
+      console.error('Avatar upload failed:', error);
+      toast({
+        title: 'Upload Failed',
+        description: 'Failed to upload profile picture. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsUploadingAvatar(false);
+      // Reset input
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
+  const handleRemoveAvatar = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!user?.avatarUrl) return;
+
+    try {
+      if (await confirm({ 
+        title: 'Remove Avatar', 
+        description: 'Are you sure you want to remove your profile picture?',
+        variant: 'destructive',
+        confirmLabel: 'Remove'
+      })) {
+        await updateUser({ avatarUrl: null });
+        toast({
+          title: 'Avatar Removed',
+          description: 'Your profile picture has been removed.',
+        });
+      }
+    } catch (error) {
+      console.error('Avatar removal failed:', error);
+      toast({
+        title: 'Removal Failed',
+        description: 'Failed to remove profile picture. Please try again.',
+        variant: 'destructive',
+      });
+    }
+  };
+
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
     if (passwordForm.newPassword !== passwordForm.confirmPassword) {
@@ -138,17 +212,68 @@ export default function Profile() {
       <div className="space-y-6 animate-fade-in">
         {/* Header */}
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-display font-bold text-foreground">My Profile</h1>
-            <p className="text-muted-foreground">Manage your personal information</p>
+          <div className="flex items-center gap-4">
+            <div className="relative group shrink-0">
+              <Avatar className="h-16 w-16 md:h-20 md:w-20 border-2 border-border cursor-pointer hover:opacity-90 transition-opacity" onClick={() => !isUploadingAvatar && fileInputRef.current?.click()}>
+                <AvatarImage src={user.avatarUrl || ''} className="object-cover" />
+                <AvatarFallback className="text-2xl bg-muted">{user.name?.[0]?.toUpperCase() || 'U'}</AvatarFallback>
+              </Avatar>
+              <div 
+                className="absolute bottom-0 right-0 bg-primary text-primary-foreground rounded-full p-1.5 cursor-pointer hover:bg-primary/90 transition-colors shadow-sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (!isUploadingAvatar) fileInputRef.current?.click();
+                }}
+              >
+                {isUploadingAvatar ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <Camera className="h-3.5 w-3.5" />
+                )}
+              </div>
+              {user.avatarUrl && !isUploadingAvatar && (
+                <div 
+                  className="absolute top-0 right-0 bg-destructive text-destructive-foreground rounded-full p-1.5 cursor-pointer hover:bg-destructive/90 transition-colors shadow-sm -mr-2 -mt-2 z-10"
+                  onClick={handleRemoveAvatar}
+                  title="Remove profile picture"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </div>
+              )}
+              <input 
+                type="file" 
+                ref={fileInputRef} 
+                className="hidden" 
+                accept="image/*"
+                onChange={handleAvatarUpload}
+                disabled={isUploadingAvatar}
+              />
+            </div>
+            <div>
+              <h1 className="text-3xl font-display font-bold text-foreground">My Profile</h1>
+              <p className="text-muted-foreground">Manage your personal information</p>
+            </div>
           </div>
           <div className="flex flex-wrap gap-2 w-full md:w-auto">
-            <Button variant="outline" asChild className="gap-2 flex-1 md:flex-none">
-              <a href="/consent">
-                <Shield className="h-4 w-4" />
-                Consent & Privacy
-              </a>
-            </Button>
+            {user.role === 'primary' ? (
+              <Button 
+                variant="outline" 
+                asChild 
+                className="gap-2 flex-1 md:flex-none border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100 hover:text-rose-800 dark:border-rose-800 dark:bg-rose-950/30 dark:text-rose-400 dark:hover:bg-rose-950/50"
+              >
+                <a href="/connect">
+                  <Heart className="h-4 w-4" />
+                  Partner Access
+                </a>
+              </Button>
+            ) : (
+              <Button variant="outline" asChild className="gap-2 flex-1 md:flex-none">
+                <a href="/consent">
+                  <Shield className="h-4 w-4" />
+                  Consent & Privacy
+                </a>
+              </Button>
+            )}
             <Button variant="outline" onClick={() => setIsPasswordDialogOpen(true)} className="gap-2 flex-1 md:flex-none">
               <Lock className="h-4 w-4" />
               Change Password
@@ -367,13 +492,16 @@ export default function Profile() {
                 </Badge>
               </div>
 
+              {/* 
               <div>
                 <p className="text-sm text-muted-foreground mb-1">Status</p>
                 <Badge variant={user.status === 'ACTIVE' ? 'default' : 'destructive'}>
                   {user.status}
                 </Badge>
               </div>
+              */}
 
+              {/* 
               <div>
                 <p className="text-sm text-muted-foreground mb-1">Last Login</p>
                 <p className="text-sm">
@@ -387,11 +515,20 @@ export default function Profile() {
                   </p>
                 )}
               </div>
+              */}
 
               <div>
                 <p className="text-sm text-muted-foreground mb-1">Onboarding</p>
-                <Badge variant={user.onboardingCompleted ? 'default' : 'secondary'}>
-                  {user.onboardingCompleted ? 'Complete' : 'Incomplete'}
+                <Badge variant={
+                  (user.role === 'partner' 
+                    ? (user.name && user.dateOfBirth && user.phone && user.city)
+                    : user.onboardingCompleted) 
+                  ? 'default' : 'secondary'
+                }>
+                  {(user.role === 'partner' 
+                    ? (user.name && user.dateOfBirth && user.phone && user.city)
+                    : user.onboardingCompleted)
+                  ? 'Complete' : 'Incomplete'}
                 </Badge>
               </div>
             </CardContent>
@@ -399,7 +536,7 @@ export default function Profile() {
 
           {user.role === 'primary' && (
             <Card variant="elevated" className="lg:col-span-3">
-              <CardHeader className="flex flex-row items-center justify-between">
+              <CardHeader className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <div className="space-y-1">
                   <CardTitle>Cycle Information</CardTitle>
                   <CardDescription>Your menstrual cycle details</CardDescription>
@@ -459,7 +596,7 @@ export default function Profile() {
 
           {user.role === 'primary' && (
             <Card variant="elevated" className="lg:col-span-3">
-              <CardHeader className="flex flex-row items-center justify-between">
+              <CardHeader className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <div className="space-y-1">
                   <CardTitle className="flex items-center gap-2">
                     <Heart className="h-5 w-5 text-lavender-foreground" />

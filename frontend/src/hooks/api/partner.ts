@@ -11,6 +11,7 @@ export interface PartnerSummaryResponse {
   primaryUserId: string;
   partnerUserName?: string;
   primaryUserName?: string;
+  primaryUserAvatar?: string;
   consent: {
     share_phase: boolean;
     share_mood_summary: boolean;

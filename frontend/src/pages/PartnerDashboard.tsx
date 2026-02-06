@@ -148,8 +148,12 @@ export default function PartnerDashboard() {
             <Card className="border-l-4 border-l-primary/50 shadow-sm mt-4">
                <CardContent className="flex items-center justify-between p-4">
                  <div className="flex items-center gap-3">
-                   <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
-                     {data.primaryUserName ? data.primaryUserName[0].toUpperCase() : 'P'}
+                   <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold overflow-hidden">
+                     {data.primaryUserAvatar ? (
+                       <img src={data.primaryUserAvatar} alt={data.primaryUserName} className="w-full h-full object-cover" />
+                     ) : (
+                       data.primaryUserName ? data.primaryUserName[0].toUpperCase() : 'P'
+                     )}
                    </div>
                    <div>
                      <p className="font-semibold text-sm text-foreground">Connected to {data.primaryUserName || 'Partner'}</p>

@@ -13,6 +13,7 @@ interface PairingData {
   status: 'active' | 'pending' | 'revoked';
   partnerName?: string;
   partnerUserId?: string;
+  partnerAvatar?: string;
 }
 
 export default function PartnerConnect() {
@@ -124,8 +125,12 @@ export default function PartnerConnect() {
               {activePairings.map(pairing => (
                 <Card key={pairing.id} variant="gradient" className="border-2 border-primary/20">
                   <CardHeader className="text-center pb-2">
-                    <div className="mx-auto w-12 h-12 rounded-full bg-white/20 flex items-center justify-center mb-2">
-                       <UserCheck className="h-6 w-6 text-primary-foreground" />
+                    <div className="mx-auto w-12 h-12 rounded-full bg-white/20 flex items-center justify-center mb-2 overflow-hidden">
+                       {pairing.partnerAvatar ? (
+                         <img src={pairing.partnerAvatar} alt={pairing.partnerName || 'Partner'} className="w-full h-full object-cover" />
+                       ) : (
+                         <UserCheck className="h-6 w-6 text-primary-foreground" />
+                       )}
                     </div>
                     <CardTitle className="text-lg">Connected with {pairing.partnerName || 'Partnerm'}</CardTitle>
                     <CardDescription className="text-primary-foreground/80 text-xs">
@@ -231,7 +236,7 @@ export default function PartnerConnect() {
         </Card>
 
         {/* QR Code */}
-        <Card variant="gradient">
+        {/* <Card variant="gradient">
           <CardHeader>
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-lavender/30">
@@ -245,7 +250,6 @@ export default function PartnerConnect() {
           </CardHeader>
           <CardContent className="flex justify-center">
             <div className="w-32 h-32 xs:w-40 xs:h-40 bg-card rounded-xl flex items-center justify-center border-2 border-border">
-              {/* Mock QR Code */}
               <div className="w-24 h-24 xs:w-32 xs:h-32 grid grid-cols-8 gap-0.5">
                 {Array.from({ length: 64 }).map((_, i) => (
                   <div
@@ -256,14 +260,14 @@ export default function PartnerConnect() {
               </div>
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
 
         {/* Pairing Code */}
         <Card variant="lavender">
           <CardHeader>
             <CardTitle className="text-base text-center">6-Digit Pairing Code</CardTitle>
             <CardDescription className="text-center">
-              Your partner can enter this code in their app
+              Your partner can also enter this code in their app
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">

@@ -1,4 +1,5 @@
 import { Shield, Eye, Heart, Battery, BookOpen, AlertTriangle, UserX, User, Loader, Calendar } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
@@ -187,9 +188,12 @@ export default function ConsentSettings() {
                 {/* Partner Status Card */}
                 <Card className="bg-gradient-to-r from-violet-100 to-fuchsia-100 border-2 border-violet-200 dark:from-violet-900/30 dark:to-fuchsia-900/30 dark:border-violet-700 shadow-md">
                     <CardContent className="flex items-center gap-4 py-4">
-                    <div className="w-12 h-12 rounded-full bg-lavender/50 flex items-center justify-center">
-                        <User className="h-6 w-6 text-lavender-foreground" />
-                    </div>
+                    <Avatar className="h-12 w-12 border-2 border-white/50 shadow-sm">
+                        <AvatarImage src={(user?.role === 'primary' ? pairing?.partnerAvatar : pairing?.primaryUserAvatar) || undefined} className="object-cover" />
+                        <AvatarFallback className="bg-lavender/50 text-lavender-foreground font-semibold">
+                            {((user?.role === 'primary' ? pairing?.partnerUserName : pairing?.primaryUserName) || 'U')[0]?.toUpperCase()}
+                        </AvatarFallback>
+                    </Avatar>
                     <div className="flex-1">
                         <p className="font-semibold text-foreground">
                         {user?.role === 'primary' ? 'Partner Connected' : 'Connected With'}

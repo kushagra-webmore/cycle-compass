@@ -122,6 +122,13 @@ export const useSendMessage = (sessionId?: string) => {
       // Also need to invalidate sessions because the session title might have changed (if new chat)
       // or updated_at changed.
       queryClient.invalidateQueries({ queryKey: ['chatHistory', sessionId ?? data.sessionId] });
+      
+      // If we just promoted a new chat (undefined sessionId) to a real session,
+      // we MUST clear the 'undefined' history so the next "New Chat" is empty.
+      if (!sessionId) {
+        queryClient.removeQueries({ queryKey: ['chatHistory', undefined] });
+      }
+
       queryClient.invalidateQueries({ queryKey: ['chatSessions'] });
     },
   });

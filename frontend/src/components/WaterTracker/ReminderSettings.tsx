@@ -78,8 +78,8 @@ export function ReminderSettings({ onSave }: ReminderSettingsProps) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="icon" className="rounded-full hover:bg-slate-100 dark:hover:bg-slate-800">
-          <Settings className="w-5 h-5 text-slate-500" />
+        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800">
+          <Settings className="w-4 h-4 text-slate-500" />
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">

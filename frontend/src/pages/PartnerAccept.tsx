@@ -11,6 +11,7 @@ import { apiClient } from '@/lib/api-client';
 interface InviteDetails {
   inviterName?: string;
   inviterEmail?: string;
+  inviterAvatar?: string;
   expiresAt: string;
 }
 
@@ -131,8 +132,12 @@ export default function PartnerAccept() {
           <Card variant="elevated" className="text-center overflow-hidden">
             <div className="h-2 gradient-primary" />
             <CardHeader className="space-y-4 pt-8">
-              <div className="w-20 h-20 mx-auto rounded-full bg-lavender/30 flex items-center justify-center">
-                <Heart className="h-10 w-10 text-lavender-foreground" />
+              <div className="w-20 h-20 mx-auto rounded-full bg-lavender/30 flex items-center justify-center overflow-hidden">
+                {details?.inviterAvatar ? (
+                  <img src={details.inviterAvatar} alt={details.inviterName || 'Inviter'} className="w-full h-full object-cover" />
+                ) : (
+                  <Heart className="h-10 w-10 text-lavender-foreground" />
+                )}
               </div>
               <div>
                 <CardTitle className="text-xl">You're Invited!</CardTitle>

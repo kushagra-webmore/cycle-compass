@@ -303,13 +303,8 @@ export default function Dashboard() {
               </Card>
             </div>
 
-            {/* Water Tracker */}
-            <div className="mt-6">
-               <WaterTracker phase={cycle?.context?.phase} />
-            </div>
-
             {/* Actions */}
-            <div className="grid grid-cols-2 gap-2 xs:gap-3 pb-6 xs:pb-8">
+            <div className="grid grid-cols-2 gap-2 xs:gap-3 mt-6">
               <Button asChild variant="default" size="lg" className="h-auto py-3 xs:py-4 flex-col gap-1.5 xs:gap-2 shadow-lg shadow-primary/20">
                 <Link to="/log">
                   <Calendar className="h-5 w-5 xs:h-6 xs:w-6" />
@@ -323,6 +318,13 @@ export default function Dashboard() {
                 </Link>
               </Button>
             </div>
+
+            {/* Water Tracker */}
+            <div className="mt-6 mb-6">
+               <WaterTracker phase={cycle?.context?.phase} />
+            </div>
+
+
           </>
         )}
 

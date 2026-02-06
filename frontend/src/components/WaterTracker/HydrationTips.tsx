@@ -49,10 +49,10 @@ export function HydrationTips({ phase }: HydrationTipsProps) {
   const tip = getTip();
 
   return (
-    <Card className={`mt-4 border shadow-sm ${tip.bg} ${tip.border}`}>
-      <CardContent className="p-3 flex gap-3 items-start">
-        <Info className={`w-5 h-5 mt-0.5 shrink-0 ${tip.icon}`} />
-        <p className="text-xs xs:text-sm text-foreground/90 leading-relaxed">
+    <Card className={`mt-0 border shadow-sm ${tip.bg} ${tip.border}`}>
+      <CardContent className="p-2 flex gap-2 items-start">
+        <Info className={`w-4 h-4 mt-0.5 shrink-0 ${tip.icon}`} />
+        <p className="text-[11px] leading-relaxed text-foreground/90 font-medium">
           {tip.text}
         </p>
       </CardContent>

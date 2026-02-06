@@ -20,8 +20,10 @@ export interface PairingInfo {
   partnerUserId: string | null; // Keeping for potential compatibility, but snake_case is what API returns
   partnerUserName?: string;
   partnerUserEmail?: string;
+  partnerAvatar?: string;
   primaryUserName?: string;
   primaryUserEmail?: string;
+  primaryUserAvatar?: string;
   consent: ConsentSettings | null;
   inviteLink?: string;
   pairCode?: string;
