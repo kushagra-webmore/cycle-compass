@@ -42,10 +42,10 @@ export const getCycleContext = (
   referenceDate = new Date()
 ): CycleContext => {
   const start = new Date(startDate);
-  // Reset time part to ensure pure date calculation
-  start.setHours(0, 0, 0, 0);
+  // Reset time part to ensure pure date calculation using UTC to avoid timezone issues
+  start.setUTCHours(0, 0, 0, 0);
   const ref = new Date(referenceDate);
-  ref.setHours(0, 0, 0, 0);
+  ref.setUTCHours(0, 0, 0, 0);
 
   const diffMs = ref.getTime() - start.getTime();
   const daysSinceStart = Math.max(0, Math.floor(diffMs / (1000 * 60 * 60 * 24)));
