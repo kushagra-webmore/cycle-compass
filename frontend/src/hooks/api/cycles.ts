@@ -80,10 +80,13 @@ export const useCurrentCycle = () => {
   return useQuery({
     queryKey: cycleKeys.current,
     queryFn: () => {
-      // Get client's current date to send to server for timezone-aware calculations
-      const clientDate = new Date().toISOString();
-      console.log('[Frontend] Fetching current cycle with client date:', clientDate);
-      console.log('[Frontend] Client local time:', new Date().toString());
+      // Get client's current LOCAL date string (YYYY-MM-DD) to send to server
+      // We explicitly construct YYYY-MM-DD from local components to avoid UTC conversion issues
+      const now = new Date();
+      const clientDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+      
+      console.log('[Frontend] Fetching current cycle with client date (local YYYY-MM-DD):', clientDate);
+      console.log('[Frontend] Client local time:', now.toString());
       return apiFetch<CycleSummary | null>(`/cycles/current?date=${encodeURIComponent(clientDate)}`, { auth: true });
     },
   });

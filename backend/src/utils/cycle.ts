@@ -49,12 +49,13 @@ export const getCycleContext = (
   console.log('Start date input:', startDate);
   
   const start = new Date(startDate);
-  // Reset time part to ensure pure date calculation
-  // Use Date.UTC with local date components to preserve the LOCAL date, not UTC date
-  const startNormalized = new Date(Date.UTC(start.getFullYear(), start.getMonth(), start.getDate()));
+  // Use Date.UTC with UTC date components to be server-timezone independent
+  // This assumes inputs are either YYYY-MM-DD strings (parsed as UTC midnight)
+  // or correctly timezone-adjusted Date objects where we want the UTC date
+  const startNormalized = new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth(), start.getUTCDate()));
   
   const ref = new Date(referenceDate);
-  const refNormalized = new Date(Date.UTC(ref.getFullYear(), ref.getMonth(), ref.getDate()));
+  const refNormalized = new Date(Date.UTC(ref.getUTCFullYear(), ref.getUTCMonth(), ref.getUTCDate()));
 
   console.log('Start date (UTC normalized):', startNormalized.toISOString());
   console.log('Reference date (UTC normalized):', refNormalized.toISOString());
