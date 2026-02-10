@@ -394,7 +394,7 @@ export default function CycleHistory() {
                       />
                     </div>
                     <div className="grid gap-2">
-                      <Label htmlFor="endDate">End Date (Optional if you are in your cycle)</Label>
+                      <Label htmlFor="endDate">End Date (Optional)</Label>
                       <Input
                         id="endDate"
                         type="date"
@@ -403,6 +403,7 @@ export default function CycleHistory() {
                         min={formData.startDate}
                         max={getLocalDateString()}
                       />
+                      <p className="text-xs text-muted-foreground">Leave empty if still in your period</p>
                     </div>
                   </div>
                   <DialogFooter>
@@ -460,6 +461,7 @@ export default function CycleHistory() {
                                  onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
                                  max={getLocalDateString()}
                                />
+                               <p className="text-xs text-muted-foreground mt-1">Leave empty if ongoing</p>
                              </div>
                              <div className="grid gap-2">
                                <Label>End Date (Optional)</Label>
@@ -470,6 +472,7 @@ export default function CycleHistory() {
                                  min={formData.startDate}
                                  max={getLocalDateString()}
                                />
+                               <p className="text-xs text-muted-foreground mt-1">Leave empty if ongoing</p>
                              </div>
                            </div>
                            <div className="flex justify-end gap-2">

@@ -84,7 +84,7 @@ export function CycleHistoryChart({ cycles }: CycleHistoryChartProps) {
   const avgLength = Math.round(allData.reduce((acc, curr) => acc + curr.length, 0) / allData.length);
 
   return (
-    <Card className="col-span-1 lg:col-span-2">
+    <Card>
       <CardHeader>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
@@ -126,8 +126,8 @@ export function CycleHistoryChart({ cycles }: CycleHistoryChartProps) {
         )}
       </CardHeader>
       <CardContent className="w-full">
-         <div className="h-[300px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
+         <div className="h-[300px] w-full min-w-0">
+            <ResponsiveContainer width="99%" height="100%">
                <BarChart data={data} margin={{ top: 20, right: 45, left: -20, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
                   <XAxis 

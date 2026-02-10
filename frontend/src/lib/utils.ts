@@ -24,6 +24,8 @@ export function getLocalDateString(date = new Date()): string {
  */
 export function parseLocalYYYYMMDD(dateStr: string): Date {
   if (!dateStr) return new Date();
+  // Ensure we only have the YYYY-MM-DD part even if an ISO string is passed
+  const cleanDate = dateStr.includes('T') ? dateStr.split('T')[0] : dateStr;
   // Append T00:00:00 to force local time parsing
-  return new Date(`${dateStr}T00:00:00`);
+  return new Date(`${cleanDate}T00:00:00`);
 }
