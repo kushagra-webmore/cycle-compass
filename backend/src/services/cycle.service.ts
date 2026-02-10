@@ -47,7 +47,7 @@ export interface SymptomEntry {
   other_symptoms: string[] | null;
 }
 
-const mapCycleRow = (row: any, periodLength: number = 5): CycleSummary => {
+const mapCycleRow = (row: any, periodLength: number = 5, referenceDate?: Date): CycleSummary => {
   const cycleLength = row.cycle_length ?? 28;
   return {
     id: row.id,
@@ -55,7 +55,7 @@ const mapCycleRow = (row: any, periodLength: number = 5): CycleSummary => {
     endDate: row.end_date,
     cycleLength,
     isPredicted: row.is_predicted,
-    context: getCycleContext(row.start_date, cycleLength, periodLength),
+    context: getCycleContext(row.start_date, cycleLength, periodLength, referenceDate),
   };
 };
 
@@ -151,7 +151,7 @@ export const createCyclesBulk = async (userId: string, cycles: CreateCycleInput[
   return (data ?? []).map(row => mapCycleRow(row, periodLength));
 };
 
-export const getCurrentCycle = async (userId: string): Promise<CycleSummary | null> => {
+export const getCurrentCycle = async (userId: string, referenceDate?: Date): Promise<CycleSummary | null> => {
   const supabase = getSupabaseClient();
   const { data, error } = await supabase
     .from('cycles')
@@ -175,7 +175,7 @@ export const getCurrentCycle = async (userId: string): Promise<CycleSummary | nu
     .eq('user_id', userId)
     .single();
 
-  return mapCycleRow(data, profile?.period_length);
+  return mapCycleRow(data, profile?.period_length, referenceDate);
 };
 
 export const getCycleById = async (userId: string, cycleId: string): Promise<CycleSummary | null> => {

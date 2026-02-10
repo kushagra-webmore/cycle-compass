@@ -76,11 +76,16 @@ export const useCycles = () =>
     queryFn: () => apiFetch<CycleSummary[]>('/cycles/history', { auth: true }),
   });
 
-export const useCurrentCycle = () =>
-  useQuery({
+export const useCurrentCycle = () => {
+  return useQuery({
     queryKey: cycleKeys.current,
-    queryFn: () => apiFetch<CycleSummary | null>('/cycles/current', { auth: true }),
+    queryFn: () => {
+      // Get client's current date to send to server for timezone-aware calculations
+      const clientDate = new Date().toISOString();
+      return apiFetch<CycleSummary | null>(`/cycles/current?date=${encodeURIComponent(clientDate)}`, { auth: true });
+    },
   });
+};
 
 export const useCreateCycle = () => {
   const queryClient = useQueryClient();

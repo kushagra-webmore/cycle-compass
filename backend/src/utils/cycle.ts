@@ -41,15 +41,29 @@ export const getCycleContext = (
   userPeriodLength?: number | null,
   referenceDate = new Date()
 ): CycleContext => {
+  // Log for debugging timezone issues
+  console.log('=== CYCLE CONTEXT DEBUG ===');
+  console.log('Server current time (local):', new Date().toString());
+  console.log('Server current time (ISO):', new Date().toISOString());
+  console.log('Reference date input:', referenceDate.toISOString());
+  console.log('Start date input:', startDate);
+  
   const start = new Date(startDate);
   // Reset time part to ensure pure date calculation using UTC to avoid timezone issues
   start.setUTCHours(0, 0, 0, 0);
   const ref = new Date(referenceDate);
   ref.setUTCHours(0, 0, 0, 0);
 
+  console.log('Start date (UTC normalized):', start.toISOString());
+  console.log('Reference date (UTC normalized):', ref.toISOString());
+
   const diffMs = ref.getTime() - start.getTime();
   const daysSinceStart = Math.max(0, Math.floor(diffMs / (1000 * 60 * 60 * 24)));
   const currentDay = (daysSinceStart % cycleLength) + 1;
+  
+  console.log('Days since start:', daysSinceStart);
+  console.log('Current day:', currentDay);
+  console.log('===========================');
   const periodLength = userPeriodLength || DEFAULT_PERIOD_LENGTH;
   const phase = derivePhase(currentDay, cycleLength, periodLength);
 

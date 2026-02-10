@@ -57,7 +57,9 @@ cycleRouter.delete(
 cycleRouter.get(
   '/current',
   asyncHandler(async (req, res) => {
-    const cycle = await getCurrentCycle(req.authUser!.id);
+    // Accept optional client date to avoid timezone issues
+    const clientDate = req.query.date ? new Date(req.query.date as string) : undefined;
+    const cycle = await getCurrentCycle(req.authUser!.id, clientDate);
     res.json(cycle);
   }),
 );
