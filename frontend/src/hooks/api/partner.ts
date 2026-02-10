@@ -44,8 +44,14 @@ const partnerKeys = {
   summary: ['partner', 'summary'] as const,
 };
 
-export const usePartnerSummary = () =>
-  useQuery({
+export const usePartnerSummary = () => {
+  return useQuery({
     queryKey: partnerKeys.summary,
-    queryFn: () => apiFetch<PartnerSummaryResponse | null>('/partner/summary', { auth: true }),
+    queryFn: () => {
+      // Get client's current date to send to server for timezone-aware calculations
+      const clientDate = new Date().toISOString();
+      console.log('[Partner Frontend] Fetching partner summary with client date:', clientDate);
+      return apiFetch<PartnerSummaryResponse | null>(`/partner/summary?date=${encodeURIComponent(clientDate)}`, { auth: true });
+    },
   });
+};

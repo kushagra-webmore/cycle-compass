@@ -43,7 +43,7 @@ const averageEnergy = (entries: Array<{ energy: string | null }>) => {
   return 'High';
 };
 
-export const getPartnerSummary = async (partnerUserId: string) => {
+export const getPartnerSummary = async (partnerUserId: string, referenceDate?: Date) => {
   const supabase = getSupabaseClient();
 
   const { data: pairing, error } = await supabase
@@ -67,7 +67,7 @@ export const getPartnerSummary = async (partnerUserId: string) => {
   const consent = (consentData ?? {}) as ConsentSettings;
   const primaryUserId = pairing.primary_user_id;
 
-  const cycle = consent.share_phase ? await getCurrentCycle(primaryUserId) : null;
+  const cycle = consent.share_phase ? await getCurrentCycle(primaryUserId, referenceDate) : null;
 
   let moodSummary: string | null = null;
   let energySummary: string | null = null;

@@ -13,7 +13,9 @@ partnerRouter.use(authenticate, requireRoles('PARTNER'));
 partnerRouter.get(
   '/summary',
   asyncHandler(async (req, res) => {
-    const summary = await getPartnerSummary(req.authUser!.id);
+    // Accept optional client date to avoid timezone issues
+    const clientDate = req.query.date ? new Date(req.query.date as string) : undefined;
+    const summary = await getPartnerSummary(req.authUser!.id, clientDate);
     res.json(summary);
   }),
 );
@@ -22,7 +24,9 @@ partnerRouter.post(
   '/guidance',
   validateBody(aiPartnerGuidanceSchema),
   asyncHandler(async (req, res) => {
-    const summary = await getPartnerSummary(req.authUser!.id);
+    // Accept optional client date to avoid timezone issues
+    const clientDate = req.query.date ? new Date(req.query.date as string) : undefined;
+    const summary = await getPartnerSummary(req.authUser!.id, clientDate);
 
     if (!summary) {
       return res.status(400).json({ message: 'No active pairing found.' });
