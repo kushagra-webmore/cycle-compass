@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { differenceInDays, format } from 'date-fns';
 import { useMediaQuery } from '@/hooks/use-media-query';
+import { parseLocalYYYYMMDD } from '@/lib/utils';
 
 interface CycleHistoryChartProps {
   cycles: any[];
@@ -20,7 +21,6 @@ export function CycleHistoryChart({ cycles }: CycleHistoryChartProps) {
   const cyclesPerPage = useMemo(() => {
     if (isMobile) return 4;
     if (isTablet) return 6;
-    return 10;
   }, [isMobile, isTablet]);
 
   // Process cycles to get lengths
@@ -34,14 +34,18 @@ export function CycleHistoryChart({ cycles }: CycleHistoryChartProps) {
         const current = sorted[i];
         const next = sorted[i+1];
         
-        const length = differenceInDays(new Date(next.startDate), new Date(current.startDate));
+        // Use parseLocalYYYYMMDD to ensure we count days based on local dates, preventing UTC shifts
+        const startDate = parseLocalYYYYMMDD(current.startDate);
+        const nextStartDate = parseLocalYYYYMMDD(next.startDate);
+        
+        const length = differenceInDays(nextStartDate, startDate);
         
         // Filter outliers
         if (length > 15 && length < 100) {
             chartData.push({
-                date: format(new Date(current.startDate), 'MMM d'),
+                date: format(startDate, 'MMM d'),
                 length: length,
-                fullDate: format(new Date(current.startDate), 'MMM d, yyyy')
+                fullDate: format(startDate, 'MMM d, yyyy')
             });
         }
     }

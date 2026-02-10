@@ -315,3 +315,88 @@
   "ip": "::1",
   "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
 }
+2026-02-11 00:44:43 [info]: 🚀 Server listening on port 4000 
+2026-02-11 00:44:43 [info]: Environment: development 
+2026-02-11 00:44:43 [info]: Scheduler initialized 
+2026-02-11 00:45:00 [info]: Running water reminder check... 
+2026-02-11 00:45:56 [http]: Request {
+  "method": "POST",
+  "url": "/auth/refresh",
+  "status": 200,
+  "responseTime": "1737ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-02-11 00:45:58 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/current?date=2026-02-11",
+  "status": 200,
+  "responseTime": "481ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-02-11 00:45:58 [http]: Request {
+  "method": "GET",
+  "url": "/symptoms/history?days=90",
+  "status": 304,
+  "responseTime": "619ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-02-11 00:45:59 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/history",
+  "status": 200,
+  "responseTime": "828ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-02-11 00:46:00 [http]: Request {
+  "method": "GET",
+  "url": "/water/2026-02-10",
+  "status": 304,
+  "responseTime": "855ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-02-11 00:46:00 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/current?date=2026-02-11",
+  "status": 304,
+  "responseTime": "946ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-02-11 00:46:11 [http]: Request {
+  "method": "POST",
+  "url": "/ai/daily-insights",
+  "status": 200,
+  "responseTime": "11838ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-02-11 00:46:23 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/current?date=2026-02-11",
+  "status": 304,
+  "responseTime": "236ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-02-11 00:46:24 [http]: Request {
+  "method": "GET",
+  "url": "/symptoms/history?days=90",
+  "status": 304,
+  "responseTime": "421ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-02-11 00:46:24 [http]: Request {
+  "method": "GET",
+  "url": "/cycles/history",
+  "status": 304,
+  "responseTime": "473ms",
+  "ip": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+}
+2026-02-11 00:46:30 [info]: Received SIGINT. Shutting down gracefully... 

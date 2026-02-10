@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { format, differenceInDays, addDays, isSameMonth } from 'date-fns';
+import { getLocalDateString, parseLocalYYYYMMDD } from '@/lib/utils';
 import { Calendar as CalendarIcon, Clock, ChevronLeft, ChevronRight, ArrowLeft, Trash2, Edit2, Plus, Info } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { AppLayout } from '@/components/layout/AppLayout';
@@ -389,7 +390,7 @@ export default function CycleHistory() {
                         type="date"
                         value={formData.startDate}
                         onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-                        max={new Date().toISOString().split('T')[0]}
+                        max={getLocalDateString()}
                       />
                     </div>
                     <div className="grid gap-2">
@@ -400,7 +401,7 @@ export default function CycleHistory() {
                         value={formData.endDate}
                         onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
                         min={formData.startDate}
-                        max={new Date().toISOString().split('T')[0]}
+                        max={getLocalDateString()}
                       />
                     </div>
                   </div>
@@ -425,8 +426,8 @@ export default function CycleHistory() {
             ) : (
               <div className="space-y-4">
                 {cycles.map((cycle: any, index: number) => {
-                  const startDate = new Date(cycle.startDate);
-                  const endDate = cycle.endDate ? new Date(cycle.endDate) : null;
+                  const startDate = parseLocalYYYYMMDD(cycle.startDate);
+                  const endDate = cycle.endDate ? parseLocalYYYYMMDD(cycle.endDate) : null;
                   const length = endDate 
                     ? differenceInDays(endDate, startDate) + 1 
                     : differenceInDays(new Date(), startDate) + 1;
@@ -457,7 +458,7 @@ export default function CycleHistory() {
                                  type="date"
                                  value={formData.startDate}
                                  onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-                                 max={new Date().toISOString().split('T')[0]}
+                                 max={getLocalDateString()}
                                />
                              </div>
                              <div className="grid gap-2">
@@ -467,7 +468,7 @@ export default function CycleHistory() {
                                  value={formData.endDate}
                                  onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
                                  min={formData.startDate}
-                                 max={new Date().toISOString().split('T')[0]}
+                                 max={getLocalDateString()}
                                />
                              </div>
                            </div>

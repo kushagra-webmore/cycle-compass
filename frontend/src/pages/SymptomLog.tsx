@@ -12,6 +12,7 @@ import { Slider } from '@/components/ui/slider';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { format } from 'date-fns';
+import { getLocalDateString } from '@/lib/utils';
 
 const moodOptions = [
   { value: 'HIGH', emoji: '😊', label: 'Great' },
@@ -57,8 +58,8 @@ export default function SymptomLog() {
   const { data: cycle } = useCurrentCycle();
   const logSymptom = useLogSymptom();
   
-  // Date State - Default to Today
-  const [logDate, setLogDate] = useState(new Date().toISOString().split('T')[0]);
+  // Date State - Default to Today (Local)
+  const [logDate, setLogDate] = useState(getLocalDateString());
   const dateInputRef = useRef<HTMLInputElement>(null);
   
   const [pain, setPain] = useState([0]); // Slider expects array
@@ -137,7 +138,7 @@ export default function SymptomLog() {
                ref={dateInputRef}
                type="date" 
                value={logDate} 
-               max={new Date().toISOString().split('T')[0]}
+               max={getLocalDateString()}
                onChange={(e) => setLogDate(e.target.value)}
                className="w-auto font-display font-semibold text-lg bg-transparent border-none shadow-none focus-visible:ring-0 cursor-pointer dark:bg-card/50 dark:px-3 [&::-webkit-calendar-picker-indicator]:hidden"
              />
