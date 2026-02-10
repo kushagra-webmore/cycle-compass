@@ -82,6 +82,8 @@ export const useCurrentCycle = () => {
     queryFn: () => {
       // Get client's current date to send to server for timezone-aware calculations
       const clientDate = new Date().toISOString();
+      console.log('[Frontend] Fetching current cycle with client date:', clientDate);
+      console.log('[Frontend] Client local time:', new Date().toString());
       return apiFetch<CycleSummary | null>(`/cycles/current?date=${encodeURIComponent(clientDate)}`, { auth: true });
     },
   });
