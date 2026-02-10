@@ -49,15 +49,17 @@ export const getCycleContext = (
   console.log('Start date input:', startDate);
   
   const start = new Date(startDate);
-  // Reset time part to ensure pure date calculation using UTC to avoid timezone issues
-  start.setUTCHours(0, 0, 0, 0);
+  // Reset time part to ensure pure date calculation
+  // Use Date.UTC with local date components to preserve the LOCAL date, not UTC date
+  const startNormalized = new Date(Date.UTC(start.getFullYear(), start.getMonth(), start.getDate()));
+  
   const ref = new Date(referenceDate);
-  ref.setUTCHours(0, 0, 0, 0);
+  const refNormalized = new Date(Date.UTC(ref.getFullYear(), ref.getMonth(), ref.getDate()));
 
-  console.log('Start date (UTC normalized):', start.toISOString());
-  console.log('Reference date (UTC normalized):', ref.toISOString());
+  console.log('Start date (UTC normalized):', startNormalized.toISOString());
+  console.log('Reference date (UTC normalized):', refNormalized.toISOString());
 
-  const diffMs = ref.getTime() - start.getTime();
+  const diffMs = refNormalized.getTime() - startNormalized.getTime();
   const daysSinceStart = Math.max(0, Math.floor(diffMs / (1000 * 60 * 60 * 24)));
   const currentDay = (daysSinceStart % cycleLength) + 1;
   
