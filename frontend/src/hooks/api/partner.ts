@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { apiFetch } from '@/lib/api';
+import { getLocalDateString } from '@/lib/utils';
 
 interface PartnerSummaries {
   moodSummary: string | null;
@@ -49,7 +50,8 @@ export const usePartnerSummary = () => {
     queryKey: partnerKeys.summary,
     queryFn: () => {
       // Get client's current date to send to server for timezone-aware calculations
-      const clientDate = new Date().toISOString();
+      // Use getLocalDateString() to send YYYY-MM-DD local date
+      const clientDate = getLocalDateString();
       console.log('[Partner Frontend] Fetching partner summary with client date:', clientDate);
       return apiFetch<PartnerSummaryResponse | null>(`/partner/summary?date=${encodeURIComponent(clientDate)}`, { auth: true });
     },
